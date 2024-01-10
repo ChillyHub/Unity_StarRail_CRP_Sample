@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
+  m_Name: RoomLightVolume Profile
+  m_EditorClassIdentifier: 
+  components:
+  - {fileID: 3517115336796379657}
+--- !u!114 &3517115336796379657
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ce730b32a343a2826f8122622500bc, type: 3}
+  m_Name: LightSettingVolume
+  m_EditorClassIdentifier: 
+  active: 1
+  mainLightMode:
+    m_OverrideState: 1
+    m_Value: 0
+  shadowLightMode:
+    m_OverrideState: 1
+    m_Value: 1
+  mainLightRotation:
+    m_OverrideState: 1
+    m_Value: {x: 0, y: 57.1, z: 47.92}
+  mainLightColor:
+    m_OverrideState: 1
+    m_Value: {r: 0.59383625, g: 0.557565, b: 0.7735849, a: 1}
+  shadowLightRotation:
+    m_OverrideState: 1
+    m_Value: {x: 0, y: 38.6, z: 47.25}
+  mainLight:
+    m_OverrideState: 1
+    m_Value: {fileID: 3921172408440403878, guid: eba2bcdff962d504f9c5285a2076d452,
+      type: 3}
+  shadowLight:
+    m_OverrideState: 1
+    m_Value: {fileID: 3921172408440403878, guid: eba2bcdff962d504f9c5285a2076d452,
+      type: 3}

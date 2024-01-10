@@ -1,0 +1,9 @@
+Assets/Unity_StarRail_CRP_Sample/Characters/Avatar_Mar_7th_00/Models/Avatar_Mar_7th_00.fbx filter=lfs diff=lfs merge=lfs -text
+Assets/Unity_StarRail_CRP_Sample/Characters/Avatar_Mar_7th_00/Models/Player_Maid_Mar_7th_00.fbx filter=lfs diff=lfs merge=lfs -text
+Library/ArtifactDB filter=lfs diff=lfs merge=lfs -text
+Library/Artifacts/02/023e55c8574ae9c62d86cd401b013438 filter=lfs diff=lfs merge=lfs -text
+Library/PackageCache/com.unity.burst@1.8.8/.Runtime/burst-llvm-15.dll filter=lfs diff=lfs merge=lfs -text
+Library/PackageCache/com.unity.burst@1.8.8/.Runtime/hostmac/dsymutil filter=lfs diff=lfs merge=lfs -text
+Library/PackageCache/com.unity.burst@1.8.8/.Runtime/libburst-llvm-10.dylib filter=lfs diff=lfs merge=lfs -text
+Library/PackageCache/com.unity.burst@1.8.8/.Runtime/libburst-llvm-15.dylib filter=lfs diff=lfs merge=lfs -text
+Library/PackageCache/com.unity.burst@1.8.8/.Runtime/libburst-llvm-15.so filter=lfs diff=lfs merge=lfs -text
