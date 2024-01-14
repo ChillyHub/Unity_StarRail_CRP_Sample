@@ -233,7 +233,7 @@ Shader "StarRail_CRP/Charater/CharacterHair"
         }
         Pass
         {
-            Name "Character Hair ShadowCaster"
+            Name "Character Shadow Caster"
             Tags { "Lightmode"="CharacterShadowCaster" }
             
             ZWrite On

@@ -1,6 +1,4 @@
-﻿using System;
-using Unity.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -9,7 +7,7 @@ namespace Unity_StarRail_CRP_Sample
 {
     public class ScreenSpaceShadowsPass : ScriptableRenderPass
     {
-        enum MaterialPass
+        public enum MaterialPass
         {
             SceneCascadeShadow = 0,
             AdditionalStencilVolume = 1,
@@ -36,10 +34,16 @@ namespace Unity_StarRail_CRP_Sample
             public static readonly int ShadowLightIndexId = Shader.PropertyToID("_ShadowLightIndex");
             public static readonly int LightLayerMaskId = Shader.PropertyToID("_LightLayerMask");
             public static readonly int CookieLightIndexId = Shader.PropertyToID("_CookieLightIndex");
+
+            public static readonly int CameraDepthAttachmentId = Shader.PropertyToID("_CameraDepthAttachment");
         }
         
         // Profiling samplers
         private readonly ProfilingSampler _screenSpaceShadowProfilingSampler;
+        
+        // Draw system
+        private CharacterEntityManager _entityManager;
+        private CharacterScreenShadowDrawSystem _drawSystem;
         
         // Material
         private Material _material;
@@ -55,7 +59,7 @@ namespace Unity_StarRail_CRP_Sample
         public ScreenSpaceShadowsPass()
         {
             this.profilingSampler = new ProfilingSampler(nameof(ScreenSpaceShadowsPass));
-            this.renderPassEvent = RenderPassEvent.BeforeRenderingGbuffer;
+            this.renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
             
             _screenSpaceShadowProfilingSampler = new ProfilingSampler("CRP Screen Space Shadow");
             
@@ -72,9 +76,11 @@ namespace Unity_StarRail_CRP_Sample
             }
         }
 
-        public void Setup(DeferredLight deferredLight)
+        public void Setup(DeferredLight deferredLight, CharacterEntityManager entityManager, CharacterScreenShadowDrawSystem drawSystem)
         {
             _deferredLight = deferredLight;
+            _entityManager = entityManager;
+            _drawSystem = drawSystem;
         }
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
@@ -118,6 +124,9 @@ namespace Unity_StarRail_CRP_Sample
                 {
                     cmd.ClearRenderTarget(false, true, Color.white);
                 }
+                
+                cmd.SetGlobalTexture(ScreenSpaceShadowConstant.CameraDepthAttachmentId, 
+                    renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
                 
                 // Render Additional Lights Shadow To Screen Space Shadow Texture
                 RenderAdditionalLightsShadow(cmd, ref renderingData);
@@ -196,33 +205,16 @@ namespace Unity_StarRail_CRP_Sample
         
         private void RenderCharacterShadow(CommandBuffer cmd, ref RenderingData renderingData)
         {
-            int index = 0;
-            var infos = CharacterManager.instance.CharacterInfos;
-            foreach (var (key, info) in infos)
+            for (int i = 0; i < _entityManager.chunkCount; i++)
             {
-                Vector3 center = info.Position + info.AABB.center;
-                float radius = info.AABB.extents.magnitude;
-                    
-                Mesh boxMesh = CreateBoxMesh(radius);
+                CharacterEntityChunk entityChunk = _entityManager.entityChunks[i];
+                if (!_entityManager.IsValid(entityChunk.entity))
+                {
+                    continue;
+                }
 
-                Matrix4x4 mat = Matrix4x4.LookAt(Vector3.zero, info.ShadowLightDirection, Vector3.up);
-                mat.m03 = center.x;
-                mat.m13 = center.y;
-                mat.m23 = center.z;
-
-                _materialPropertyBlock[index] = new MaterialPropertyBlock();
-                _materialPropertyBlock[index].SetFloat(ScreenSpaceShadowConstant.IndexId, index);
-                    
-                // Stencil pass
-                cmd.DrawMesh(boxMesh, mat, _material, 0, (int)MaterialPass.CharacterStencilVolume, _materialPropertyBlock[index]);
-                    
-                // Character Shadow pass
-                cmd.DrawMesh(boxMesh, mat, _material, 0, (int)MaterialPass.CharacterShadow, _materialPropertyBlock[index]);
-
-                index++;
+                _drawSystem.Execute(cmd, i);
             }
-            
-            // Debug.Log(index);
         }
 
         private static Mesh CreateBoxMesh(float radius)

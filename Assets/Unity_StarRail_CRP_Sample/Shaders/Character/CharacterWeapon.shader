@@ -275,7 +275,7 @@
         }
         Pass
         {
-            Name "Character Weapon ShadowCaster"
+            Name "Character Shadow Caster"
             Tags { "Lightmode"="CharacterShadowCaster" }
             
             ZWrite On

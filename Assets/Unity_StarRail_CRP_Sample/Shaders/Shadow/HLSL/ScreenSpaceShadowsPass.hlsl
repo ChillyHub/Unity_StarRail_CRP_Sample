@@ -11,6 +11,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
+#include "../../Utils/HLSL/Depth.hlsl"
 #include "../../Deferred/HLSL/CRPDeferred.hlsl"
 
 #include "CharacterShadow.hlsl"
@@ -90,9 +91,9 @@ half4 DirectionalShadowFragment(Varyings input) : SV_Target
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     #if UNITY_REVERSED_Z
-    float deviceDepth = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, input.texcoord.xy).r;
+    float deviceDepth = SampleDepth(input.texcoord.xy);
     #else
-    float deviceDepth = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, input.texcoord.xy).r;
+    float deviceDepth = SampleDepth(input.texcoord.xy);
     deviceDepth = deviceDepth * 2.0 - 1.0;
     #endif
 
@@ -111,9 +112,9 @@ half4 AdditionalShadowFragment(Varyings1 input) : SV_Target
     float2 uv = input.screenUV.xy / input.screenUV.z;
     
     #if UNITY_REVERSED_Z
-    float deviceDepth = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, uv).r;
+    float deviceDepth = SampleDepth(uv);
     #else
-    float deviceDepth = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, uv).r;
+    float deviceDepth = SampleDepth(uv);
     deviceDepth = deviceDepth * 2.0 - 1.0;
     #endif
 
@@ -137,9 +138,9 @@ half4 CharacterShadowFragment(Varyings1 input) : SV_Target
     float2 uv = input.screenUV.xy / input.screenUV.z;
     
     #if UNITY_REVERSED_Z
-    float deviceDepth = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, uv).r;
+    float deviceDepth = SampleDepth(uv);
     #else
-    float deviceDepth = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, uv).r;
+    float deviceDepth = SampleDepth(uv);
     deviceDepth = deviceDepth * 2.0 - 1.0;
     #endif
 

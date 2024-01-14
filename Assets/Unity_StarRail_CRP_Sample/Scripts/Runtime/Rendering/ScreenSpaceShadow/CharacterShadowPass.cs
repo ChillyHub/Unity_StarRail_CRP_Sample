@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using ShaderVariantLogLevel = UnityEngine.Rendering.ShaderVariantLogLevel;
 
 namespace Unity_StarRail_CRP_Sample
 {
@@ -27,14 +25,17 @@ namespace Unity_StarRail_CRP_Sample
         
         private FilteringSettings _filteringSettings;
         
+        // Draw system
+        private CharacterEntityManager _entityManager;
+        private CharacterShadowCasterDrawSystem _drawSystem;
+
         // Data
         private static readonly int MaxCharacterCounts = 16;
         private static readonly int CharacterShadowSize = 4096;
-        private static readonly int CharacterShadowTileSize = 1024;
+        // private static readonly int CharacterShadowTileSize = 1024;
 
         private readonly Matrix4x4[] _characterLightShadowMatrices;
         private readonly ShadowSliceData[] _shadowSliceData;
-        private int _CharacterShadowCount;
 
         // State
         // private bool _createEmptyShadowmap = false;
@@ -57,62 +58,27 @@ namespace Unity_StarRail_CRP_Sample
             _shadowSliceData = new ShadowSliceData[MaxCharacterCounts];
         }
 
-        public bool Setup(in RenderingData renderingData)
+        public bool Setup(CharacterEntityManager entityManager, CharacterShadowCasterDrawSystem drawSystem)
         {
             Clear();
+            
+            _entityManager = entityManager;
+            _drawSystem = drawSystem;
 
-            int index = 0;
-            var infos = CharacterManager.instance.CharacterInfos;
-            foreach (var (key, info) in infos)
+            int validIndex = 0;
+            for (int i = 0; i < entityManager.chunkCount; i++)
             {
-                if (key == null || !key.activeSelf || !key.activeInHierarchy)
+                CharacterEntityChunk entityChunk = entityManager.entityChunks[i];
+                CharacterShadowCasterDrawCullChunk drawCullChunk = entityManager.shadowCasterDrawCallChunks[i];
+
+                if (!entityManager.IsValid(entityChunk.entity))
                 {
                     continue;
                 }
                 
-                Vector3 center = info.Position + info.AABB.center;
-                float radius = info.AABB.extents.magnitude;
+                _shadowSliceData[validIndex] = drawSystem.GetShadowSliceData(entityChunk, drawCullChunk, validIndex);
 
-                Vector3 up = Vector3.up;
-
-                if (info.ShadowLightDirection == new Vector3(0.0f, 1.0f, 0.0f) || 
-                    info.ShadowLightDirection == new Vector3(0.0f, -1.0f, 0.0f))
-                {
-                    up = Vector3.forward;
-                }
-
-                // Create view projection matrix
-                Matrix4x4 viewMatrix = Matrix4x4.LookAt(Vector3.zero, -info.ShadowLightDirection, up);
-                viewMatrix.m03 = center.x;
-                viewMatrix.m13 = center.y;
-                viewMatrix.m23 = center.z;
-                
-                viewMatrix = viewMatrix.inverse;
-                viewMatrix.m20 = -viewMatrix.m20;
-                viewMatrix.m21 = -viewMatrix.m21;
-                viewMatrix.m22 = -viewMatrix.m22;
-                viewMatrix.m23 = -viewMatrix.m23;
-
-                Matrix4x4 projMatrix = Matrix4x4.Ortho(-radius, radius, -radius, radius, -radius, radius);
-
-                ShadowSplitData splitData = new ShadowSplitData();
-                splitData.cullingSphere = new Vector4(center.x, center.y, center.z, radius);
-                splitData.cullingPlaneCount = 1;
-                splitData.shadowCascadeBlendCullingFactor = 1.0f;
-                
-                _shadowSliceData[index].splitData = splitData;
-                _shadowSliceData[index].offsetX = (index % 4) * CharacterShadowTileSize;
-                _shadowSliceData[index].offsetY = (index / 4) * CharacterShadowTileSize;
-                _shadowSliceData[index].resolution = CharacterShadowTileSize;
-                _shadowSliceData[index].projectionMatrix = projMatrix;
-                _shadowSliceData[index].viewMatrix = viewMatrix;
-                _shadowSliceData[index].shadowTransform = GetShadowTransform(projMatrix, viewMatrix);
-
-                ApplySliceTransform(ref _shadowSliceData[index], CharacterShadowSize, CharacterShadowSize);
-                
-                _CharacterShadowCount++;
-
-                index++;
+                validIndex++;
             }
 
             return true;
@@ -147,12 +113,21 @@ namespace Unity_StarRail_CRP_Sample
             CommandBuffer cmd = CommandBufferPool.Get();
             using (new ProfilingScope(cmd, _characterShadowProfilingSampler))
             {
-                for (int index = 0; index < _CharacterShadowCount; ++index)
+                int validIndex = 0;
+                for (int i = 0; i < _entityManager.chunkCount; i++)
                 {
+                    CharacterEntityChunk entityChunk = _entityManager.entityChunks[i];
+                    if (!_entityManager.IsValid(entityChunk.entity))
+                    {
+                        continue;
+                    }
+                    
                     CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.CastingPunctualLightShadow, false);
-                    RenderShadowSlice(cmd, ref context, ref _shadowSliceData[index],
+                    RenderShadowSlice(cmd, ref context, ref _shadowSliceData[validIndex],
                         ref drawingSettings, cullingResults, 
-                        _shadowSliceData[index].projectionMatrix, _shadowSliceData[index].viewMatrix);
+                        _shadowSliceData[validIndex].projectionMatrix, _shadowSliceData[validIndex].viewMatrix, i);
+
+                    validIndex++;
                 }
 
                 // cmd.SetViewProjectionMatrices(renderingData.cameraData.GetViewMatrix(), renderingData.cameraData.GetProjectionMatrix());
@@ -165,7 +140,7 @@ namespace Unity_StarRail_CRP_Sample
                 CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.MainLightShadowCascades, shadowData.mainLightShadowCascadesCount > 1);
                 CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.SoftShadows, isKeywordSoftShadowsEnabled);
 
-                SetupMainLightShadowReceiverConstants(cmd, shadowData.supportsSoftShadows);
+                SetupMainLightShadowReceiverConstants(cmd, shadowData.supportsSoftShadows, validIndex);
 
                 // shadowData.supportsSoftShadows = tmp;
             }
@@ -193,8 +168,6 @@ namespace Unity_StarRail_CRP_Sample
 
             for (int i = 0; i < _shadowSliceData.Length; ++i)
                 _shadowSliceData[i].Clear();
-
-            _CharacterShadowCount = 0;
         }
         
         private Matrix4x4 GetShadowTransform(Matrix4x4 proj, Matrix4x4 view)
@@ -241,11 +214,11 @@ namespace Unity_StarRail_CRP_Sample
             CommandBufferPool.Release(cmd);
         }
         
-        void SetupMainLightShadowReceiverConstants(CommandBuffer cmd, bool supportsSoftShadows)
+        void SetupMainLightShadowReceiverConstants(CommandBuffer cmd, bool supportsSoftShadows, int validCount)
         {
             bool softShadows = supportsSoftShadows;
 
-            int count = CharacterManager.instance.CharacterInfos.Count;
+            int count = validCount;
             for (int i = 0; i < count; ++i)
                 _characterLightShadowMatrices[i] = _shadowSliceData[i].shadowTransform;
 
@@ -309,7 +282,7 @@ namespace Unity_StarRail_CRP_Sample
         
         private void RenderShadowSlice(CommandBuffer cmd, ref ScriptableRenderContext context,
             ref ShadowSliceData shadowSliceData, ref DrawingSettings drawingSettings, CullingResults cullingResults, 
-            Matrix4x4 proj, Matrix4x4 view)
+            Matrix4x4 proj, Matrix4x4 view, int chunkIndex)
         {
             cmd.SetGlobalDepthBias(1.0f, 2.5f); // these values match HDRP defaults (see https://github.com/Unity-Technologies/Graphics/blob/9544b8ed2f98c62803d285096c91b44e9d8cbc47/com.unity.render-pipelines.high-definition/Runtime/Lighting/Shadow/HDShadowAtlas.cs#L197 )
 
@@ -317,7 +290,10 @@ namespace Unity_StarRail_CRP_Sample
             cmd.SetViewProjectionMatrices(view, proj);
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
-            context.DrawRenderers(cullingResults, ref drawingSettings, ref _filteringSettings);
+            
+            //context.DrawRenderers(cullingResults, ref drawingSettings, ref _filteringSettings);
+            _drawSystem.Execute(cmd, chunkIndex);
+            
             cmd.DisableScissorRect();
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();

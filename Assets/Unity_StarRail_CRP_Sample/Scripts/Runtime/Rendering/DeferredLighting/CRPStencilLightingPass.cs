@@ -39,7 +39,7 @@ namespace Unity_StarRail_CRP_Sample
         public CRPStencilLightingPass()
         {
             this.profilingSampler = new ProfilingSampler(nameof(CRPStencilLightingPass));
-            this.renderPassEvent = RenderPassEvent.BeforeRenderingGbuffer;
+            this.renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
             
             _nprStencilLightingProfilingSampler = new ProfilingSampler("CRP Stencil Deferred Lighting");
             

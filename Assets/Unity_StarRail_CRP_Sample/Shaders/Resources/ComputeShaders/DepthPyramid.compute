@@ -1,0 +1,48 @@
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+
+#pragma kernel CSCopy KERNEL_SIZE=8
+#pragma kernel CSPyramid KERNEL_SIZE=8
+
+RW_TEXTURE2D(float, _DepthPyramidTexture);
+TEXTURE2D(_CameraDepthAttachment);
+
+CBUFFER_START(cb)
+    uint4 _Offset;             // {sx, sy, dx, dy}
+    uint2 _SampleSize;         // {x, y}
+CBUFFER_END
+
+#if UNITY_REVERSED_Z
+    #define MIN_DEPTH(l, r) max(l, r)
+#else
+    #define MIN_DEPTH(l, r) min(l, r)
+#endif
+
+[numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
+void CSCopy(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    _DepthPyramidTexture[dispatchThreadId.xy] =
+        LOAD_TEXTURE2D(_CameraDepthAttachment, dispatchThreadId.xy).x;
+}
+
+[numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
+void CSPyramid(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    uint2 srcOffset = _Offset.xy;
+    uint2 dstOffset = _Offset.zw;
+    uint2 sampleSize = _SampleSize;
+    
+    uint2 srcPixelUL = srcOffset + (dispatchThreadId.xy << 1);
+
+    float p00 = _DepthPyramidTexture[min(srcPixelUL + uint2(0u, 0u), sampleSize - 1u)];
+    float p10 = _DepthPyramidTexture[min(srcPixelUL + uint2(1u, 0u), sampleSize - 1u)];
+    float p01 = _DepthPyramidTexture[min(srcPixelUL + uint2(0u, 1u), sampleSize - 1u)];
+    float p11 = _DepthPyramidTexture[min(srcPixelUL + uint2(1u, 1u), sampleSize - 1u)];
+    float4 depths = float4(p00, p10, p01, p11);
+
+    // Select the closest sample
+    float minDepth = MIN_DEPTH(MIN_DEPTH(depths.x, depths.y), MIN_DEPTH(depths.z, depths.w));
+
+    _DepthPyramidTexture[dstOffset + dispatchThreadId.xy] = minDepth;
+}
+
+#undef MIN_DEPTH

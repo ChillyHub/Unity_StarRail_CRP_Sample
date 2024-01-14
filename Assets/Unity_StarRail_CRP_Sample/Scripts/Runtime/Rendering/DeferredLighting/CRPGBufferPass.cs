@@ -24,7 +24,7 @@ namespace Unity_StarRail_CRP_Sample
         public CRPGBufferPass()
         {
             this.profilingSampler = new ProfilingSampler(nameof(CRPGBufferPass));
-            this.renderPassEvent = RenderPassEvent.BeforeRenderingGbuffer;
+            this.renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
 
             _crpGBufferProfilingSampler = new ProfilingSampler("CRP GBuffer");
             

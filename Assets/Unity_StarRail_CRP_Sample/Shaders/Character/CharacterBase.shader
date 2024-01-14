@@ -290,7 +290,7 @@ Shader "StarRail_CRP/Charater/CharacterBase"
         }
         Pass
         {
-            Name "Character Base ShadowCaster"
+            Name "Character Shadow Caster"
             Tags { "Lightmode"="CharacterShadowCaster" }
             
             ZWrite On

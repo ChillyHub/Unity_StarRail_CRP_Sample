@@ -11,6 +11,8 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
     #include "HLSL/CRPDeferred.hlsl"
     
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+
+    #include "../Utils/HLSL/Depth.hlsl"
     
     #include "../Scene/HLSL/SceneLighting.hlsl"
     #include "../Scene/HLSL/SceneShadow.hlsl"
@@ -272,7 +274,7 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
         #else
         // Using SAMPLE_TEXTURE2D is faster than using LOAD_TEXTURE2D on iOS platforms (5% faster shader).
         // Possible reason: HLSLcc upcasts Load() operation to float, which doesn't happen for Sample()?
-        float d        = SAMPLE_TEXTURE2D_X_LOD(_CameraDepthTexture, my_point_clamp_sampler, screen_uv, 0).x; // raw depth value has UNITY_REVERSED_Z applied on most platforms.
+        float d        = SampleDepth(screen_uv); // raw depth value has UNITY_REVERSED_Z applied on most platforms.
         half4 gbuffer0 = SAMPLE_TEXTURE2D_X_LOD(_CustomGBuffer0, my_point_clamp_sampler, screen_uv, 0);
         half4 gbuffer1 = SAMPLE_TEXTURE2D_X_LOD(_CustomGBuffer1, my_point_clamp_sampler, screen_uv, 0);
         #endif
