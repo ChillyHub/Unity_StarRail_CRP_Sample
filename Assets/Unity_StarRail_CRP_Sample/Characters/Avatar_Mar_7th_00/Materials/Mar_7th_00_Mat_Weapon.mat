@@ -199,6 +199,7 @@ Material:
     - _ReceiveShadowsToggle: 1
     - _RenderingMode: 0
     - _RimIntensity: 1
+    - _RimWidth: 1
     - _RimWidth0: 1
     - _RimWidth1: 1
     - _RimWidth2: 1
@@ -214,23 +215,23 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SpecularIntensity: 1
-    - _SpecularIntensity0: 1
-    - _SpecularIntensity1: 1
-    - _SpecularIntensity2: 1
-    - _SpecularIntensity3: 1
-    - _SpecularIntensity4: 1
-    - _SpecularIntensity5: 1
-    - _SpecularIntensity6: 1
-    - _SpecularIntensity7: 1
+    - _SpecularIntensity0: 25.3
+    - _SpecularIntensity1: 24.3
+    - _SpecularIntensity2: 23.5
+    - _SpecularIntensity3: 23.3
+    - _SpecularIntensity4: 21.8
+    - _SpecularIntensity5: 20.4
+    - _SpecularIntensity6: 19.9
+    - _SpecularIntensity7: 19.1
     - _SpecularRoughness: 0.1
-    - _SpecularRoughness0: 0.1
-    - _SpecularRoughness1: 0.1
-    - _SpecularRoughness2: 0.1
-    - _SpecularRoughness3: 0.1
-    - _SpecularRoughness4: 0.1
+    - _SpecularRoughness0: 0.012
+    - _SpecularRoughness1: 0.005
+    - _SpecularRoughness2: 0.007
+    - _SpecularRoughness3: 0.012
+    - _SpecularRoughness4: 0.02
     - _SpecularRoughness5: 0.1
-    - _SpecularRoughness6: 0.1
-    - _SpecularRoughness7: 0.1
+    - _SpecularRoughness6: 0.012
+    - _SpecularRoughness7: 0.01
     - _SpecularShininess: 10
     - _SpecularShininess0: 10
     - _SpecularShininess1: 10

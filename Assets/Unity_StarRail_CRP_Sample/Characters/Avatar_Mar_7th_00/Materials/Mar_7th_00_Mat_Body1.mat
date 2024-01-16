@@ -28,12 +28,13 @@ Material:
   - _CUSTOMBLOOMCOLORVARENUM_DISABLE
   - _CUSTOMBLOOMVARENUM_DISABLE
   - _CUSTOMOUTLINEVARENUM_MULTIPLY
-  - _CUSTOMRIMVARENUM_DISABLE
+  - _CUSTOMRIMVARENUM_MULTIPLY
   - _CUSTOMSPECULARVARENUM_OVERLAY
   - _CUSTOM_RAMP_MAPPING
   - _ENABLE_DIFFUSE
   - _ENABLE_GI
   - _ENABLE_OUTLINE
+  - _ENABLE_RIM
   - _ENABLE_SPECULAR
   - _OUTLINENORMALCHANNEL_TANGENT
   - _RECEIVE_SHADOWS
@@ -135,6 +136,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - RimWidth: 1
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _AnisotropySpecularToggle: 0
@@ -158,7 +160,7 @@ Material:
     - _CustomBloomVarEnum: 0
     - _CustomOutlineVarEnum: 1
     - _CustomRampMappingToggle: 1
-    - _CustomRimVarEnum: 0
+    - _CustomRimVarEnum: 1
     - _CustomSpecularVarEnum: 2
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
@@ -173,7 +175,7 @@ Material:
     - _EnableEmissionToggle: 0
     - _EnableGIToggle: 1
     - _EnableOutlineToggle: 1
-    - _EnableRimToggle: 0
+    - _EnableRimToggle: 1
     - _EnableSpecularToggle: 1
     - _EnvironmentReflections: 1
     - _FresnelIntensity: 1
@@ -206,7 +208,8 @@ Material:
     - _ReceiveShadows: 1
     - _ReceiveShadowsToggle: 1
     - _RenderingMode: 0
-    - _RimIntensity: 1
+    - _RimIntensity: 1.86
+    - _RimWidth: 1
     - _RimWidth0: 1
     - _RimWidth1: 1
     - _RimWidth2: 1
@@ -222,32 +225,32 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SpecularIntensity: 1
-    - _SpecularIntensity0: 8.76
-    - _SpecularIntensity1: 8.37
-    - _SpecularIntensity2: 8.31
-    - _SpecularIntensity3: 0.2
-    - _SpecularIntensity4: 8.75
-    - _SpecularIntensity5: 8.6
-    - _SpecularIntensity6: 8.81
-    - _SpecularIntensity7: 8.71
-    - _SpecularRoughness: 0.1
-    - _SpecularRoughness0: 0.1
-    - _SpecularRoughness1: 0.123
-    - _SpecularRoughness2: 0.1
-    - _SpecularRoughness3: 0.115
-    - _SpecularRoughness4: 0.1
-    - _SpecularRoughness5: 0.1
-    - _SpecularRoughness6: 0.1
-    - _SpecularRoughness7: 0.1
+    - _SpecularIntensity0: 22
+    - _SpecularIntensity1: 22
+    - _SpecularIntensity2: 22
+    - _SpecularIntensity3: 22.3
+    - _SpecularIntensity4: 14.6
+    - _SpecularIntensity5: 22
+    - _SpecularIntensity6: 22
+    - _SpecularIntensity7: 22
+    - _SpecularRoughness: 0.005
+    - _SpecularRoughness0: 0.005
+    - _SpecularRoughness1: 0.005
+    - _SpecularRoughness2: 0.356
+    - _SpecularRoughness3: 0.134
+    - _SpecularRoughness4: 0.342
+    - _SpecularRoughness5: 0.005
+    - _SpecularRoughness6: 0.005
+    - _SpecularRoughness7: 0.005
     - _SpecularShininess: 10
-    - _SpecularShininess0: 2.6
-    - _SpecularShininess1: 2.5
-    - _SpecularShininess2: 4.3
-    - _SpecularShininess3: 6.3
-    - _SpecularShininess4: 3.1
-    - _SpecularShininess5: 3.7
-    - _SpecularShininess6: 3.1
-    - _SpecularShininess7: 3.7
+    - _SpecularShininess0: 10
+    - _SpecularShininess1: 10
+    - _SpecularShininess2: 10
+    - _SpecularShininess3: 2.5
+    - _SpecularShininess4: 23
+    - _SpecularShininess5: 10
+    - _SpecularShininess6: 10
+    - _SpecularShininess7: 10
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _StencilComp: 8
@@ -297,11 +300,11 @@ Material:
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor0: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor1: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularColor2: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularColor3: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularColor4: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularColor5: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor2: {r: 0.65014243, g: 0.66426426, b: 0.7075472, a: 1}
+    - _SpecularColor3: {r: 0.72075474, g: 0.98178834, b: 1, a: 1}
+    - _SpecularColor4: {r: 1, g: 0.94931954, b: 0.78679246, a: 1}
+    - _SpecularColor5: {r: 1, g: 0.827451, b: 0.56078434, a: 1}
+    - _SpecularColor6: {r: 0, g: 1, b: 0.7019608, a: 1}
     - _SpecularColor7: {r: 1, g: 1, b: 1, a: 1}
     - _StockBrightColor: {r: 1, g: 1, b: 1, a: 1}
     - _StockDarkColor: {r: 1, g: 1, b: 1, a: 1}

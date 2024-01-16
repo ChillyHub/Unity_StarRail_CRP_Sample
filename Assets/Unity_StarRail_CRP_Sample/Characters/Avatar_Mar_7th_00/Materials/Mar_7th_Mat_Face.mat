@@ -180,6 +180,7 @@ Material:
     - _ReceiveShadowsToggle: 1
     - _RenderingMode: 0
     - _RimIntensity: 1
+    - _RimWidth: 1
     - _RimWidth0: 1
     - _RimWidth1: 1
     - _RimWidth2: 1
@@ -196,9 +197,9 @@ Material:
     - _Smoothness: 0.4472136
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularIntensity: 1
-    - _SpecularRoughness: 0.1
-    - _SpecularShininess: 10
+    - _SpecularIntensity: 22.9
+    - _SpecularRoughness: 0.02
+    - _SpecularShininess: 9.3
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _StencilComp: 8
@@ -215,6 +216,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
     - _OutlineColor: {r: 0.8679245, g: 0.7483802, b: 0.7530561, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor0: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor1: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor2: {r: 1, g: 1, b: 1, a: 1}

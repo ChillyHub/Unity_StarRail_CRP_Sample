@@ -39,6 +39,9 @@ MonoBehaviour:
   mainLightColor:
     m_OverrideState: 1
     m_Value: {r: 0.59383625, g: 0.557565, b: 0.7735849, a: 1}
+  mainLightIntensity:
+    m_OverrideState: 1
+    m_Value: 1.13
   shadowLightRotation:
     m_OverrideState: 1
     m_Value: {x: 0, y: 75.76, z: 47.25}

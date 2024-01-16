@@ -33,7 +33,7 @@ Shader "StarRail_CRP/Charater/CharacterHair"
         _SpecularColor("Spwcular Color", Color) = (1, 1, 1, 1)
         _SpecularShininess("Specular Shininess", Range(0.1, 100)) = 10
         _SpecularRoughness("Specular Roughness", Range(0, 1)) = 0.1
-        _SpecularIntensity("Specualr Intensity", Range(0, 10)) = 1
+        _SpecularIntensity("Specualr Intensity", Range(0, 50)) = 1
         
         [Header(Emission)][Space]
         [Toggle(_ENABLE_EMISSION)] _EnableEmissionToggle("Enable Emission", Float) = 1

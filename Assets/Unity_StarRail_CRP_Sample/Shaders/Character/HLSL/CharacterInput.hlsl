@@ -304,6 +304,11 @@ half GetRampLineIndex(half matId)
         _RampV7, step(0.875, matId));
 }
 
+half GetMetalIndex()
+{
+    return _RampV4;
+}
+
 half3 LerpRampColor(half3 coolRamp, half3 warmRamp)
 {
     return lerp(warmRamp, coolRamp, abs(_DayTime - 12.0) * rcp(12.0));
@@ -433,8 +438,12 @@ float GetSpecularIntensity()
     return _SpecularIntensity;
 }
 
-half3 GetRimColor(half materialId)
+half3 GetRimColor(half materialId, half3 mainColor)
 {
+    half3 coolColor = SampleCoolRampMap(float2(0, GetRampV(materialId))).rgb;
+    half3 warmColor = SampleWarmRampMap(float2(0, GetRampV(materialId))).rgb;
+    half3 color = mainColor * LerpRampColor(coolColor, warmColor);
+    
     const float4 overlayColors[8] = {
         _RimColor0,
         _RimColor1,
@@ -449,19 +458,33 @@ half3 GetRimColor(half materialId)
     half3 overlayColor = overlayColors[GetRampLineIndex(materialId)].rgb;
 
     #ifdef _CUSTOMRIMVARENUM_DISABLE
-        return _RimColor.rgb;
+        return color.rgb;
     #elif _CUSTOMRIMVARENUM_MULTIPLY
-        return _RimColor.rgb * overlayColor;
+        return color.rgb * overlayColor;
+    #elif _CUSTOMRIMVARENUM_OVERLAY
+        return overlayColor;
+    #else
+        return color.rgb;
+    #endif
+}
+
+half3 GetRimColor(half3 mainColor)
+{
+    half3 coolColor = SampleCoolRampMap(float2(0, 0)).rgb;
+    half3 warmColor = SampleWarmRampMap(float2(0, 0)).rgb;
+    half3 color = mainColor * LerpRampColor(coolColor, warmColor);
+
+    half3 overlayColor = _RimColor.rgb;
+    
+    #ifdef _CUSTOMRIMVARENUM_DISABLE
+        return color.rgb;
+    #elif _CUSTOMRIMVARENUM_MULTIPLY
+        return color.rgb * overlayColor;
     #elif _CUSTOMRIMVARENUM_OVERLAY
         return overlayColor;
     #else
         return _RimColor.rgb;
     #endif
-}
-
-half3 GetRimColor()
-{
-    return _RimColor.rgb;
 }
 
 float GetRimWidth(half materialId)

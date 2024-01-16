@@ -244,19 +244,22 @@ half3 CalculateSpecular(Surface surface, Light light, float3 viewDirWS, half3 no
     //float smoothness = exp2(shininess * (1.0 - roughness) + 1.0) + 1.0;
     float3 halfDirWS = normalize(light.direction + viewDirWS);
     float blinnPhong = pow(saturate(dot(halfDirWS, normalWS)), shininess);
-    float stepPhong = smoothstep(1.0 - blinnPhong, 1.0 + roughness - blinnPhong, surface.specularThreshold);
+    float threshold = 1.0 - surface.specularThreshold;
+    float stepPhong = smoothstep(threshold - roughness, threshold + roughness, blinnPhong);
+
+    float3 f0 = lerp(0.04, surface.color, metallic);
+    float3 fresnel = f0 + (1.0 - f0) * pow(1.0 - saturate(dot(viewDirWS, halfDirWS)), 5.0);
 
     half3 lightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
-    half3 NonmetalSpecular = lightColor * specColor * 0.04 * stepPhong * diffuseFac;
-    half3 MetalSpecular = lightColor * specColor * 0.96 * surface.color * blinnPhong * metallic;
+    half3 specular = lightColor * specColor * fresnel * stepPhong * lerp(diffuseFac, 1.0, metallic);
     
-    return (NonmetalSpecular + MetalSpecular) * intensity * surface.specularIntensity;
+    return specular * intensity * surface.specularIntensity;
 }
 
 half3 CalculateBaseSpecular(Surface surface, Light light, float3 viewDirWS, half3 normalWS, 
     half3 specColor, float shininess, float roughness, float intensity, float diffuseFac)
 {
-    float metallic = step(abs(surface.materialId - 0.5), 0.05);
+    float metallic = step(abs(GetRampLineIndex(surface.materialId) - GetMetalIndex()), 0.001);
     return CalculateSpecular(surface, light, viewDirWS, normalWS, specColor, shininess, roughness, intensity, diffuseFac, metallic);
 }
 

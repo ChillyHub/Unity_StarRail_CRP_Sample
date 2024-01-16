@@ -34,7 +34,7 @@ Shader "StarRail_CRP/Charater/CharacterFace"
         _SpecularColor("Spwcular Color", Color) = (1, 1, 1, 1)
         _SpecularShininess("Specular Shininess", Range(0.1, 100)) = 10
         _SpecularRoughness("Specular Roughness", Range(0, 1)) = 0.1
-        _SpecularIntensity("Specualr Intensity", Range(0, 10)) = 1
+        _SpecularIntensity("Specualr Intensity", Range(0, 50)) = 1
         
         [Header(Emission)][Space]
         [Toggle(_ENABLE_EMISSION)] _EnableEmissionToggle("Enable Emission", Float) = 1
@@ -44,22 +44,8 @@ Shader "StarRail_CRP/Charater/CharacterFace"
         [Header(Rim)][Space]
         [Toggle(_ENABLE_RIM)] _EnableRimToggle("Enable Rim", Float) = 1
         [KeywordEnum(Disable, Multiply, Overlay)] _CustomRimVarEnum("Custom Rim Var State", Float) = 0
-        _RimColor0("Rim Color 0", Color) = (1, 1, 1, 1)
-        _RimWidth0("Rim Width 0", Float) = 1
-        _RimColor1("Rim Color 1", Color) = (1, 1, 1, 1)
-        _RimWidth1("Rim Width 1", Float) = 1
-        _RimColor2("Rim Color 2", Color) = (1, 1, 1, 1)
-        _RimWidth2("Rim Width 2", Float) = 1
-        _RimColor3("Rim Color 3", Color) = (1, 1, 1, 1)
-        _RimWidth3("Rim Width 3", Float) = 1
-        _RimColor4("Rim Color 4", Color) = (1, 1, 1, 1)
-        _RimWidth4("Rim Width 4", Float) = 1
-        _RimColor5("Rim Color 5", Color) = (1, 1, 1, 1)
-        _RimWidth5("Rim Width 5", Float) = 1
-        _RimColor6("Rim Color 6", Color) = (1, 1, 1, 1)
-        _RimWidth6("Rim Width 6", Float) = 1
-        _RimColor7("Rim Color 7", Color) = (1, 1, 1, 1)
-        _RimWidth7("Rim Width 7", Float) = 1
+        _RimColor("Rim Color", Color) = (1, 1, 1, 1)
+        _RimWidth("Rim Width", Float) = 1
         [Space]
         _RimIntensity("Rim Intensity", Range(0, 10)) = 1
         

@@ -197,8 +197,8 @@ float4 CharacterBaseFragment(Varyings input, half4 mainTex, half4 lightMap)
     // half3 rim = CalculateRim(surface, GetRimColor(surface.materialId), input.positionWS, input.normalWS,
     //     UNITY_MATRIX_VP, _ZBufferParams, input.positionCS.z,
     //     _OutlineWidth, _OutlineRealWidthMin, _OutlineRealWidthMax);
-    half3 rim = CalculateRim(surface, GetRimColor(surface.materialId), GetRimWidth(surface.materialId), _RimIntensity,
-        input.positionWS, TransformWorldToViewDir(input.normalWS),
+    half3 rim = CalculateRim(surface, GetRimColor(surface.materialId, surface.color), GetRimWidth(surface.materialId),
+        _RimIntensity, input.positionWS, TransformWorldToViewDir(input.normalWS),
         UNITY_MATRIX_VP, _ZBufferParams, input.positionCS.z);
 
     half3 bloom = GetBloomColor(surface.materialId, surface.color) * GetBloomIntensity(surface.materialId);
@@ -251,7 +251,7 @@ float4 CharacterFaceFragment(Varyings input, half4 mainTex)
     // half3 rim = CalculateRim(surface, GetRimColor(surface.materialId), input.positionWS, input.normalWS,
     //     UNITY_MATRIX_VP, _ZBufferParams, input.positionCS.z,
     //     _OutlineWidth, _OutlineRealWidthMin, _OutlineRealWidthMax);
-    half3 rim = CalculateRim(surface, GetRimColor(), GetRimWidth(), _RimIntensity, input.positionWS,
+    half3 rim = CalculateRim(surface, GetRimColor(surface.color), GetRimWidth(), _RimIntensity, input.positionWS,
         TransformWorldToViewDir(input.normalWS), UNITY_MATRIX_VP, _ZBufferParams, input.positionCS.z);
 
     half3 bloom = GetBloomColor(surface.color) * GetBloomIntensity();
@@ -284,7 +284,7 @@ float4 CharacterHairFragment(Varyings input, half4 mainTex, half4 lightMap)
     float diffuseFac = 0.0;
     half3 gi = CalculateGI(surface, input.sh, _GI_Intensity, _GI_UseMainColor);
     half3 addLight = CalculateAdditionalLight(surface, input.positionWS);
-    half3 diffuse = CalculateHairDiffuse(diffuseFac, surface, light, normalize(input.positionWS - _HeadCenter),
+    half3 diffuse = CalculateHairDiffuse(diffuseFac, surface, light, input.normalWS, //normalize(input.positionWS - _HeadCenter),
         _ShadowRamp, _ShadowOffset, _ShadowBoost);
     half3 specular = CalculateHairSpecular(surface, light, viewDirWS, input.normalWS,
         GetSpecularColor(), GetSpecularShininess(), GetSpecularRoughness(), GetSpecularIntensity(), diffuseFac);
@@ -292,7 +292,7 @@ float4 CharacterHairFragment(Varyings input, half4 mainTex, half4 lightMap)
     // half3 rim = CalculateRim(surface, GetRimColor(surface.materialId), input.positionWS, input.normalWS,
     //     UNITY_MATRIX_VP, _ZBufferParams, input.positionCS.z,
     //     _OutlineWidth, _OutlineRealWidthMin, _OutlineRealWidthMax);
-    half3 rim = CalculateRim(surface, GetRimColor(), GetRimWidth(), _RimIntensity, input.positionWS,
+    half3 rim = CalculateRim(surface, GetRimColor(surface.color), GetRimWidth(), _RimIntensity, input.positionWS,
         TransformWorldToViewDir(input.normalWS), UNITY_MATRIX_VP, _ZBufferParams, input.positionCS.z);
 
     half3 bloom = GetBloomColor(surface.color) * GetBloomIntensity();
@@ -329,11 +329,13 @@ float4 CharacterBaseOutlinePassFragment(Varyings input) : SV_Target
     #ifndef _ENABLE_OUTLINE
         clip(-1.0);
     #endif
+
+    Light light = GetCharacterLight(input.positionWS);
     
     half4 mainTex = SampleMainTex(input.baseUV);
     half4 lightMap = SampleLightMap(input.baseUV);
 
-    return float4(GetOutlineColor(lightMap.a, mainTex.rgb), 1.0);
+    return float4(GetOutlineColor(lightMap.a, mainTex.rgb) * light.color, 1.0);
 }
 
 FragmentOutput CharacterBaseGBufferOutlinePassFragment(Varyings input) : SV_Target
@@ -341,6 +343,8 @@ FragmentOutput CharacterBaseGBufferOutlinePassFragment(Varyings input) : SV_Targ
     #ifndef _ENABLE_OUTLINE
     clip(-1.0);
     #endif
+
+    Light light = GetCharacterLight(input.positionWS);
     
     half4 mainTex = SampleMainTex(input.baseUV);
     half4 lightMap = SampleLightMap(input.baseUV);
@@ -348,7 +352,7 @@ FragmentOutput CharacterBaseGBufferOutlinePassFragment(Varyings input) : SV_Targ
     FragmentOutput output = (FragmentOutput)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
-    output.GBuffer2 = float4(GetOutlineColor(lightMap.a, mainTex.rgb), 1.0);
+    output.GBuffer2 = float4(GetOutlineColor(lightMap.a, mainTex.rgb) * light.color, 1.0);
 
     return output;
 }
@@ -395,10 +399,12 @@ float4 CharacterFaceOutlinePassFragment(Varyings input) : SV_Target
     #ifndef _ENABLE_OUTLINE
         clip(-1.0);
     #endif
+
+    Light light = GetCharacterLight(input.positionWS);
     
     half4 mainTex = SampleMainTex(input.baseUV);
 
-    return float4(GetOutlineColor(mainTex.rgb), 1.0);
+    return float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
 }
 
 FragmentOutput CharacterFaceGBufferOutlinePassFragment(Varyings input) : SV_Target
@@ -406,13 +412,15 @@ FragmentOutput CharacterFaceGBufferOutlinePassFragment(Varyings input) : SV_Targ
     #ifndef _ENABLE_OUTLINE
         clip(-1.0);
     #endif
+
+    Light light = GetCharacterLight(input.positionWS);
     
     half4 mainTex = SampleMainTex(input.baseUV);
     
     FragmentOutput output = (FragmentOutput)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
-    output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb), 1.0);
+    output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
     
     return output;
 }
@@ -494,9 +502,11 @@ float4 CharacterHairOutlinePassFragment(Varyings input) : SV_Target
         clip(-1.0);
     #endif
     
+    Light light = GetCharacterLight(input.positionWS);
+    
     half4 mainTex = SampleMainTex(input.baseUV);
 
-    return float4(GetOutlineColor(mainTex.rgb), 1.0);
+    return float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
 }
 
 FragmentOutput CharacterHairGBufferOutlinePassFragment(Varyings input) : SV_Target
@@ -504,13 +514,15 @@ FragmentOutput CharacterHairGBufferOutlinePassFragment(Varyings input) : SV_Targ
     #ifndef _ENABLE_OUTLINE
     clip(-1.0);
     #endif
+
+    Light light = GetCharacterLight(input.positionWS);
     
     half4 mainTex = SampleMainTex(input.baseUV);
 
     FragmentOutput output = (FragmentOutput)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
-    output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb), 1.0);
+    output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
 
     return output;
 }

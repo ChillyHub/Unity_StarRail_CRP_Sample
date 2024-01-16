@@ -18,6 +18,7 @@ namespace Unity_StarRail_CRP_Sample
         
         public Vector3Parameter mainLightRotation = new Vector3Parameter(Vector3.zero);
         public ColorParameter mainLightColor = new ColorParameter(Color.white, true, false, true);
+        public ClampedFloatParameter mainLightIntensity = new ClampedFloatParameter(1.0f, 0.0f, 10.0f);
         
         public Vector3Parameter shadowLightRotation = new Vector3Parameter(Vector3.zero);
         
@@ -59,7 +60,7 @@ namespace Unity_StarRail_CRP_Sample
                 case LightSettingMode.VirtualFixed:
                     return mainLightColor.value;
                 case LightSettingMode.FromLightObject:
-                    return mainLight.value?.color ?? Color.white;
+                    return mainLight.GetLightColor() * mainLightIntensity.value;
                 default:
                     return Color.white;
             }
@@ -134,6 +135,30 @@ namespace Unity_StarRail_CRP_Sample
             }
 
             return Vector3.up;
+        }
+
+        public Color GetLightColor()
+        {
+            Light light1 = _lightsInfo.Light1;
+            Light light2 = _lightsInfo.Light2;
+            float t = _lightsInfo.T;
+            
+            if (light1 == null && light2 == null)
+            {
+                return Color.white;
+            }
+
+            if (light1 == null && light2 != null)
+            {
+                return light2.color;
+            }
+
+            if (light1 != null && light2 == null)
+            {
+                return light1.color;
+            }
+            
+            return Color.Lerp(light1.color, light2.color, t);
         }
         
         public class LightsInfo

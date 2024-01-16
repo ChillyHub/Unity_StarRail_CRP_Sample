@@ -59,7 +59,7 @@ namespace Unity_StarRail_CRP_Sample
             
             bool needMipMap = ssr != null && ssr.IsActive();
             
-            _depthMipmapInfo = _depthTextures.ReAllocDepthPyramidTextureIfNeed(cameraTextureDescriptor, needMipMap);
+            _depthMipmapInfo = _depthTextures?.ReAllocDepthPyramidTextureIfNeed(cameraTextureDescriptor, needMipMap);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)

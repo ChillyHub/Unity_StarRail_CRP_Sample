@@ -65,7 +65,7 @@ half3 GetSubsurfaceScatteringColor(InputData inputData, SSSData sssData, Light l
     float3 normal = inputData.normalWS;
 
     float3 h = normalize(-lightDir + normal * sssData.distortion);
-    float scatter = pow(saturate(dot(viewDir, h)), sssData.power) * sssData.thickness * sssData.intensity;
+    float scatter = pow(saturate(dot(viewDir, h)), sssData.power) * sssData.thickness * sssData.intensity * 2.0;
 
     return sssData.albedo * scatter;
 }

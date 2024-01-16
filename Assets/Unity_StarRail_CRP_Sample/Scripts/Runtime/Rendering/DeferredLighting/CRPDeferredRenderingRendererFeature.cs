@@ -52,6 +52,15 @@ namespace Unity_StarRail_CRP_Sample
         
         public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
         {
+            if (_deferredLight == null)
+            {
+                _deferredLight = new DeferredLight();
+            }
+            if (_depthTextures == null)
+            {
+                _depthTextures = new DepthTextures();
+            }
+
             _haveCharacterShadowPass = _characterShadowPass.Setup(
                 _characterEntityManager, _characterShadowCasterDrawSystem);
             

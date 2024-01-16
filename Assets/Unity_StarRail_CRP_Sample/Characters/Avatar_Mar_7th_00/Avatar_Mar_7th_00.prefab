@@ -71,5 +71,54 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b01c6b0c0f2157f4a8c362affb6e080f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8004488545523431390}
   m_SourcePrefab: {fileID: 100100000, guid: b01c6b0c0f2157f4a8c362affb6e080f, type: 3}
+--- !u!1 &1636462751506037797 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -159566079749617307, guid: b01c6b0c0f2157f4a8c362affb6e080f,
+    type: 3}
+  m_PrefabInstance: {fileID: 7745339569586730304}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7475289959045482513 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b01c6b0c0f2157f4a8c362affb6e080f,
+    type: 3}
+  m_PrefabInstance: {fileID: 7745339569586730304}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8004488545523431390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7475289959045482513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e029c81849415cb3a24483f777f14c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterType: 1
+  mainLightDirectionMode: 1
+  shadowLightDirectionMode: 1
+  mainDirectionLight: {fileID: 0}
+  shadowDirectionLight: {fileID: 0}
+  mainPointLight: {fileID: 0}
+  shadowPointLight: {fileID: 0}
+  mainLightRotation: {x: 0, y: 0, z: 0}
+  shadowLightDirection: {x: 0, y: 0, z: 1}
+  mainLightColor: {r: 1, g: 1, b: 1, a: 1}
+  headBinding: {fileID: 1636462751506037797}
+  overrideKeywords: 0
+  keywordsValues:
+    enableGI: 1
+    enableAdditionalLight: 1
+    enableDiffuse: 1
+    enableSpecular: 1
+    enableEmission: 1
+    enableRim: 1
+    enableOutline: 1
+    enableStocking: 1

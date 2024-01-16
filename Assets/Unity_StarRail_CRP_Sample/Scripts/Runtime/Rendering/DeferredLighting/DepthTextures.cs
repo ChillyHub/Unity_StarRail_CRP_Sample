@@ -55,6 +55,11 @@ namespace Unity_StarRail_CRP_Sample
         private readonly RTHandle[] _depthTextures = new RTHandle[1];
         private MipmapInfo _depthMipmapInfo;
         
+        public DepthTextures()
+        {
+            _depthTextures[0] = RTHandles.Alloc(1, 1);
+        }
+        
         public void Release()
         {
             _depthTextures[0]?.Release();

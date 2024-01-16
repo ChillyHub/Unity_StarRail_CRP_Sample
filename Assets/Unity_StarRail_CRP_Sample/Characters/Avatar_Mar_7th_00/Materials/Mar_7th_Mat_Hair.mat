@@ -25,11 +25,12 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _CUSTOMRIMVARENUM_DISABLE
+  - _CUSTOMRIMVARENUM_MULTIPLY
   - _ENABLE_DIFFUSE
   - _ENABLE_EMISSION
   - _ENABLE_GI
   - _ENABLE_OUTLINE
+  - _ENABLE_RIM
   - _ENABLE_SPECULAR
   - _OUTLINENORMALCHANNEL_TANGENT
   - _RECEIVE_SHADOWS
@@ -133,7 +134,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _CullMode: 2
-    - _CustomRimVarEnum: 0
+    - _CustomRimVarEnum: 1
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -147,7 +148,7 @@ Material:
     - _EnableEmissionToggle: 1
     - _EnableGIToggle: 1
     - _EnableOutlineToggle: 1
-    - _EnableRimToggle: 0
+    - _EnableRimToggle: 1
     - _EnableSpecularToggle: 1
     - _EnvironmentReflections: 1
     - _FresnelIntensity: 1
@@ -172,7 +173,7 @@ Material:
     - _ReceiveShadows: 1
     - _ReceiveShadowsToggle: 1
     - _RenderingMode: 0
-    - _RimIntensity: 1
+    - _RimIntensity: 0.71
     - _RimWidth: 1
     - _ShadowBoost: 1
     - _ShadowOffset: 0
@@ -180,8 +181,8 @@ Material:
     - _Smoothness: 0.4472136
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularIntensity: 1
-    - _SpecularRoughness: 0.1
+    - _SpecularIntensity: 29.5
+    - _SpecularRoughness: 0.013
     - _SpecularShininess: 10
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
@@ -198,7 +199,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
-    - _OutlineColor: {r: 0.9245283, g: 0.6227483, b: 0.8609297, a: 1}
+    - _OutlineColor: {r: 0.8301887, g: 0.56703454, b: 0.8192239, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
