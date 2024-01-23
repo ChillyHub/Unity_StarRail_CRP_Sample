@@ -357,18 +357,14 @@ Shader "StarRail_CRP/Charater/CharacterBase"
             #include "HLSL/CharacterPass.hlsl"
             ENDHLSL
         }
-        /*
         Pass
         {
             Name "Object Motion Vectors"
 
-            Tags { "LightMode" = "MotionVectors" }
+            Tags { "LightMode" = "ObjectMotionVector" }
 
             HLSLPROGRAM
             #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
-            #pragma never_use_dxc metal
-
-            #pragma exclude_renderers d3d11_9x
             #pragma target 3.5
 
             #pragma vertex CharacterMotionVectorPassVertex
@@ -378,21 +374,28 @@ Shader "StarRail_CRP/Charater/CharacterBase"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            // -------------------------------------
-            // Includes
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityInput.hlsl"
-#ifndef HAVE_VFX_MODIFICATION
-    #pragma multi_compile _ DOTS_INSTANCING_ON
-    #if UNITY_PLATFORM_ANDROID || UNITY_PLATFORM_WEBGL || UNITY_PLATFORM_UWP
-        #pragma target 3.5 DOTS_INSTANCING_ON
-    #else
-        #pragma target 4.5 DOTS_INSTANCING_ON
-    #endif
-#endif // HAVE_VFX_MODIFICATION
-            #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-                #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            #endif
+            #include "HLSL/CharacterInput.hlsl"
+            #include "HLSL/CharacterFunction.hlsl"
+            #include "HLSL/CharacterPass.hlsl"
+
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "Object Outline Motion Vectors"
+
+            Tags { "LightMode" = "ObjectOutlineMotionVector" }
+
+            HLSLPROGRAM
+            #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
+            #pragma target 3.5
+
+            #pragma vertex CharacterOutlineMotionVectorPassVertex
+            #pragma fragment CharacterMotionVectorFragment
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
 
             #include "HLSL/CharacterInput.hlsl"
             #include "HLSL/CharacterFunction.hlsl"
@@ -400,6 +403,5 @@ Shader "StarRail_CRP/Charater/CharacterBase"
 
             ENDHLSL
         }
-        */
     }
 }

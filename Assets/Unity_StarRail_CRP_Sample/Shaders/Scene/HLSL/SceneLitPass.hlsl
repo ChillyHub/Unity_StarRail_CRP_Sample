@@ -213,7 +213,7 @@ half4 SceneLitForwardPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_F
 }
 
 // Used in Standard (Physically Based) shader
-FragmentOutput SceneLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC) : SV_Target
+FragmentOutputs SceneLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC) : SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -254,6 +254,47 @@ FragmentOutput SceneLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face 
     return SceneBRDFDataToGBuffer(brdfData, inputData, surfaceData.smoothness, surfaceData.emission + color, 1.0);
 }
 
+FragmentOutputs SceneLitGBufferSSRPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC) : SV_Target
+{
+    UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+    input.normalWS = IS_FRONT_VFACE(face, input.normalWS, -input.normalWS);
+
+    #if defined(_PARALLAXMAP)
+    #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+    half3 viewDirTS = input.viewDirTS;
+    #else
+    half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, input.viewDirWS);
+    #endif
+    ApplyPerPixelDisplacement(viewDirTS, input.uv);
+    #endif
+
+    SurfaceData surfaceData;
+    InitializeStandardLitSurfaceData(input.uv, surfaceData);
+
+    InputData inputData;
+    InitializeInputData(input, surfaceData.normalTS, inputData);
+    SETUP_DEBUG_TEXTURE_DATA(inputData, input.uv, _BaseMap);
+
+    #ifdef _DBUFFER
+    ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);
+    #endif
+
+    // Stripped down version of UniversalFragmentPBR().
+
+    // in LitForwardPass GlobalIllumination (and temporarily LightingPhysicallyBased) are called inside UniversalFragmentPBR
+    // in Deferred rendering we store the sum of these values (and of emission as well) in the GBuffer
+    BRDFData brdfData;
+    InitializeBRDFData(surfaceData.albedo, surfaceData.metallic, surfaceData.specular, surfaceData.smoothness, surfaceData.alpha, brdfData);
+
+    Light mainLight = CustomGetMainLight(inputData.shadowCoord, inputData.positionWS, inputData.shadowMask);
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, inputData.shadowMask);
+    half3 color = SSRGlobalIllumination(brdfData, inputData.bakedGI, surfaceData.occlusion, inputData.positionWS, inputData.normalWS, inputData.viewDirectionWS);
+
+    return SceneBRDFDataToGBuffer(brdfData, inputData, surfaceData.smoothness, surfaceData.emission + color, 1.0);
+}
+
 inline void InitializeStandardLitSurfaceData2(float2 uv, out SurfaceData outSurfaceData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
@@ -288,7 +329,7 @@ inline void InitializeStandardLitSurfaceData2(float2 uv, out SurfaceData outSurf
 }
 
 // Used in Standard (Physically Based) shader
-FragmentOutput SceneLitGBufferPassFragment2(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC) : SV_Target
+FragmentOutputs SceneLitGBufferPassFragment2(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC) : SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);

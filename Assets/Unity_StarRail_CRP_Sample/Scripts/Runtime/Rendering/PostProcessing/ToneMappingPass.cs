@@ -47,6 +47,11 @@ namespace Unity_StarRail_CRP_Sample
                 Debug.LogWarning($"Can't find shader: {shaderName}");
             }
         }
+        
+        public void Setup()
+        {
+            
+        }
 
         public void Execute(ref RenderingData renderingData, CommandBuffer cmd, 
             ScriptableRenderPass renderPass, RTHandle source, RTHandle destination)
@@ -106,6 +111,7 @@ namespace Unity_StarRail_CRP_Sample
         public void Dispose()
         {
             CoreUtils.Destroy(_material);
+            _material = null;
         }
     }
 }

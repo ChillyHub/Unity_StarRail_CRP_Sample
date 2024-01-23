@@ -178,7 +178,7 @@ Varyings SimpleSSSLitGBufferPassVertex(Attributes input)
 }
 
 // Used in Standard (Physically Based) shader
-FragmentOutput SimpleSSSLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC)
+FragmentOutputs SimpleSSSLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC)
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -260,7 +260,7 @@ inline void InitializeStandardLitSurfaceData2(float2 uv, out SurfaceData outSurf
 }
 
 // Used in Standard (Physically Based) shader
-FragmentOutput SimpleSSSLitGBufferPassFragment2(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC)
+FragmentOutputs SimpleSSSLitGBufferPassFragment2(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC)
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);

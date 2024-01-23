@@ -312,5 +312,51 @@ Shader "StarRail_CRP/Charater/CharacterFace"
             #include "HLSL/CharacterPass.hlsl"
             ENDHLSL
         }
+        Pass
+        {
+            Name "Object Motion Vectors"
+
+            Tags { "LightMode" = "ObjectMotionVector" }
+
+            HLSLPROGRAM
+            #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
+            #pragma target 3.5
+
+            #pragma vertex CharacterMotionVectorPassVertex
+            #pragma fragment CharacterMotionVectorFragment
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+
+            #include "HLSL/CharacterInput.hlsl"
+            #include "HLSL/CharacterFunction.hlsl"
+            #include "HLSL/CharacterPass.hlsl"
+
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "Object Outline Motion Vectors"
+
+            Tags { "LightMode" = "ObjectOutlineMotionVector" }
+
+            HLSLPROGRAM
+            #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
+            #pragma target 3.5
+
+            #pragma vertex CharacterOutlineMotionVectorPassVertex
+            #pragma fragment CharacterMotionVectorFragment
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+
+            #include "HLSL/CharacterInput.hlsl"
+            #include "HLSL/CharacterFunction.hlsl"
+            #include "HLSL/CharacterPass.hlsl"
+
+            ENDHLSL
+        }
     }
 }

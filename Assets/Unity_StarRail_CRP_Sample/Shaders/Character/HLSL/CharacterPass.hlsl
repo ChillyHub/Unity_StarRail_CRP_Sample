@@ -3,6 +3,8 @@
 
 #include "CharacterInput.hlsl"
 #include "CharacterFunction.hlsl"
+#include "../../Deferred/HLSL/CRPGBuffer.hlsl"
+#include "../../TAA/HLSL/MotionVectorPass.hlsl"
 
 struct Attributes
 {
@@ -311,12 +313,12 @@ float4 CharacterBaseForwardPassFragment(Varyings input) : SV_Target
     return CharacterBaseFragment(input, mainTex, lightMap);
 }
 
-FragmentOutput CharacterBaseGBufferPassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterBaseGBufferPassFragment(Varyings input) : SV_Target
 {
     half4 mainTex = SampleMainTex(input.baseUV);
     half4 lightMap = SampleLightMap(input.baseUV);
     
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = CharacterBaseFragment(input, mainTex, lightMap);
@@ -338,7 +340,7 @@ float4 CharacterBaseOutlinePassFragment(Varyings input) : SV_Target
     return float4(GetOutlineColor(lightMap.a, mainTex.rgb) * light.color, 1.0);
 }
 
-FragmentOutput CharacterBaseGBufferOutlinePassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterBaseGBufferOutlinePassFragment(Varyings input) : SV_Target
 {
     #ifndef _ENABLE_OUTLINE
     clip(-1.0);
@@ -349,7 +351,7 @@ FragmentOutput CharacterBaseGBufferOutlinePassFragment(Varyings input) : SV_Targ
     half4 mainTex = SampleMainTex(input.baseUV);
     half4 lightMap = SampleLightMap(input.baseUV);
 
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = float4(GetOutlineColor(lightMap.a, mainTex.rgb) * light.color, 1.0);
@@ -364,11 +366,11 @@ float4 CharacterFaceForwardPassFragment(Varyings input) : SV_Target
     return CharacterFaceFragment(input, mainTex);
 }
 
-FragmentOutput CharacterFaceGBufferPassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterFaceGBufferPassFragment(Varyings input) : SV_Target
 {
     half4 mainTex = SampleMainTex(input.baseUV);
     
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = CharacterFaceFragment(input, mainTex);
@@ -384,12 +386,12 @@ float4 CharacterFaceForwardStencilPassFragment(Varyings input) : SV_Target
     return 0.0;
 }
 
-FragmentOutput CharacterFaceGBufferStencilPassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterFaceGBufferStencilPassFragment(Varyings input) : SV_Target
 {
     half4 faceTex = SampleFaceMap(input.addUV);
     clip(faceTex.g - 0.5);
     
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     
     return output;
 }
@@ -407,7 +409,7 @@ float4 CharacterFaceOutlinePassFragment(Varyings input) : SV_Target
     return float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
 }
 
-FragmentOutput CharacterFaceGBufferOutlinePassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterFaceGBufferOutlinePassFragment(Varyings input) : SV_Target
 {
     #ifndef _ENABLE_OUTLINE
         clip(-1.0);
@@ -417,7 +419,7 @@ FragmentOutput CharacterFaceGBufferOutlinePassFragment(Varyings input) : SV_Targ
     
     half4 mainTex = SampleMainTex(input.baseUV);
     
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
@@ -430,9 +432,9 @@ float4 CharacterEyesShadowForwardPassFragment(Varyings input) : SV_Target
     return float4(0.0, 0.0, 0.0, 0.5);
 }
 
-FragmentOutput CharacterEyesShadowGBufferPassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterEyesShadowGBufferPassFragment(Varyings input) : SV_Target
 {
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(0.0, 0.0, 0.0, 0.0);
     output.GBuffer1 = half4(0.0, 0.0, 0.0, 0.0);
     output.GBuffer2 = float4(0.0, 0.0, 0.0, 0.6);
@@ -463,13 +465,13 @@ float4 CharacterHairForwardStencilInPassFragment(Varyings input) : SV_Target
     return fragment;
 }
 
-FragmentOutput CharacterHairGBufferStencilOutPassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterHairGBufferStencilOutPassFragment(Varyings input) : SV_Target
 {
     // Sample textures
     half4 mainTex = SampleMainTex(input.baseUV);
     half4 lightMap = SampleLightMap(input.baseUV);
 
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = CharacterHairFragment(input, mainTex, lightMap);
@@ -477,7 +479,7 @@ FragmentOutput CharacterHairGBufferStencilOutPassFragment(Varyings input) : SV_T
     return output;
 }
 
-FragmentOutput CharacterHairGBufferStencilInPassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterHairGBufferStencilInPassFragment(Varyings input) : SV_Target
 {
     // Sample textures
     half4 mainTex = SampleMainTex(input.baseUV);
@@ -488,7 +490,7 @@ FragmentOutput CharacterHairGBufferStencilInPassFragment(Varyings input) : SV_Ta
     half3 viewDirWS = normalize(GetWorldSpaceViewDir(input.positionWS));
     fragment.a *= 1.0 - saturate(dot(_HeadForward, viewDirWS) * 0.2);
 
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = fragment;
@@ -509,7 +511,7 @@ float4 CharacterHairOutlinePassFragment(Varyings input) : SV_Target
     return float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
 }
 
-FragmentOutput CharacterHairGBufferOutlinePassFragment(Varyings input) : SV_Target
+FragmentOutputs CharacterHairGBufferOutlinePassFragment(Varyings input) : SV_Target
 {
     #ifndef _ENABLE_OUTLINE
     clip(-1.0);
@@ -519,7 +521,7 @@ FragmentOutput CharacterHairGBufferOutlinePassFragment(Varyings input) : SV_Targ
     
     half4 mainTex = SampleMainTex(input.baseUV);
 
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(mainTex.rgb, 0.0);
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
@@ -543,7 +545,7 @@ half4 CharacterDepthOnlyFragment(Varyings input) : SV_TARGET
     return 0;
 }
 
-Varyings CharacterMotionVectorPassVertex(Attributes input)
+PerObjectMotionVectorPassVertexOutput CharacterMotionVectorPassVertex(Attributes input)
 {
     Varyings output = (Varyings)0;
 
@@ -553,74 +555,51 @@ Varyings CharacterMotionVectorPassVertex(Attributes input)
 
     VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
 
-    // Jittered. Match the frame.
-    output.positionCS = vertexInput.positionCS;
+    PerObjectMotionVectorPassVertexInput vIn;
 
-    // This is required to avoid artifacts ("gaps" in the _MotionVectorTexture) on some platforms
-    #if defined(UNITY_REVERSED_Z)
-    output.positionCS.z -= unity_MotionVectorsParams.z * output.positionCS.w;
-    #else
-    output.positionCS.z += unity_MotionVectorsParams.z * output.positionCS.w;
-    #endif
+    vIn.positionOS = input.positionOS;
+    vIn.positionCS = vertexInput.positionCS;
+    vIn.positionOld = input.positionOld;
 
-    output.positionCSNoJitter = mul(_NonJitteredViewProjMatrix, mul(UNITY_MATRIX_M, input.positionOS));
-
-    const float4 prevPos = (unity_MotionVectorsParams.x == 1) ? float4(input.positionOld, 1) : input.positionOS;
-    output.previousPositionCSNoJitter = mul(_PrevViewProjMatrix, mul(UNITY_PREV_MATRIX_M, prevPos));
-
-    return output;
+    return ObjectMotionVectorPassVertex(vIn);
 }
 
-#if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-// Non-uniform raster needs to keep the posNDC values in float to avoid additional conversions
-// since uv remap functions use floats
-#define POS_NDC_TYPE float2 
-#else
-#define POS_NDC_TYPE half2
-#endif
-
-half4 CharacterMotionVectorFragment(Varyings input)
+PerObjectMotionVectorPassVertexOutput CharacterOutlineMotionVectorPassVertex(Attributes input)
 {
+    Varyings output = (Varyings)0;
+
     UNITY_SETUP_INSTANCE_ID(input);
-    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
+    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    // Note: unity_MotionVectorsParams.y is 0 is forceNoMotion is enabled
-    bool forceNoMotion = unity_MotionVectorsParams.y == 0.0;
-    if (forceNoMotion)
-    {
-        return half4(0.0, 0.0, 0.0, 0.0);
-    }
+    VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
 
-    // Calculate positions
-    float4 posCS = input.positionCSNoJitter;
-    float4 prevPosCS = input.previousPositionCSNoJitter;
+    float3 smoothNormalWS = GetSmoothNormalWS(input);
+    float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
 
-    POS_NDC_TYPE posNDC = posCS.xy * rcp(posCS.w);
-    POS_NDC_TYPE prevPosNDC = prevPosCS.xy * rcp(prevPosCS.w);
-
-    #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-    // Convert velocity from NDC space (-1..1) to screen UV 0..1 space since FoveatedRendering remap needs that range.
-    half2 posUV = RemapFoveatedRenderingResolve(posNDC * 0.5 + 0.5);
-    half2 prevPosUV = RemapFoveatedRenderingPrevFrameResolve(prevPosNDC * 0.5 + 0.5);
+    float outlineWidth = input.color.a;
+    #if defined(_IS_FACE)
+    outlineWidth *= lerp(1.0,
+        saturate(0.4 - dot(_HeadForward.xz, normalize(GetCameraPositionWS() - positionWS).xz)), step(0.5, input.color.b));
+    #endif
     
-    // Calculate forward velocity
-    half2 velocity = (posUV - prevPosUV);
-    #if UNITY_UV_STARTS_AT_TOP
-    velocity.y = -velocity.y;
-    #endif
-    #else
-    // Calculate forward velocity
-    half2 velocity = (posNDC.xy - prevPosNDC.xy);
-    #if UNITY_UV_STARTS_AT_TOP
-    velocity.y = -velocity.y;
-    #endif
+    positionWS = ExtendOutline(positionWS, smoothNormalWS,
+        _OutlineWidth * outlineWidth, _OutlineWidthMin * outlineWidth, _OutlineWidthMax * outlineWidth);
+    
+    float4 positionCS = TransformWorldToHClip(positionWS);
 
-    // Convert velocity from NDC space (-1..1) to UV 0..1 space
-    // Note: It doesn't mean we don't have negative values, we store negative or positive offset in UV space.
-    // Note: ((posNDC * 0.5 + 0.5) - (prevPosNDC * 0.5 + 0.5)) = (velocity * 0.5)
-    velocity.xy *= 0.5;
-    #endif
-    return half4(velocity, 0, 0);
+    PerObjectMotionVectorPassVertexInput vIn;
+
+    vIn.positionOS = input.positionOS;
+    vIn.positionCS = positionCS;
+    vIn.positionOld = input.positionOld;
+
+    return ObjectMotionVectorPassVertex(vIn);
+}
+
+half4 CharacterMotionVectorFragment(PerObjectMotionVectorPassVertexOutput input) : SV_Target
+{
+    return ObjectMotionVectorPassFragment(input);
 }
 
 #endif

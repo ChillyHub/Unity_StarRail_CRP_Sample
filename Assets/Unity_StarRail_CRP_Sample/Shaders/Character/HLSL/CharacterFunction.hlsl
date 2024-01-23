@@ -4,7 +4,6 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityGBuffer.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
 const static float3 f3zero = float3(0.0, 0.0, 0.0);
@@ -166,7 +165,7 @@ half3 CalculateBaseDiffuse(out float diffuseFac, Surface surface, Light light, h
         surface.color = surface.color * lerp(f3one, stocking, surface.stockMask);
     #endif
     
-    half3 diffuse = lightColor * surface.color * rampColor;
+    half3 diffuse = lightColor * surface.color * rampColor * rampColor;
 
     return diffuse;
 }
@@ -205,7 +204,7 @@ half3 CalculateFaceDiffuse(Surface surface, FaceData faceData, Light light, floa
     half3 faceColor = lerp(surface.color, half3(1.0, 0.0, 0.0), (faceData.shy + faceData.cheek + faceData.shadow));
     faceColor = lerp(faceColor, GetOutlineColor(surface.color), outlineFac);
 
-    half3 diffuse = lightColor * faceColor * rampColor;
+    half3 diffuse = lightColor * faceColor * rampColor * rampColor;
     
     return diffuse;
 }
@@ -232,7 +231,7 @@ half3 CalculateHairDiffuse(out float diffuseFac, Surface surface, Light light, h
     float3 lightColor = light.color * light.distanceAttenuation;
     lightColor = lerp(lightColor, GrayColor(lightColor), 0.0);
 
-    half3 diffuse = lightColor * surface.color * rampColor;
+    half3 diffuse = lightColor * surface.color * rampColor * rampColor;
     
     return diffuse;
 }

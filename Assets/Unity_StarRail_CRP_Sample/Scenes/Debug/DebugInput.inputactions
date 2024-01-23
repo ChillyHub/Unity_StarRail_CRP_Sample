@@ -1,0 +1,84 @@
+{
+    "name": "DebugInput",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "bcb478a5-e82c-4c29-a79c-42860bb73656",
+            "actions": [
+                {
+                    "name": "Display",
+                    "type": "Value",
+                    "id": "4b8cb47b-6681-4641-a5ed-8980edd264f3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a0881d36-82f6-48a4-9af6-93e9042deb34",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "Scale",
+                    "groups": "KeyboardMouse",
+                    "action": "Display",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "69fb5b64-f06b-4891-9f8c-7270e48fbe63",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "Scale(factor=2)",
+                    "groups": "KeyboardMouse",
+                    "action": "Display",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c2667b0b-5ef7-4d2d-9323-2484af9ac827",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "Scale(factor=3)",
+                    "groups": "KeyboardMouse",
+                    "action": "Display",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "316410cd-a511-45bb-8bb8-38c91e28e861",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "Scale(factor=4)",
+                    "groups": "KeyboardMouse",
+                    "action": "Display",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "KeyboardMouse",
+            "bindingGroup": "KeyboardMouse",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

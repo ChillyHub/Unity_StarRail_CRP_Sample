@@ -13,6 +13,9 @@ namespace Unity_StarRail_CRP_Sample
         private FilteringSettings _filteringSettings;
 
         private readonly List<ShaderTagId> _shaderTagIds;
+        
+        // Render Texture
+        private GBufferTextures _gBufferTextures;
 
         public CRPTransparentPass()
         {
@@ -36,14 +39,14 @@ namespace Unity_StarRail_CRP_Sample
             };
         }
 
-        public void Setup()
+        public void Setup(GBufferTextures gBufferTextures)
         {
-            
+            _gBufferTextures = gBufferTextures;
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
-            GBufferManager.GBuffer.ReAllocIfNeed(cameraTextureDescriptor);
+            //_gBufferTextures.ReAllocIfNeed(cameraTextureDescriptor);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -65,6 +68,11 @@ namespace Unity_StarRail_CRP_Sample
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

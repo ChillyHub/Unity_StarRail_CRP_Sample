@@ -13,6 +13,7 @@ namespace Unity_StarRail_CRP_Sample
             public static readonly int CameraDepthAttachment = Shader.PropertyToID("_CameraDepthAttachment");
             public static readonly int DepthPyramidTexture = Shader.PropertyToID("_DepthPyramidTexture");
             public static readonly int MipLevelParam = Shader.PropertyToID("_MipLevelParam");
+            public static readonly int DepthPyramidMipLevelMax = Shader.PropertyToID("_DepthPyramidMipLevelMax");
         }
         
         // Profiling samplers
@@ -26,10 +27,6 @@ namespace Unity_StarRail_CRP_Sample
         // Render Texture
         private DepthTextures _depthTextures;
         private MipmapInfo _depthMipmapInfo;
-        
-        // Data
-        private ComputeBuffer _srcOffsetBuffer;
-        private ComputeBuffer _dstOffsetBuffer;
 
         public CRPDepthPyramidPass()
         {
@@ -64,17 +61,27 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            if (!CheckExecute(ref renderingData))
+            {
+                return;
+            }
+            
             CommandBuffer cmd = CommandBufferPool.Get();
             using (new ProfilingScope(cmd, _crpCopyDepthProfilingSampler))
             {
+#if UNITY_ANDROID
+                Blitter.BlitCameraTexture(cmd, 
+                    renderingData.cameraData.renderer.cameraDepthTargetHandle, 
+                    _depthTextures.DepthPyramidTexture);
+#else
                 cmd.SetComputeTextureParam(_depthPyramidCS, _depthPyramidKernelCSCopy, 
-                    ShaderIds.DepthPyramidTexture, _depthTextures.DepthPyramidTexture.nameID);
-                cmd.SetComputeTextureParam(_depthPyramidCS, _depthPyramidKernelCSCopy, 
-                    ShaderIds.CameraDepthAttachment, renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
+                        ShaderIds.DepthPyramidTexture, _depthTextures.DepthPyramidTexture.nameID);
+                    cmd.SetComputeTextureParam(_depthPyramidCS, _depthPyramidKernelCSCopy, 
+                        ShaderIds.CameraDepthAttachment, renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
                 
-                DrawUtils.Dispatch(cmd, _depthPyramidCS, _depthPyramidKernelCSCopy, 
-                    _depthMipmapInfo.textureSize.x, _depthMipmapInfo.textureSize.y);
-                
+                    DrawUtils.Dispatch(cmd, _depthPyramidCS, _depthPyramidKernelCSCopy, 
+                        _depthMipmapInfo.textureSize.x, _depthMipmapInfo.textureSize.y);
+
                 for (int i = 1; i < _depthMipmapInfo.mipLevelCount; i++)
                 {
                     Vector2Int dstSize = _depthMipmapInfo.mipLevelSizes[i];
@@ -93,12 +100,32 @@ namespace Unity_StarRail_CRP_Sample
                     
                     DrawUtils.Dispatch(cmd, _depthPyramidCS, _depthPyramidKernelCSPyramid, dstSize.x, dstSize.y);
                 }
+#endif
                 
                 cmd.SetGlobalTexture(ShaderIds.DepthPyramidTexture, _depthTextures.DepthPyramidTexture.nameID);
                 cmd.SetGlobalVectorArray(ShaderIds.MipLevelParam, _depthMipmapInfo.GetMipLevelParam());
+                cmd.SetGlobalInt(ShaderIds.DepthPyramidMipLevelMax, _depthMipmapInfo.mipLevelCount - 1);
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
+        }
+        
+        public void Dispose()
+        {
+            
+        }
+        
+        private bool CheckExecute(ref RenderingData renderingData)
+        {
+            ref CameraData cameraData = ref renderingData.cameraData;
+            Camera camera = cameraData.camera;
+
+            if (camera.cameraType == CameraType.Preview)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -1,6 +1,7 @@
 #ifndef CRP_UNLIT_PASS_INCLUDED
 #define CRP_UNLIT_PASS_INCLUDED
 
+#include "UnLitInput.hlsl"
 #include "../../Deferred/HLSL/CRPGBuffer.hlsl"
 
 struct Attributes
@@ -43,7 +44,7 @@ half4 UnLitForwardPassFragment(Varyings input) : SV_Target
     return color;
 }
 
-FragmentOutput UnLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC) : SV_Target
+FragmentOutputs UnLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face : FRONT_FACE_SEMANTIC) : SV_Target
 {
     half4 color = _BaseColor * SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
     half4 emission = _EmissionColor * SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, input.uv);
@@ -52,7 +53,7 @@ FragmentOutput UnLitGBufferPassFragment(Varyings input, FRONT_FACE_TYPE face : F
 
     half3 packedNormalWS = PackNormal(input.normalWS);
 
-    FragmentOutput output;
+    FragmentOutputs output;
     output.GBuffer0 = half4(color.rgb, 0.0);
     output.GBuffer1 = half4(packedNormalWS, 0.0);      
     output.GBuffer2 = half4(color.rgb + emission.rgb, color.r);           

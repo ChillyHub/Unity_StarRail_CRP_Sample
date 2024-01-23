@@ -23,6 +23,7 @@ namespace Unity_StarRail_CRP_Sample
         private Material _material;
         
         // Render Targets
+        private GBufferTextures _gBufferTextures;
         private RTHandle[] _bloomMipUp;
         private RTHandle[] _bloomMipDown;
 
@@ -43,6 +44,11 @@ namespace Unity_StarRail_CRP_Sample
             }
             
             InitRenderTarget();
+        }
+        
+        public void Setup(GBufferTextures gBufferTextures)
+        {
+            _gBufferTextures = gBufferTextures;
         }
         
         public void Execute(CommandBuffer cmd, RTHandle source)
@@ -103,7 +109,7 @@ namespace Unity_StarRail_CRP_Sample
                     desc.height = Mathf.Max(1, desc.height >> 1);
                 }
                 
-                cmd.SetGlobalTexture(ShaderConstants.AdditionalBloomColorTexture, GBufferManager.GBuffer.GBuffer0.nameID);
+                cmd.SetGlobalTexture(ShaderConstants.AdditionalBloomColorTexture, _gBufferTextures.GBuffer0.nameID);
 
                 Blitter.BlitCameraTexture(cmd, source, _bloomMipDown[0], RenderBufferLoadAction.DontCare,
                     RenderBufferStoreAction.Store, _material, 0);
@@ -144,14 +150,15 @@ namespace Unity_StarRail_CRP_Sample
         {
             for (int i = 0; i < 16; i++)
             {
-                _bloomMipUp[i]?.Release();
+                RTHandles.Release(_bloomMipUp[i]);
                 _bloomMipUp[i] = null;
                 
-                _bloomMipDown[i]?.Release();
+                RTHandles.Release(_bloomMipDown[i]);
                 _bloomMipDown[i] = null;
             }
             
             CoreUtils.Destroy(_material);
+            _material = null;
         }
 
         private void InitRenderTarget()

@@ -39,12 +39,14 @@ namespace Unity_StarRail_CRP_Sample
     
     public class DepthTextures
     {
-        public static class PropertyIDs
+        public static class ShaderIds
         {
             public static readonly int DepthPyramidTexture = Shader.PropertyToID("_DepthPyramidTexture");
+            public static readonly int MipLevelParam = Shader.PropertyToID("_MipLevelParam");
+            public static readonly int DepthPyramidMipLevelMax = Shader.PropertyToID("_DepthPyramidMipLevelMax");
         }
         
-        public static class Name
+        private static class TextureName
         {
             public static readonly string DepthPyramidTexture = "_DepthPyramidTexture";
         }
@@ -62,23 +64,42 @@ namespace Unity_StarRail_CRP_Sample
         
         public void Release()
         {
-            _depthTextures[0]?.Release();
+            RTHandles.Release(_depthTextures[0]);
+            _depthTextures[0] = null;
         }
         
         public MipmapInfo ReAllocDepthPyramidTextureIfNeed(RenderTextureDescriptor src, bool needMipMap = false)
         {
             RenderingUtils.ReAllocateIfNeeded(ref DepthPyramidTexture, 
                 GetDepthPyramidTextureDescriptor(src, needMipMap), 
-                wrapMode: TextureWrapMode.Clamp, name: Name.DepthPyramidTexture);
+                wrapMode: TextureWrapMode.Clamp, name: TextureName.DepthPyramidTexture);
 
             return _depthMipmapInfo;
+        }
+        
+        public void SetGlobalDepthPyramidTexture(CommandBuffer cmd)
+        {
+            cmd.SetGlobalTexture(ShaderIds.DepthPyramidTexture, DepthPyramidTexture.nameID);
+            cmd.SetGlobalVectorArray(ShaderIds.MipLevelParam, _depthMipmapInfo.GetMipLevelParam());
+            cmd.SetGlobalInt(ShaderIds.DepthPyramidMipLevelMax, _depthMipmapInfo.mipLevelCount - 1);
+        }
+        
+        public void SetMaterialDepthPyramidTexture(Material material)
+        {
+            material.SetTexture(ShaderIds.DepthPyramidTexture, DepthPyramidTexture.rt);
+            material.SetVectorArray(ShaderIds.MipLevelParam, _depthMipmapInfo.GetMipLevelParam());
+            material.SetInt(ShaderIds.DepthPyramidMipLevelMax, _depthMipmapInfo.mipLevelCount - 1);
         }
 
         public RenderTextureDescriptor GetDepthPyramidTextureDescriptor(RenderTextureDescriptor src, bool needMipMap = false)
         {
+#if UNITY_ANDROID
+            _depthMipmapInfo = GetNonMipmapInfo(new Vector2Int(src.width, src.height));
+#else
             _depthMipmapInfo = needMipMap 
                 ? ComputeMipmapInfo(new Vector2Int(src.width, src.height)) 
                 : GetNonMipmapInfo(new Vector2Int(src.width, src.height));
+#endif
             
             RenderTextureDescriptor desc = new RenderTextureDescriptor
             {

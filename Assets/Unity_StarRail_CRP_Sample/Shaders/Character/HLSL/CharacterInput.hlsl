@@ -6,6 +6,8 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
+#include "../../Utils/HLSL/Depth.hlsl"
+
 CBUFFER_START(UnityPerMaterial)
 float _NormalScale;
 
@@ -245,7 +247,7 @@ half4 SampleLUTMap(int materialId, int renderType)
 
 float SampleCameraDepthTexture(float2 uv)
 {
-    return SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv);
+    return SampleDepth(uv);
 }
 
 float4 SampleCameraOpaqueTexture(float2 uv)

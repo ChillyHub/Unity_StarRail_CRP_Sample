@@ -299,36 +299,51 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
-        //Pass
-        //{
-        //    Name "OutlineDepthOnly"
-        //    Tags{"LightMode" = "DepthOnly"}
-        //
-        //    ZWrite On
-        //    ColorMask 0
-        //    Cull Off
-        //
-        //    HLSLPROGRAM
-        //    #pragma exclude_renderers gles gles3 glcore
-        //    #pragma target 4.5
-        //
-        //    #pragma vertex CharacterOutlinePassVertex
-        //    #pragma fragment CharacterDepthOnlyFragment
-        //
-        //    // -------------------------------------
-        //    // Material Keywords
-        //    #pragma shader_feature_local_fragment _ALPHATEST_ON
-        //    #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-        //
-        //    //--------------------------------------
-        //    // GPU Instancing
-        //    #pragma multi_compile_instancing
-        //    #pragma multi_compile _ DOTS_INSTANCING_ON
-        //
-        //    #include "HLSL/CharacterInput.hlsl"
-        //    #include "HLSL/CharacterFunction.hlsl"
-        //    #include "HLSL/CharacterPass.hlsl"
-        //    ENDHLSL
-        //}
+        Pass
+        {
+            Name "Object Motion Vectors"
+
+            Tags { "LightMode" = "ObjectMotionVector" }
+
+            HLSLPROGRAM
+            #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
+            #pragma target 3.5
+
+            #pragma vertex CharacterMotionVectorPassVertex
+            #pragma fragment CharacterMotionVectorFragment
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+
+            #include "HLSL/CharacterInput.hlsl"
+            #include "HLSL/CharacterFunction.hlsl"
+            #include "HLSL/CharacterPass.hlsl"
+
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "Object Motion Vectors"
+
+            Tags { "LightMode" = "ObjectOutlineMotionVector" }
+
+            HLSLPROGRAM
+            #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
+            #pragma target 3.5
+
+            #pragma vertex CharacterOutlineMotionVectorPassVertex
+            #pragma fragment CharacterMotionVectorFragment
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+
+            #include "HLSL/CharacterInput.hlsl"
+            #include "HLSL/CharacterFunction.hlsl"
+            #include "HLSL/CharacterPass.hlsl"
+
+            ENDHLSL
+        }
     }
 }

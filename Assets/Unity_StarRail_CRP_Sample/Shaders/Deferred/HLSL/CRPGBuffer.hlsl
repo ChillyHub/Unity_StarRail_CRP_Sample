@@ -62,7 +62,7 @@
 // Light flags.
 #define kLightFlagSubtractiveMixedLighting    4 // The light uses subtractive mixed lighting.
 
-struct FragmentOutput
+struct FragmentOutputs
 {
     half4 GBuffer0 : SV_Target0;
     half4 GBuffer1 : SV_Target1;
@@ -89,7 +89,7 @@ uint UnpackMaterialFlags(float packedMaterialFlags)
     return uint((packedMaterialFlags * 255.0h) + 0.5h);
 }
 
-#ifdef _GBUFFER_NORMALS_OCT
+//#ifdef _GBUFFER_NORMALS_OCT
 half3 PackNormal(half3 n)
 {
     float2 octNormalWS = PackNormalOctQuadEncode(n);                  // values between [-1, +1], must use fp32 on some platforms.
@@ -104,13 +104,13 @@ half3 UnpackNormal(half3 pn)
     return half3(UnpackNormalOctQuadEncode(octNormalWS));              // values between [-1, +1]
 }
 
-#else
-half3 PackNormal(half3 n)
-{ return n; }                                                         // values between [-1, +1]
-
-half3 UnpackNormal(half3 pn)
-{ return pn; }                                                        // values between [-1, +1]
-#endif
+//#else
+//half3 PackNormal(half3 n)
+//{ return n; }                                                         // values between [-1, +1]
+//
+//half3 UnpackNormal(half3 pn)
+//{ return pn; }                                                        // values between [-1, +1]
+//#endif
 
 InputData InputDataFromGBufferAndWorldPosition(half4 gbuffer1, float3 wsPos)
 {
@@ -135,11 +135,11 @@ InputData InputDataFromGBufferAndWorldPosition(half4 gbuffer1, float3 wsPos)
     
 
 // This will encode SurfaceData into GBuffer
-FragmentOutput SceneSurfaceDataToGBuffer(SurfaceData surfaceData, InputData inputData, half3 globalIllumination, float bloomIntensity)
+FragmentOutputs SceneSurfaceDataToGBuffer(SurfaceData surfaceData, InputData inputData, half3 globalIllumination, float bloomIntensity)
 {
     half3 packedNormalWS = PackNormal(inputData.normalWS);
 
-    FragmentOutput output;
+    FragmentOutputs output;
     output.GBuffer0 = half4(surfaceData.albedo.rgb, surfaceData.metallic);  // albedo          albedo          albedo          metallic  (sRGB render target)
     output.GBuffer1 = half4(packedNormalWS, surfaceData.smoothness);        // encoded-normal  encoded-normal  encoded-normal  smoothness
     output.GBuffer2 = half4(globalIllumination, bloomIntensity);            // GI              GI              GI              bloom intensity
@@ -169,11 +169,11 @@ SurfaceData SceneSurfaceDataFromGBuffer(half4 gbuffer0, half4 gbuffer1)
 }
 
 // This will encode SurfaceData into GBuffer
-FragmentOutput SceneBRDFDataToGBuffer(BRDFData brdfData, InputData inputData, half smoothness, half3 globalIllumination, float bloomIntensity)
+FragmentOutputs SceneBRDFDataToGBuffer(BRDFData brdfData, InputData inputData, half smoothness, half3 globalIllumination, float bloomIntensity)
 {
     half3 packedNormalWS = PackNormal(inputData.normalWS);
     
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(brdfData.albedo.rgb, brdfData.reflectivity);  // albedo          albedo          albedo          metallic  (sRGB render target)
     output.GBuffer1 = half4(packedNormalWS, smoothness);                  // encoded-normal  encoded-normal  encoded-normal  smoothness
     output.GBuffer2 = half4(globalIllumination, bloomIntensity);          // GI              GI              GI                        (camera color attachment)

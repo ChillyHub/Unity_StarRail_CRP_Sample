@@ -13,13 +13,19 @@ namespace Unity_StarRail_CRP_Sample
         private FilteringSettings _filteringSettings;
 
         private readonly List<ShaderTagId> _characterShaderTagIds;
+        private readonly List<ShaderTagId> _sceneSSRShaderTagIds;
         private readonly List<ShaderTagId> _sceneShaderTagIds;
         private readonly List<ShaderTagId> _sssShaderTagIds;
         private readonly List<ShaderTagId> _unlitShaderTagIds;
         
+        private RenderStateBlock _sceneSSRRenderStateBlock;
         private RenderStateBlock _sceneRenderStateBlock;
         private RenderStateBlock _sssRenderStateBlock;
         private RenderStateBlock _unlitRenderStateBlock;
+        
+        // Render Texture
+        private GBufferTextures _gBufferTextures;
+        private DepthTextures _depthTextures;
 
         public CRPGBufferPass()
         {
@@ -37,6 +43,11 @@ namespace Unity_StarRail_CRP_Sample
                 new ShaderTagId("CharacterOutline")
             };
 
+            _sceneSSRShaderTagIds = new List<ShaderTagId>
+            {
+                new ShaderTagId("SceneGBufferSSR")
+            };
+            
             _sceneShaderTagIds = new List<ShaderTagId>
             {
                 new ShaderTagId("SceneGBuffer"),
@@ -53,6 +64,13 @@ namespace Unity_StarRail_CRP_Sample
             {
                 new ShaderTagId("UnlitGBuffer"),
                 new ShaderTagId("UnlitOutline")
+            };
+            
+            _sceneSSRRenderStateBlock = new RenderStateBlock
+            {
+                stencilState = DeferredStencil.GetStencilState(DeferredPass.SceneGBuffer),
+                stencilReference = DeferredStencil.GetStencilReference(DeferredPass.SceneGBuffer, 4), // 0100
+                mask = RenderStateMask.Stencil
             };
 
             _sceneRenderStateBlock = new RenderStateBlock
@@ -77,14 +95,15 @@ namespace Unity_StarRail_CRP_Sample
             };
         }
 
-        public void Setup()
+        public void Setup(GBufferTextures gBufferTextures, DepthTextures depthTextures)
         {
-            
+            _gBufferTextures = gBufferTextures;
+            _depthTextures = depthTextures;
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
-            GBufferManager.GBuffer.ReAllocIfNeed(cameraTextureDescriptor);
+            _gBufferTextures.ReAllocIfNeed(cameraTextureDescriptor);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -97,25 +116,30 @@ namespace Unity_StarRail_CRP_Sample
             {
                 DrawingSettings characterDrawingSettings = CreateDrawingSettings(
                     _characterShaderTagIds, ref renderingData, cameraData.defaultOpaqueSortFlags);
+                DrawingSettings sceneSSRDrawingSettings = CreateDrawingSettings(
+                    _sceneSSRShaderTagIds, ref renderingData, cameraData.defaultOpaqueSortFlags);
                 DrawingSettings sceneDrawingSettings = CreateDrawingSettings(
                     _sceneShaderTagIds, ref renderingData, cameraData.defaultOpaqueSortFlags);
                 DrawingSettings sssDrawingSettings = CreateDrawingSettings(
                     _sssShaderTagIds, ref renderingData, cameraData.defaultOpaqueSortFlags);
                 DrawingSettings unlitDrawingSettings = CreateDrawingSettings(
                     _unlitShaderTagIds, ref renderingData, cameraData.defaultOpaqueSortFlags);
-
-                GBufferManager.GBuffer.GBuffers[2] = cameraData.renderer.cameraColorTargetHandle;
-                cmd.SetRenderTarget(GBufferManager.GBuffer.GBufferIds, cameraData.renderer.cameraDepthTargetHandle);
                 
+                _depthTextures.SetGlobalDepthPyramidTexture(cmd);
+
+                _gBufferTextures.GBuffers[2] = cameraData.renderer.cameraColorTargetHandle;
+                cmd.SetRenderTarget(_gBufferTextures.GBufferIds, cameraData.renderer.cameraDepthTargetHandle.nameID);
                 cmd.ClearRenderTarget(true, true, Color.clear);
+
+                CoreUtils.SetKeyword(cmd, "_GBUFFER_NORMALS_OCT", true);
 
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
-                CoreUtils.SetKeyword(cmd, "_GBUFFER_NORMALS_OCT", true);
-                
                 context.DrawRenderers(renderingData.cullResults, 
                     ref characterDrawingSettings, ref _filteringSettings);
+                context.DrawRenderers(renderingData.cullResults, 
+                    ref sceneSSRDrawingSettings, ref _filteringSettings, ref _sceneSSRRenderStateBlock);
                 context.DrawRenderers(renderingData.cullResults, 
                     ref sceneDrawingSettings, ref _filteringSettings, ref _sceneRenderStateBlock);
                 context.DrawRenderers(renderingData.cullResults, 
@@ -127,6 +151,11 @@ namespace Unity_StarRail_CRP_Sample
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
+        }
+        
+        public void Dispose()
+        {
+            
         }
     }
 }

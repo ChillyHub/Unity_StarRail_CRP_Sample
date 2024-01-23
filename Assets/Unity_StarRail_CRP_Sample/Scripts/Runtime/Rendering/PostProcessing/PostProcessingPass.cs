@@ -24,9 +24,10 @@ namespace Unity_StarRail_CRP_Sample
             _toneMappingPass = new ToneMappingPass();
         }
 
-        public void Setup()
+        public void Setup(GBufferTextures gBufferTextures)
         {
-            
+            _bloomPass.Setup(gBufferTextures);
+            _toneMappingPass.Setup();
         }
         
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -46,6 +47,12 @@ namespace Unity_StarRail_CRP_Sample
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
+        }
+        
+        public void Dispose()
+        {
+            _bloomPass.Dispose();
+            _toneMappingPass.Dispose();
         }
         
         private bool CheckExecute(ref RenderingData renderingData)

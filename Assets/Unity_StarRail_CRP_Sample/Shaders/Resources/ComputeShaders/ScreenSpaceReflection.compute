@@ -1,0 +1,205 @@
+﻿#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+
+#include "../../Utils/HLSL/Depth.hlsl"
+
+#pragma kernel CSScreenSpaceReflection KERNEL_SIZE=8
+#pragma kernel CSScreenSpaceReflectionUVMapping KERNEL_SIZE=8
+
+#pragma multi_compile _ _GBUFFER_NORMALS_OCT
+#pragma multi_compile _ UNITY_REVERSED_Z
+
+RW_TEXTURE2D(float4, _SSRLightingTexture);
+RW_TEXTURE2D(float2, _SSRReflectUVTexture);
+TEXTURE2D(_PackedNormalSmoothnessTexture);
+SAMPLER(sampler_PackedNormalSmoothnessTexture);
+TEXTURE2D(_ColorPyramidTexture);
+SAMPLER(sampler_ColorPyramidTexture);
+TEXTURE2D(_MotionVectorTexture);
+SAMPLER(sampler_MotionVectorTexture);
+Texture2D<uint2> _StencilTexture;
+
+CBUFFER_START(ScreenSpaceReflectionCB)
+int _SSRMaxIterCount;
+float _SSRThicknessScale;
+float _SSRThicknessBias;
+CBUFFER_END
+
+#define SSR_TRACE_EPS 0.000488281f 
+
+//#ifdef _GBUFFER_NORMALS_OCT
+half3 UnpackNormal(half3 pn)
+{
+    half2 remappedOctNormalWS = half2(Unpack888ToFloat2(pn));          // values between [ 0, +1]
+    half2 octNormalWS = remappedOctNormalWS.xy * half(2.0) - half(1.0);// values between [-1, +1]
+    return half3(UnpackNormalOctQuadEncode(octNormalWS));              // values between [-1, +1]
+}
+//#else
+//half3 UnpackNormal(half3 pn)
+//{ return pn; }                                                        // values between [-1, +1]
+//#endif
+
+float2 GetHitPointUV(int2 positionSS)
+{
+    // Stencil
+    uint stencil = GetStencilValue(LOAD_TEXTURE2D_X(_StencilTexture, positionSS));
+    //return stencil;
+    if ((stencil & 4u) == 0)
+    {
+        return float2(0.0, 0.0);
+    }
+    
+    // Current Screen Position Info
+    float2 positionNDC = (positionSS + 0.5) * _ScreenSize.zw;
+    float deviceDepth = SampleDepth(positionSS);
+    float3 positionWS = ComputeWorldSpacePosition(positionNDC, deviceDepth, UNITY_MATRIX_I_VP);
+    float3 viewDirWS = GetWorldSpaceNormalizeViewDir(positionWS);
+
+    half4 normalSmooth = LOAD_TEXTURE2D_X(_PackedNormalSmoothnessTexture, positionSS);
+    float3 normalWS = UnpackNormal(normalSmooth.xyz);
+    //float smoothness = normalSmooth.w;
+
+    // Reflect Ray Info (Simple reflection, no sequence sample)
+    float3 reflectWS = reflect(-viewDirWS, normalWS);
+    
+    float3 stepReflectPosWS = positionWS + reflectWS;
+    float3 stepReflectPosNDC = ComputeNormalizedDeviceCoordinatesWithZ(stepReflectPosWS, UNITY_MATRIX_VP);
+    float3 stepReflectPosSS = float3(stepReflectPosNDC.xy * _ScreenSize.xy, stepReflectPosNDC.z);
+
+    float3 rayOriginSS = float3(positionSS + 0.5, deviceDepth);
+    
+    float3 rayDirSS = stepReflectPosSS - rayOriginSS;
+    float3 invRayDirSS = rcp(rayDirSS);  // (steps per pixel)
+
+    int2 sampleStep = int2(invRayDirSS.x >= 0 ? 1 : 0, invRayDirSS.y >= 0 ? 1 : 0);
+    int3 raySign = int3(invRayDirSS.x >= 0 ? 1 : -1, invRayDirSS.y >= 0 ? 1 : -1, invRayDirSS.z >= 0 ? 1 : -1);
+    #if UNITY_REVERSED_Z
+    bool rayToScreen = invRayDirSS.z >= 0;
+    #else
+    bool rayToScreen = invRayDirSS.z <= 0;
+    #endif
+
+    float2 dist = abs(invRayDirSS.xy * 0.5);
+    float totalStep = min(dist.x, dist.y); // target step of one pixel
+
+    bool preReturn = false;
+    preReturn = preReturn || (stepReflectPosSS.z < 0.0);
+    preReturn = preReturn || (dot(normalWS, viewDirWS) <= 0.0);
+
+    if (preReturn)
+    {
+        return float2(0.0, 0.0);
+    }
+
+    const float halfTexel = 0.5;
+
+    float3 bounds;
+    bounds.x = (invRayDirSS.x >= 0) ? _ScreenSize.x - halfTexel : halfTexel;
+    bounds.y = (invRayDirSS.y >= 0) ? _ScreenSize.y - halfTexel : halfTexel;
+    #if UNITY_REVERSED_Z
+    bounds.z = (invRayDirSS.z >= 0) ? 1 : -0.00000024;
+    #else
+    bounds.z = (invRayDirSS.z >= 0) ? -1 : 1.00000024;
+    #endif
+
+    float3 boundDist = (bounds - rayOriginSS) * invRayDirSS;
+    float stepsMax = Min3(boundDist.x, boundDist.y, boundDist.z);
+
+    // Ray Marching
+    float3 rayPosSS;
+    bool hit = false;
+    bool miss = false;
+    bool isBehind = false;
+    int mipLevel = 0;
+    int iterCount = 0;
+    while (!(hit || miss) && (totalStep < stepsMax) && (iterCount < _SSRMaxIterCount))
+    {
+        rayPosSS = rayOriginSS + rayDirSS * totalStep;
+
+        // Add Bias
+        float2 sgnEdgeDist = round(rayPosSS.xy) - rayPosSS.xy;
+        float2 satEdgeDist = clamp(raySign.xy * sgnEdgeDist + SSR_TRACE_EPS, 0, SSR_TRACE_EPS);
+        rayPosSS.xy += raySign.xy * satEdgeDist;
+
+        int2 mipCoord = (int2)rayPosSS.xy >> mipLevel;
+        int2 sampleCoord = mipCoord << mipLevel;
+        int2 boundCoord = (mipCoord + sampleStep) << mipLevel;
+
+        float4 boundingSS; // (xy: bound coord z: front depth, w: back depth)
+        boundingSS.xy = boundCoord;
+        boundingSS.z = SampleDepth(sampleCoord, mipLevel);
+        #if UNITY_REVERSED_Z
+        boundingSS.w = boundingSS.z * _SSRThicknessScale + _SSRThicknessBias;
+        #else
+        boundingSS.w = boundingSS.z * _SSRThicknessScale + _SSRThicknessBias;
+        #endif
+
+        float4 steps = (boundingSS - rayOriginSS.xyzz) * invRayDirSS.xyzz;
+        float stepBound = min(steps.x, steps.y);
+        float stepFront = steps.z;
+        float stepBack = steps.w;
+
+        #if UNITY_REVERSED_Z
+        bool behindFront = rayPosSS.z < boundingSS.z;
+        bool beforeBack = rayPosSS.z >= boundingSS.w;
+        #else
+        bool behindFront = rayPosSS.z >= depthSS.z;
+        bool beforeBack = rayPosSS.z < depthSS.w;
+        #endif
+        bool inside = behindFront && beforeBack;
+        bool hitBoundFront = (totalStep <= stepFront) && (stepFront <= stepBound);
+        // Hit Test
+        miss = isBehind && inside;
+        hit = (mipLevel == 0) && (inside || hitBoundFront);
+        isBehind = (mipLevel == 0) && behindFront;
+
+        // Update step and mip level
+        totalStep = hitBoundFront ? stepFront : (((mipLevel != 0) && behindFront) ? totalStep : stepBound);
+        mipLevel += (hitBoundFront || behindFront) ? -1 : 1;
+        mipLevel = clamp(mipLevel, 0, _DepthPyramidMipLevelMax);
+        
+        iterCount++;
+    }
+
+    hit = hit && !miss;
+
+    if (hit)
+    {
+        float2 hitUV = saturate((floor(rayPosSS.xy) + 0.5) * _ScreenSize.zw);
+        return hitUV;
+    }
+
+    return float2(0.0, 0.0);
+}
+
+float4 SampleSSRLighting(int2 positionSS, float2 hitUV)
+{
+    half4 normalSmooth = LOAD_TEXTURE2D_X(_PackedNormalSmoothnessTexture, positionSS);
+    float3 normalWS = UnpackNormal(normalSmooth.xyz);
+    float smoothness = normalSmooth.w;
+
+    if (max(hitUV.x, hitUV.y) == 0.0)
+    {
+        return 0.0;
+    }
+
+    float mipLevel = lerp(0.0, 14.0, 1.0 - smoothness);
+
+    float3 color = SAMPLE_TEXTURE2D_X_LOD(_ColorPyramidTexture, sampler_ColorPyramidTexture, hitUV, mipLevel).rgb;
+
+    return float4(color, 1.0);
+}
+
+[numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
+void CSScreenSpaceReflection(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    float2 hitUV = GetHitPointUV(dispatchThreadId.xy);
+    _SSRLightingTexture[dispatchThreadId.xy] = SampleSSRLighting(dispatchThreadId.xy, hitUV);
+}
+
+[numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
+void CSScreenSpaceReflectionUVMapping(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    _SSRReflectUVTexture[dispatchThreadId.xy] = GetHitPointUV(dispatchThreadId.xy);
+}

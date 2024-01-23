@@ -3,6 +3,7 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
 #include "../../Deferred/HLSL/CRPGBuffer.hlsl"
 
@@ -11,7 +12,7 @@ half3 LightingPhysicallyScene(BRDFData brdfData, Light light, half3 normalWS, ha
     half NdotL = saturate(dot(normalWS, light.direction));
     half3 radiance = light.color * (light.distanceAttenuation * light.shadowAttenuation * NdotL);
 
-    half metalic = MetallicFromReflectivity(brdfData.reflectivity);
+    half metallic = MetallicFromReflectivity(brdfData.reflectivity);
 
     half3 diffuse = brdfData.diffuse * radiance;
 
@@ -19,11 +20,17 @@ half3 LightingPhysicallyScene(BRDFData brdfData, Light light, half3 normalWS, ha
     float blinnPhong = pow(saturate(dot(halfDirWS, normalWS)), 20.0);
     float stepPhong = smoothstep(1.0 - blinnPhong, 1.0 + brdfData.roughness - blinnPhong, 0.5);
 
+    float3 f0 = lerp(0.04, brdfData.albedo, metallic);
+    float3 fresnel = f0 + (1.0 - f0) * pow(1.0 - saturate(dot(viewDirWS, halfDirWS)), 5.0);
+
     half3 lightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
     half3 NonmetalSpecular = lightColor * 0.04 * stepPhong * brdfData.diffuse;
-    half3 MetalSpecular = lightColor * 0.96 * brdfData.albedo * blinnPhong * metalic;
+    half3 MetalSpecular = lightColor * 0.96 * brdfData.albedo * blinnPhong * metallic;
+
+    //half3 lightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
+    half3 specular = lightColor * fresnel * blinnPhong;
     
-    return diffuse + NonmetalSpecular + MetalSpecular;
+    return diffuse + specular;// + NonmetalSpecular + MetalSpecular;
 }
 
 half3 SceneLighting(InputData input, half4 gBuffer0, half4 gBuffer1, Light light, bool specularOff)
@@ -117,6 +124,25 @@ half4 SceneForwardLighting(InputData inputData, SurfaceData surfaceData)
 #else
     return CalculateFinalColor(lightingData, surfaceData.alpha);
 #endif
+}
+
+half3 SSRGlobalIllumination(BRDFData brdfData, half3 bakedGI, half occlusion, float3 positionWS,
+    half3 normalWS, half3 viewDirectionWS)
+{
+    half NoV = saturate(dot(normalWS, viewDirectionWS));
+    half fresnelTerm = Pow4(1.0 - NoV);
+
+    half3 indirectDiffuse = bakedGI;
+    half3 indirectSpecular = 0.0;
+
+    half3 color = EnvironmentBRDF(brdfData, indirectDiffuse, indirectSpecular, fresnelTerm);
+
+    if (IsOnlyAOLightingFeatureEnabled())
+    {
+        color = half3(1,1,1); // "Base white" for AO debug lighting mode
+    }
+
+    return color * occlusion;
 }
 
 #endif

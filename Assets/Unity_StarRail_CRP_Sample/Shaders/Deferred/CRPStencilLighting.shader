@@ -138,12 +138,12 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
     {
         Light unityLight;
 
-        bool materialReceiveShadowsOff = false;
+        bool materialReceiveShadowsOff = true;
         
         uint lightLayerMask =_LightLayerMask;
 
-        #if !defined(_ADDITIONAL_LIGHT_SHADOWS)
-            materialReceiveShadowsOff = true;
+        #if defined(_ADDITIONAL_LIGHT_SHADOWS)
+            materialReceiveShadowsOff = false;
         #endif
 
         float4 shadowCoord = float4(screen_uv, 0.0, 1.0);
@@ -337,7 +337,7 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
         InputData inputData = InputDataFromGBufferAndWorldPosition(gbuffer1, posWS.xyz);
 
         bool specularOff = false;
-        specularOff = true;
+        //specularOff = true;
         #if defined(_POINT)
             specularOff = true;
         #endif
@@ -383,7 +383,6 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_vertex _ _SPOT
@@ -416,25 +415,24 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL
             #pragma multi_compile _DIRECTIONAL
             #pragma multi_compile_fragment _UNLIT
-            #pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
-            #pragma multi_compile_fragment _ _DEFERRED_MAIN_LIGHT
-            #pragma multi_compile_fragment _ _DEFERRED_FIRST_LIGHT
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
-            #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
-            #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
-            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            //#pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            //#pragma multi_compile_fragment _ _DEFERRED_MAIN_LIGHT
+            //#pragma multi_compile_fragment _ _DEFERRED_FIRST_LIGHT
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _SHADOWS_SOFT
+            //#pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
+            //#pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
+            //#pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
-            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile_fragment _ _LIGHT_LAYERS
+            //#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            //#pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
-            #pragma multi_compile_fragment _ _LIGHT_COOKIES
+            //#pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             #pragma vertex Vertex
             #pragma fragment DeferredShading
@@ -464,25 +462,24 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL
             #pragma multi_compile _DIRECTIONAL
             #pragma multi_compile_fragment _CHARACTER
-            #pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
-            #pragma multi_compile_fragment _ _DEFERRED_MAIN_LIGHT
-            #pragma multi_compile_fragment _ _DEFERRED_FIRST_LIGHT
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
-            #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
-            #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
-            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            //#pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            //#pragma multi_compile_fragment _ _DEFERRED_MAIN_LIGHT
+            //#pragma multi_compile_fragment _ _DEFERRED_FIRST_LIGHT
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _SHADOWS_SOFT
+            //#pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
+            //#pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
+            //#pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
-            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile_fragment _ _LIGHT_LAYERS
+            //#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            //#pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
-            #pragma multi_compile_fragment _ _LIGHT_COOKIES
+            //#pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             #pragma vertex Vertex
             #pragma fragment DeferredShading
@@ -512,7 +509,6 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL
@@ -560,7 +556,6 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL
@@ -609,22 +604,21 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL
             #pragma multi_compile _POINT _SPOT
             #pragma multi_compile_fragment _UNLIT
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
-            #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
-            #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
-            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _SHADOWS_SOFT
+            //#pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
+            //#pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
+            //#pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
-            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile_fragment _ _LIGHT_LAYERS
+            //#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            //#pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
-            #pragma multi_compile_fragment _ _LIGHT_COOKIES
+            //#pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             #pragma vertex Vertex
             #pragma fragment DeferredShading
@@ -655,22 +649,21 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL
             #pragma multi_compile _POINT _SPOT
             #pragma multi_compile_fragment _CHARACTER
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
-            #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
-            #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
-            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _SHADOWS_SOFT
+            //#pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
+            //#pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
+            //#pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
-            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile_fragment _ _LIGHT_LAYERS
+            //#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            //#pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
-            #pragma multi_compile_fragment _ _LIGHT_COOKIES
+            //#pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             #pragma vertex Vertex
             #pragma fragment DeferredShading
@@ -701,14 +694,13 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL
             #pragma multi_compile _POINT _SPOT
             #pragma multi_compile_fragment _SCENE
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
@@ -747,7 +739,6 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             }
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma multi_compile_fragment _DEFERRED_STENCIL

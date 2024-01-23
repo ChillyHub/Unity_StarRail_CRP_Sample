@@ -1,3 +1,7 @@
 fileFormatVersion: 2
 guid: d577d96af11746b682bde35d6ea25d9f
-timeCreated: 1704968716
+ComputeShaderImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: shader
+  assetBundleVariant: 

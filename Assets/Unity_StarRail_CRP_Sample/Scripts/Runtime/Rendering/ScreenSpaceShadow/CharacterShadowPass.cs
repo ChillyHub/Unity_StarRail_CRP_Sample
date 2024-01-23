@@ -148,6 +148,11 @@ namespace Unity_StarRail_CRP_Sample
             CommandBufferPool.Release(cmd);
         }
         
+        public void Dispose()
+        {
+            Clear();
+        }
+        
         private bool CheckExecute(ref RenderingData renderingData)
         {
             ref CameraData cameraData = ref renderingData.cameraData;

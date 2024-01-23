@@ -39,9 +39,6 @@ MonoBehaviour:
   mainLightColor:
     m_OverrideState: 1
     m_Value: {r: 0.59383625, g: 0.557565, b: 0.7735849, a: 1}
-  mainLightIntensity:
-    m_OverrideState: 1
-    m_Value: 1.13
   shadowLightRotation:
     m_OverrideState: 1
     m_Value: {x: 0, y: 75.76, z: 47.25}
@@ -53,3 +50,17 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: {fileID: 3921172408440403878, guid: eba2bcdff962d504f9c5285a2076d452,
       type: 3}
+  mainLightIntensity:
+    m_OverrideState: 1
+    m_Value: 1.13
+  mainVirtualLight:
+    m_OverrideState: 1
+    m_Value: {fileID: 7150100073144344080, guid: c7a52b41685ba1342ac50e61246889c3,
+      type: 3}
+  shadowVirtualLight:
+    m_OverrideState: 1
+    m_Value: {fileID: 7150100073144344080, guid: c7a52b41685ba1342ac50e61246889c3,
+      type: 3}
+  overrideMainLightColor:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 1}

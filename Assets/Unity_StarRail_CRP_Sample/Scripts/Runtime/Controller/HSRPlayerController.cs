@@ -306,7 +306,10 @@ namespace Unity_StarRail_CRP_Sample
             // Zoom
             _targetCameraDistance -= zoom / 360.0f;
             _targetCameraDistance = Mathf.Clamp(_targetCameraDistance, minDistance, maxDistance);
-            _cameraDistance = Mathf.Lerp(_cameraDistance, _targetCameraDistance, Time.deltaTime * distanceChangeRate);
+            _cameraDistance = Mathf.Lerp(_cameraDistance,  _targetCameraDistance, 
+                Time.deltaTime * distanceChangeRate);
+            //_cameraDistance -= zoom * Time.deltaTime * distanceChangeRate / 18.0f;
+            //_cameraDistance = Mathf.Clamp(_cameraDistance, minDistance, maxDistance);
             _personFollow.CameraDistance = _cameraDistance;
 
             // Cinemachine will follow this target

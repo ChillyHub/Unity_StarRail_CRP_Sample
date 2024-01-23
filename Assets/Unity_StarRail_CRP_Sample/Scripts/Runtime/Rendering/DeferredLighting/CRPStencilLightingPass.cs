@@ -19,7 +19,7 @@ namespace Unity_StarRail_CRP_Sample
         // Material
         private Material _material;
         private MaterialPropertyBlock _propertyBlock;
-        
+
         private enum MaterialPass : int
         {
             StencilVolume         = 0,
@@ -35,6 +35,9 @@ namespace Unity_StarRail_CRP_Sample
         
         // Deferred Light
         private DeferredLight _deferredLight;
+        
+        // Render Texture
+        private GBufferTextures _gBufferTextures;
 
         public CRPStencilLightingPass()
         {
@@ -59,9 +62,10 @@ namespace Unity_StarRail_CRP_Sample
             _propertyBlock = new MaterialPropertyBlock();
         }
         
-        public void Setup(DeferredLight deferredLight)
+        public void Setup(DeferredLight deferredLight, GBufferTextures gBufferTextures)
         {
             _deferredLight = deferredLight;
+            _gBufferTextures = gBufferTextures;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -81,9 +85,9 @@ namespace Unity_StarRail_CRP_Sample
                 // This must be set for each eye in XR mode multipass.
                 SetupMatrixConstants(cmd, ref renderingData);
                 
-                cmd.SetGlobalTexture(GBufferTextures.GBuffer0Name, GBufferManager.GBuffer.GBuffer0);
-                cmd.SetGlobalTexture(GBufferTextures.GBuffer1Name, GBufferManager.GBuffer.GBuffer1);
-                cmd.SetGlobalTexture(GBufferTextures.GBuffer2Name, GBufferManager.GBuffer.GBuffer2);
+                cmd.SetGlobalTexture(GBufferTextures.GBuffer0Name, _gBufferTextures.GBuffer0.nameID);
+                cmd.SetGlobalTexture(GBufferTextures.GBuffer1Name, _gBufferTextures.GBuffer1.nameID);
+                cmd.SetGlobalTexture(GBufferTextures.GBuffer2Name, _gBufferTextures.GBuffer2.nameID);
 
                 if (_deferredLight.HasStencilLightsOfType(LightType.Directional))
                 {
@@ -130,7 +134,13 @@ namespace Unity_StarRail_CRP_Sample
             CommandBufferPool.Release(cmd);
         }
         
-        void SetupMatrixConstants(CommandBuffer cmd, ref RenderingData renderingData)
+        public void Dispose()
+        {
+            CoreUtils.Destroy(_material);
+            _material = null;
+        }
+        
+        private void SetupMatrixConstants(CommandBuffer cmd, ref RenderingData renderingData)
         {
             ref CameraData cameraData = ref renderingData.cameraData;
 

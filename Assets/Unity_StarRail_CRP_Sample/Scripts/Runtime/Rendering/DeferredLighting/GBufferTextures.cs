@@ -29,6 +29,13 @@ namespace Unity_StarRail_CRP_Sample
 
         private RTHandle[] _gBuffers = new RTHandle[3];
 
+        public GBufferTextures()
+        {
+            _gBuffers[0] = RTHandles.Alloc(1, 1);
+            _gBuffers[1] = RTHandles.Alloc(1, 1);
+            _gBuffers[2] = RTHandles.Alloc(1, 1);
+        }
+
         public GraphicsFormat GetGBufferFormat(int index)
         {
             switch (index)
@@ -60,19 +67,23 @@ namespace Unity_StarRail_CRP_Sample
 
         public void Release()
         {
-            _gBuffers[0]?.Release();
-            _gBuffers[1]?.Release();
-            _gBuffers[2]?.Release();
+            RTHandles.Release(_gBuffers[0]);
+            RTHandles.Release(_gBuffers[1]);
+            RTHandles.Release(_gBuffers[2]);
+            _gBuffers[0] = null;
+            _gBuffers[1] = null;
+            _gBuffers[2] = null;
+            _gBuffers = null;
         }
     }
 
-    public class GBufferManager
-    {
-        private static readonly Lazy<GBufferManager> Ins =
-            new Lazy<GBufferManager>(() => new GBufferManager());
-
-        public static GBufferTextures GBuffer => Ins.Value._gBuffer;
-
-        private readonly GBufferTextures _gBuffer = new GBufferTextures();
-    }
+    //public class GBufferManager
+    //{
+    //    private static readonly Lazy<GBufferManager> Ins =
+    //        new Lazy<GBufferManager>(() => new GBufferManager());
+    //
+    //    public static GBufferTextures GBuffer => Ins.Value._gBuffer;
+    //
+    //    private readonly GBufferTextures _gBuffer = new GBufferTextures();
+    //}
 }

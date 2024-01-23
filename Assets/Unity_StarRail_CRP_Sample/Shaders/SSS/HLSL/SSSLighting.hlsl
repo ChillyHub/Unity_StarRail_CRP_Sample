@@ -15,11 +15,11 @@ struct SSSData
 };
 
 // This will encode SurfaceData into GBuffer
-FragmentOutput SSSBRDFDataToGBuffer(BRDFData brdfData, SSSData sssData, InputData inputData, half smoothness, half3 globalIllumination, float bloomIntensity)
+FragmentOutputs SSSBRDFDataToGBuffer(BRDFData brdfData, SSSData sssData, InputData inputData, half smoothness, half3 globalIllumination, float bloomIntensity)
 {
     half3 packedNormalWS = PackNormal(inputData.normalWS);
     
-    FragmentOutput output = (FragmentOutput)0;
+    FragmentOutputs output = (FragmentOutputs)0;
     output.GBuffer0 = half4(brdfData.albedo.rgb, sssData.thickness);      // albedo          albedo          albedo          metallic  (sRGB render target)
     output.GBuffer1 = half4(packedNormalWS, smoothness);                  // encoded-normal  encoded-normal  encoded-normal  smoothness
     output.GBuffer2 = half4(globalIllumination, bloomIntensity);          // GI              GI              GI                        (camera color attachment)

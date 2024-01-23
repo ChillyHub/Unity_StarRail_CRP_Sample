@@ -7,9 +7,10 @@ namespace Unity_StarRail_CRP_Sample
     public enum LightSettingMode
     {
         VirtualFixed,
+        FromVirtualObject,
         FromLightObject
     }
-    
+
     [Serializable]
     public class LightSettingVolume : VolumeComponent
     {
@@ -18,13 +19,16 @@ namespace Unity_StarRail_CRP_Sample
         
         public Vector3Parameter mainLightRotation = new Vector3Parameter(Vector3.zero);
         public ColorParameter mainLightColor = new ColorParameter(Color.white, true, false, true);
-        public ClampedFloatParameter mainLightIntensity = new ClampedFloatParameter(1.0f, 0.0f, 10.0f);
-        
         public Vector3Parameter shadowLightRotation = new Vector3Parameter(Vector3.zero);
         
         public LightObjectParameter mainLight = new LightObjectParameter(null);
         public LightObjectParameter shadowLight = new LightObjectParameter(null);
+        public ClampedFloatParameter mainLightIntensity = new ClampedFloatParameter(1.0f, 0.0f, 10.0f);
         
+        public GameObjectParameter mainVirtualLight = new GameObjectParameter(null);
+        public GameObjectParameter shadowVirtualLight = new GameObjectParameter(null);
+        public ColorParameter overrideMainLightColor = new ColorParameter(Color.white, true, false, true);
+
         public Vector3 GetMainLightDirection(Vector3 currPosition)
         {
             switch (mainLightMode.value)
@@ -32,6 +36,8 @@ namespace Unity_StarRail_CRP_Sample
                 case LightSettingMode.VirtualFixed:
                     Quaternion quaternion = Quaternion.Euler(mainLightRotation.value);
                     return quaternion * Vector3.up;
+                case LightSettingMode.FromVirtualObject:
+                    return mainVirtualLight.GetLightDirection(currPosition);
                 case LightSettingMode.FromLightObject:
                     return mainLight.GetLightDirection(currPosition);
                 default:
@@ -46,6 +52,8 @@ namespace Unity_StarRail_CRP_Sample
                 case LightSettingMode.VirtualFixed:
                     Quaternion quaternion = Quaternion.Euler(shadowLightRotation.value);
                     return quaternion * Vector3.up;
+                case LightSettingMode.FromVirtualObject:
+                    return shadowVirtualLight.GetLightDirection(currPosition);
                 case LightSettingMode.FromLightObject:
                     return shadowLight.GetLightDirection(currPosition);
                 default:
@@ -59,6 +67,8 @@ namespace Unity_StarRail_CRP_Sample
             {
                 case LightSettingMode.VirtualFixed:
                     return mainLightColor.value;
+                case LightSettingMode.FromVirtualObject:
+                    return overrideMainLightColor.value;
                 case LightSettingMode.FromLightObject:
                     return mainLight.GetLightColor() * mainLightIntensity.value;
                 default:
@@ -170,6 +180,58 @@ namespace Unity_StarRail_CRP_Sample
         private LightsInfo _lightsInfo = new LightsInfo();
 
         public override void Interp(Light from, Light to, float t)
+        {
+            _lightsInfo = new LightsInfo()
+            {
+                Light1 = from,
+                Light2 = to,
+                T = t
+            };
+        }
+    }
+
+    [Serializable]
+    public class GameObjectParameter : VolumeParameter<GameObject>
+    {
+        public GameObjectParameter(GameObject value, bool overrideState = false) 
+            : base(value, overrideState) { }
+        
+        public Vector3 GetLightDirection(Vector3 currPosition)
+        {
+            GameObject light1 = _lightsInfo.Light1;
+            GameObject light2 = _lightsInfo.Light2;
+            float t = _lightsInfo.T;
+
+            if (light1 == null && light2 == null)
+            {
+                return Vector3.up;
+            }
+
+            if (light1 == null)
+            {
+                return Vector3.Lerp(Vector3.up, (light2.transform.position - currPosition).normalized, t).normalized;
+            }
+
+            if (light2 == null)
+            {
+                return Vector3.Lerp((light1.transform.position - currPosition).normalized, Vector3.up, t).normalized;
+            }
+
+            Vector3 pos1 = light1.transform.position;
+            Vector3 pos2 = light2.transform.position;
+            
+            return (Vector3.Lerp(pos1, pos2, t) - currPosition).normalized;
+        }
+        
+        public class LightsInfo
+        {
+            internal GameObject Light1;
+            internal GameObject Light2;
+            internal float T;
+        }
+        private LightsInfo _lightsInfo = new LightsInfo();
+
+        public override void Interp(GameObject from, GameObject to, float t)
         {
             _lightsInfo = new LightsInfo()
             {
