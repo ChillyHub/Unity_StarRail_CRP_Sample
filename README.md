@@ -43,7 +43,7 @@ Use a single Renderer Feature to manage custom passes. Use stencil deferred rend
 
 The following is the flow chart of the rendering pipeline:
 
-![Custom Render Pipeline](./Documents~/README.assets/Custom Render Pipeline.png)
+![Custom Render Pipeline](./Documents~/README.assets/CustomRenderPipeline.png)
 
 > [!TIP]
 >
