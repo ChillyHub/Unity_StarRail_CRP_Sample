@@ -16,6 +16,9 @@ An example of a custom rendering pipeline that restores the rendering of HSR
 
 ###### Video:
 
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/70a140ba-5c9e-45eb-a1bd-00d58aa083cb
+
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/d4a82116-1efc-464e-8d14-abc0946d0067
 
 
 ### Requirements
