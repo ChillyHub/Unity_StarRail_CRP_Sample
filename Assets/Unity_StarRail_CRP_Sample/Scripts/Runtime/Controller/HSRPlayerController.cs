@@ -142,12 +142,7 @@ namespace Unity_StarRail_CRP_Sample
         {
             CameraRotation();
         }
-        
-        private void OnApplicationFocus(bool hasFocus)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
-        
+
         private void OnDrawGizmosSelected()
         {
             Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);

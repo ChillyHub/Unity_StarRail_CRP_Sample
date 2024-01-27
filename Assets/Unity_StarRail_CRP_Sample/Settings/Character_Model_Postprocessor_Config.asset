@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a9681b704c41174ca72f474f0118b98, type: 3}
   m_Name: Character_Model_Postprocessor_Config
   m_EditorClassIdentifier: 
-  characterModelAssetPath: Assets/Unity_StarRail_CRP_Sample/Characters
+  characterModelAssetPath: 
   writeChannel: 1

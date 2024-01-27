@@ -30,9 +30,11 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/d4a82116-
 >
 > Before clone this project, make sure you have install Git LFS. Otherwise some big FBX files will not clone successfully.
 >
-> Download Git LFS from [this website](https://git-scm.com/downloads), and install. 
+> Download Git from [this website](https://git-scm.com/downloads), and install. 
 >
-> Then run   `` git install lfs``
+> Then run   `` git lfs install``
+> 
+> Use ``git lfs clone https://github.com/ChillyHub/Unity_StarRail_CRP_Sample.git`` to clone
 
 > [!WARNING]
 >

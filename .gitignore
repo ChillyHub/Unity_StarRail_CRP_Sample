@@ -75,6 +75,7 @@ crashlytics-build.properties
 .idea/
 .vscode/
 .plastic/
+.build/
 
 ignore.conf
 tracker.sh

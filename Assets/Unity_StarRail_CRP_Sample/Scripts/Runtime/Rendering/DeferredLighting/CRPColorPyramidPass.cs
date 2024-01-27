@@ -60,8 +60,8 @@ namespace Unity_StarRail_CRP_Sample
                 _propertyBlock = new MaterialPropertyBlock();
             }
             
-            _downSampledTexture = RTHandles.Alloc(1, 1);
-            _tempBlurTexture = RTHandles.Alloc(1, 1);
+            //_downSampledTexture = RTHandles.Alloc(1, 1);
+            //_tempBlurTexture = RTHandles.Alloc(1, 1);
             
             _srcOffset = new int[4];
             _dstOffset = new int[4];
