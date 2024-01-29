@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.SceneManagement;
 
 namespace Unity_StarRail_CRP_Sample
 {
@@ -16,6 +21,9 @@ namespace Unity_StarRail_CRP_Sample
 
         private bool _isPause = false;
         private bool _isPressing = false;
+
+        private int _currentSceneId;
+        private int _loadSceneId;
         
         private void Start()
         {
@@ -23,6 +31,10 @@ namespace Unity_StarRail_CRP_Sample
             _player = _inputActionAsset.FindActionMap("Player");
             _esc = _inputActionAsset.FindActionMap("UI").FindAction("Menu");
             _esc.Enable();
+
+            // Init load
+            SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
+            _currentSceneId = 1;
         }
 
         private void Update()
@@ -62,23 +74,72 @@ namespace Unity_StarRail_CRP_Sample
 
         public void OnValueChangedScene(Int32 value)
         {
-            
+            LoadScene(value + 1);
         }
 
         public void OnValueChangedDisplay(Int32 value)
         {
-            int targetDisplayIndex = value;
-            Debug.Log(Display.displays.Length);
-            if (targetDisplayIndex < Display.displays.Length)
+            Scene scene = SceneManager.GetSceneByBuildIndex(_currentSceneId);
+            if (scene.IsValid())
             {
-                Display.displays[targetDisplayIndex].Activate();
+                var cameras = FindCameraInScene(scene);
+
+                for (int i = 0; i < cameras.Count; i++)
+                {
+                    cameras[i].SetActive(i == value);
+                }
             }
         }
 
         public void OnClickExit()
         {
             Debug.Log("Exit");
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
             Application.Quit();
+#endif
+        }
+
+        private void LoadScene(int sceneId)
+        {
+            StartCoroutine(LoadSceneCoroutine(sceneId));
+        }
+
+        private IEnumerator LoadSceneCoroutine(int sceneId)
+        {
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneId, LoadSceneMode.Additive);
+
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+            
+            SceneManager.UnloadSceneAsync(_currentSceneId);
+            
+            // AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(_currentSceneId);
+            // 
+            // while (!asyncUnload.isDone)
+            // {
+            //     yield return null;
+            // }
+
+            _currentSceneId = sceneId;
+        }
+
+        List<GameObject> FindCameraInScene(Scene scene)
+        {
+            List<GameObject> cameras = new List<GameObject>();
+
+            foreach (var rootGameObject in scene.GetRootGameObjects())
+            {
+                if (rootGameObject.TryGetComponent(out Camera camera))
+                {
+                    cameras.Add(rootGameObject);
+                }
+            }
+
+            return cameras;
         }
     }
 #endif
