@@ -22,3 +22,5 @@ Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/build/intermediates/local_aar
 Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/src/main/assets/bin/Data/data.unity3d filter=lfs diff=lfs merge=lfs -text
 Library/PlayerDataCache/Android/Data/data.unity3d filter=lfs diff=lfs merge=lfs -text
 Library/PlayerDataCache/Win64/Data/sharedassets0.assets.resS filter=lfs diff=lfs merge=lfs -text
+.build/Unity_StarRail_CRP_Sample_Data/sharedassets2.assets.resS filter=lfs diff=lfs merge=lfs -text
+Library/PlayerDataCache/Win64/Data/sharedassets2.assets.resS filter=lfs diff=lfs merge=lfs -text
