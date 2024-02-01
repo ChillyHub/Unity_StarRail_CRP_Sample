@@ -214,7 +214,7 @@ namespace Unity_StarRail_CRP_Sample
             {
                 targetSpeed = 0.0f;
             }
-            
+
             // a reference to the players current horizontal velocity
             Vector3 controllerVelocity = _controller.velocity;
             float currentHorizontalSpeed = new Vector3(controllerVelocity.x, 0.0f, controllerVelocity.z).magnitude;
@@ -228,7 +228,7 @@ namespace Unity_StarRail_CRP_Sample
                 _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed, Time.deltaTime * speedChangeRate);
                 
                 // round speed to 3 decimal places
-                //_speed = Mathf.Round(_speed * 1000f) / 1000f;
+                _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
             else
             {

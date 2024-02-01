@@ -137,13 +137,13 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
     Light GetStencilLight(float3 posWS, float2 screen_uv, half4 shadowMask)
     {
         Light unityLight;
-
-        bool materialReceiveShadowsOff = true;
         
-        uint lightLayerMask =_LightLayerMask;
+        uint lightLayerMask = _LightLayerMask;
 
-        #if defined(_ADDITIONAL_LIGHT_SHADOWS)
-            materialReceiveShadowsOff = false;
+        #if defined(_CRP_ADDITIONAL_LIGHT_SHADOWS)
+            bool materialReceiveShadowsOff = false;
+        #else
+            bool materialReceiveShadowsOff = true;
         #endif
 
         float4 shadowCoord = float4(screen_uv, 0.0, 1.0);
@@ -315,12 +315,12 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
 
         Light unityLight = GetStencilLight(posWS.xyz, screen_uv, shadowMask);
 
-        #ifdef _LIGHT_LAYERS
-        float4 renderingLayers = SAMPLE_TEXTURE2D_X_LOD(MERGE_NAME(_, GBUFFER_LIGHT_LAYERS), my_point_clamp_sampler, screen_uv, 0);
-        uint meshRenderingLayers = DecodeMeshRenderingLayer(renderingLayers.r);
-        [branch] if (!IsMatchingLightLayer(unityLight.layerMask, meshRenderingLayers))
-            return half4(color, alpha); // Cannot discard because stencil must be updated.
-        #endif
+        //#ifdef _LIGHT_LAYERS
+        //float4 renderingLayers = SAMPLE_TEXTURE2D_X_LOD(MERGE_NAME(_, GBUFFER_LIGHT_LAYERS), my_point_clamp_sampler, screen_uv, 0);
+        //uint meshRenderingLayers = DecodeMeshRenderingLayer(renderingLayers.r);
+        //[branch] if (!IsMatchingLightLayer(unityLight.layerMask, meshRenderingLayers))
+        //    return half4(color, alpha); // Cannot discard because stencil must be updated.
+        //#endif
 
         #if defined(_SCREEN_SPACE_OCCLUSION) && !defined(_SURFACE_TYPE_TRANSPARENT)
             AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(screen_uv);
@@ -339,7 +339,7 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
         bool specularOff = false;
         //specularOff = true;
         #if defined(_POINT)
-            specularOff = true;
+            //specularOff = true;
         #endif
         
         #if defined(_UNLIT)
@@ -517,7 +517,8 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             #pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile_fragment _ _DEFERRED_MAIN_LIGHT
             #pragma multi_compile_fragment _ _DEFERRED_FIRST_LIGHT
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _CRP_ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
@@ -564,7 +565,8 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             #pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile_fragment _ _DEFERRED_MAIN_LIGHT
             #pragma multi_compile_fragment _ _DEFERRED_FIRST_LIGHT
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _CRP_ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
@@ -700,7 +702,8 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             #pragma multi_compile _POINT _SPOT
             #pragma multi_compile_fragment _SCENE
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _CRP_ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
@@ -744,7 +747,8 @@ Shader "Hidden/StarRail_CRP/Deferred/CRPStencilLighting"
             #pragma multi_compile_fragment _DEFERRED_STENCIL
             #pragma multi_compile _POINT _SPOT
             #pragma multi_compile_fragment _SSS
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            //#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _CRP_ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_fragment _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile_fragment _ SHADOWS_SHADOWMASK

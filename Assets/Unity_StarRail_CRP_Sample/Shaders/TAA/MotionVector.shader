@@ -13,7 +13,7 @@
             #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
             #pragma never_use_dxc metal
 
-            #pragma exclude_renderers d3d11_9x
+            //#pragma exclude_renderers d3d11_9x
             #pragma target 3.5
 
             #pragma vertex CameraMotionVectorVertex

@@ -102,7 +102,7 @@ Light UnityLightFromPunctualLightDataAndWorldSpacePosition2(PunctualLightData pu
         light.shadowAttenuation = 1.0;
     else
     {
-        light.shadowAttenuation = SampleScreenSpaceShadowmap(shadowCoord);
+        light.shadowAttenuation = SampleScreenSpaceShadowmap(shadowCoord);;
     }
 
     light.layerMask = punctualLightData.layerMask;

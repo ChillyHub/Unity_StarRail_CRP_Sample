@@ -20,8 +20,18 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/70a140ba-
 
 https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/d4a82116-1efc-464e-8d14-abc0946d0067
 
+### Demo
 
-### Requirements
+Here is a very simple demo for Windows x64:
+
+[Demo Release v0.0.1](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.1)
+
+> [!Tip]
+>
+> The operation is similar to the game.
+
+
+### Project Requirements
 
 - Unity 2022.3.8f1 (Base on URP)
 - Git and Git LFS
@@ -61,4 +71,6 @@ The following is the flow chart of the rendering pipeline:
 - To support decal rendering
 - To support decal screen space shadow
 - Add HBAO
+- Add Volume Light
 - Add Screen Space Fog
+- More Efficient Bloom (Less RT switch)

@@ -1496,16 +1496,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player_Maid_Mar_7th_00
       objectReference: {fileID: 0}
-    - target: {fileID: 2099286604359767170, guid: d0fe68406050e1241bdf8d7abefe641e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3668131563573046578, guid: d0fe68406050e1241bdf8d7abefe641e,
-        type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[0]
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

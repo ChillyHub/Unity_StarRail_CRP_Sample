@@ -93,7 +93,7 @@ Shader "StarRail_CRP/Scene/SceneLit2"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
+            //#pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             // -------------------------------------
@@ -162,7 +162,7 @@ Shader "StarRail_CRP/Scene/SceneLit2"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
+            //#pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             // -------------------------------------
@@ -201,7 +201,7 @@ Shader "StarRail_CRP/Scene/SceneLit2"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
+            //#pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             // -------------------------------------
@@ -266,7 +266,7 @@ Shader "StarRail_CRP/Scene/SceneLit2"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
+            //#pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex DepthOnlyVertex
@@ -297,7 +297,7 @@ Shader "StarRail_CRP/Scene/SceneLit2"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
+            //#pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex DepthNormalsVertex
@@ -330,7 +330,7 @@ Shader "StarRail_CRP/Scene/SceneLit2"
             Cull Off
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
+            //#pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex UniversalVertexMeta
@@ -362,7 +362,7 @@ Shader "StarRail_CRP/Scene/SceneLit2"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
+            //#pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex vert

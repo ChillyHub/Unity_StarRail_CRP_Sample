@@ -202,7 +202,7 @@ namespace Unity_StarRail_CRP_Sample
                     hasDeferredShadows = light && light.shadows != LightShadows.None && shadowLightIndex >= 0;
                     cmd.SetGlobalInt(ShaderConstants.ShadowLightIndexId, shadowLightIndex);
                 }
-                SetAdditionalLightsShadowsKeyword(ref cmd, ref renderingData, hasDeferredShadows);
+                SetAdditionalLightsShadowsKeyword(cmd, ref renderingData, hasDeferredShadows);
 
                 bool hasSoftShadow = hasDeferredShadows && renderingData.shadowData.supportsSoftShadows && light.shadows == LightShadows.Soft;
                 CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.SoftShadows, hasSoftShadow);
@@ -268,7 +268,7 @@ namespace Unity_StarRail_CRP_Sample
 
                 int shadowLightIndex = GetShadowLightIndexFromLightIndex(visLightIndex, mainLightIndex);
                 bool hasDeferredLightShadows = light && light.shadows != LightShadows.None && shadowLightIndex >= 0;
-                SetAdditionalLightsShadowsKeyword(ref cmd, ref renderingData, hasDeferredLightShadows);
+                SetAdditionalLightsShadowsKeyword(cmd, ref renderingData, hasDeferredLightShadows);
 
                 bool hasSoftShadow = hasDeferredLightShadows && renderingData.shadowData.supportsSoftShadows && light.shadows == LightShadows.Soft;
                 CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.SoftShadows, hasSoftShadow);
@@ -342,7 +342,7 @@ namespace Unity_StarRail_CRP_Sample
 
                 int shadowLightIndex = GetShadowLightIndexFromLightIndex(visLightIndex, mainLightIndex);
                 bool hasDeferredLightShadows = light && light.shadows != LightShadows.None && shadowLightIndex >= 0;
-                SetAdditionalLightsShadowsKeyword(ref cmd, ref renderingData, hasDeferredLightShadows);
+                SetAdditionalLightsShadowsKeyword(cmd, ref renderingData, hasDeferredLightShadows);
 
                 bool hasSoftShadow = hasDeferredLightShadows && renderingData.shadowData.supportsSoftShadows && light.shadows == LightShadows.Soft;
                 CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.SoftShadows, hasSoftShadow);
@@ -412,7 +412,7 @@ namespace Unity_StarRail_CRP_Sample
 
                 int shadowLightIndex = GetShadowLightIndexFromLightIndex(visLightIndex, mainLightIndex);
                 bool hasDeferredLightShadows = light && light.shadows != LightShadows.None && shadowLightIndex >= 0;
-                SetAdditionalLightsShadowsKeyword(ref cmd, ref renderingData, hasDeferredLightShadows);
+                SetAdditionalLightsShadowsKeyword(cmd, ref renderingData, hasDeferredLightShadows);
 
                 bool hasSoftShadow = hasDeferredLightShadows && renderingData.shadowData.supportsSoftShadows && light.shadows == LightShadows.Soft;
                 CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.SoftShadows, hasSoftShadow);
@@ -489,7 +489,7 @@ namespace Unity_StarRail_CRP_Sample
 
                 int shadowLightIndex = GetShadowLightIndexFromLightIndex(visLightIndex, mainLightIndex);
                 bool hasDeferredLightShadows = light && light.shadows != LightShadows.None && shadowLightIndex >= 0;
-                SetAdditionalLightsShadowsKeyword(ref cmd, ref renderingData, hasDeferredLightShadows);
+                SetAdditionalLightsShadowsKeyword(cmd, ref renderingData, hasDeferredLightShadows);
 
                 bool hasSoftShadow = hasDeferredLightShadows && renderingData.shadowData.supportsSoftShadows && light.shadows == LightShadows.Soft;
                 CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.SoftShadows, hasSoftShadow);
@@ -647,14 +647,44 @@ namespace Unity_StarRail_CRP_Sample
             return -1;
         }
         
-        private void SetAdditionalLightsShadowsKeyword(ref CommandBuffer cmd, ref RenderingData renderingData, bool hasDeferredShadows)
+        private void SetMainLightsShadowsKeyword(CommandBuffer cmd, ref RenderingData renderingData, bool hasDeferredShadows)
+        {
+            bool mainLightShadowsEnabledInAsset = renderingData.shadowData.supportsMainLightShadows;
+
+            // AdditionalLightShadows Keyword is enabled when:
+            // Shadows are enabled in Asset
+            bool shouldEnable = mainLightShadowsEnabledInAsset && hasDeferredShadows;
+            CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.MainLightShadows, shouldEnable);
+        }
+        
+        private void SetMainLightsShadowsKeyword(Material material, ref RenderingData renderingData, bool hasDeferredShadows)
+        {
+            bool mainLightShadowsEnabledInAsset = renderingData.shadowData.supportsMainLightShadows;
+
+            // AdditionalLightShadows Keyword is enabled when:
+            // Shadows are enabled in Asset
+            bool shouldEnable = mainLightShadowsEnabledInAsset && hasDeferredShadows;
+            CoreUtils.SetKeyword(material, ShaderKeywordStrings.MainLightShadows, shouldEnable);
+        }
+        
+        private void SetAdditionalLightsShadowsKeyword(CommandBuffer cmd, ref RenderingData renderingData, bool hasDeferredShadows)
         {
             bool additionalLightShadowsEnabledInAsset = renderingData.shadowData.supportsAdditionalLightShadows;
 
             // AdditionalLightShadows Keyword is enabled when:
             // Shadows are enabled in Asset
             bool shouldEnable = additionalLightShadowsEnabledInAsset && hasDeferredShadows;
-            CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.AdditionalLightShadows, shouldEnable);
+            CoreUtils.SetKeyword(cmd, "_CRP_ADDITIONAL_LIGHT_SHADOWS", shouldEnable);
+        }
+        
+        private void SetAdditionalLightsShadowsKeyword(Material material, ref RenderingData renderingData, bool hasDeferredShadows)
+        {
+            bool additionalLightShadowsEnabledInAsset = renderingData.shadowData.supportsAdditionalLightShadows;
+
+            // AdditionalLightShadows Keyword is enabled when:
+            // Shadows are enabled in Asset
+            bool shouldEnable = additionalLightShadowsEnabledInAsset && hasDeferredShadows;
+            CoreUtils.SetKeyword(material, "_CRP_ADDITIONAL_LIGHT_SHADOWS", shouldEnable);
         }
 
         private static Mesh CreateFullscreenMesh()
