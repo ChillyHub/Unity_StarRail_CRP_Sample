@@ -284,6 +284,10 @@ namespace Unity_StarRail_CRP_Sample
             Vector2 look = _lookAction.ReadValue<Vector2>();
             float zoom = _zoomAction.ReadValue<float>();
 
+#if UNITY_ANDROID
+            look *= 0.4f;
+#endif
+
             // if there is an input and camera position is not fixed
             if (look.sqrMagnitude >= _threshold)
             {

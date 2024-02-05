@@ -56,10 +56,10 @@ namespace Unity_StarRail_CRP_Sample
             desc.depthBufferBits = 0;
 
             desc.graphicsFormat = GetGBufferFormat(0);
-            RenderingUtils.ReAllocateIfNeeded(ref _gBuffers[0], desc, FilterMode.Bilinear, name: GBuffer0Name);
+            RenderingUtils.ReAllocateIfNeeded(ref _gBuffers[0], desc, FilterMode.Point, name: GBuffer0Name);
 
             desc.graphicsFormat = GetGBufferFormat(1);
-            RenderingUtils.ReAllocateIfNeeded(ref _gBuffers[1], desc, FilterMode.Bilinear, name: GBuffer1Name);
+            RenderingUtils.ReAllocateIfNeeded(ref _gBuffers[1], desc, FilterMode.Point, name: GBuffer1Name);
 
             // desc.graphicsFormat = GetGBufferFormat(2);
             // RenderingUtils.ReAllocateIfNeeded(ref _gBuffers[2], desc, FilterMode.Bilinear, name: GBuffer2Name);

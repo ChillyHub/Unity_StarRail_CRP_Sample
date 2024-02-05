@@ -93,13 +93,13 @@ namespace Unity_StarRail_CRP_Sample
                 return;
             }
             
-            _colorTextures.ReAllocColorPyramidTextureIfNeed(cameraTextureDescriptor, needMipMap);
+            _colorTextures?.ReAllocColorPyramidTextureIfNeed(cameraTextureDescriptor, needMipMap);
             
             _srcWidth = cameraTextureDescriptor.width;
             _srcHeight = cameraTextureDescriptor.height;
 
             cameraTextureDescriptor.depthBufferBits = 0;
-            cameraTextureDescriptor.useDynamicScale = true;
+            //cameraTextureDescriptor.useDynamicScale = true;
 
             RenderingUtils.ReAllocateIfNeeded(ref _downSampledTexture,
                 Vector2.one * 0.5f,

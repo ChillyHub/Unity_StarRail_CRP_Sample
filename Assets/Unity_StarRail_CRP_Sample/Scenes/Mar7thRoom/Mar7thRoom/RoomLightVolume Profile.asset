@@ -29,19 +29,19 @@ MonoBehaviour:
   active: 1
   mainLightMode:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   shadowLightMode:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   mainLightRotation:
     m_OverrideState: 1
-    m_Value: {x: 0, y: -351.3, z: 64.3}
+    m_Value: {x: 0, y: 201.1, z: 91.8}
   mainLightColor:
     m_OverrideState: 1
     m_Value: {r: 0.59383625, g: 0.557565, b: 0.7735849, a: 1}
   shadowLightRotation:
     m_OverrideState: 1
-    m_Value: {x: 0, y: 75.76, z: 47.25}
+    m_Value: {x: 0, y: 201.1, z: 91.8}
   mainLight:
     m_OverrideState: 1
     m_Value: {fileID: 3921172408440403878, guid: eba2bcdff962d504f9c5285a2076d452,

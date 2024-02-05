@@ -87,7 +87,7 @@ namespace Unity_StarRail_CRP_Sample
                 
                 cmd.SetGlobalTexture(GBufferTextures.GBuffer0Name, _gBufferTextures.GBuffer0.nameID);
                 cmd.SetGlobalTexture(GBufferTextures.GBuffer1Name, _gBufferTextures.GBuffer1.nameID);
-                cmd.SetGlobalTexture(GBufferTextures.GBuffer2Name, _gBufferTextures.GBuffer2.nameID);
+                //cmd.SetGlobalTexture(GBufferTextures.GBuffer2Name, _gBufferTextures.GBuffer2.nameID);
 
                 if (_deferredLight.HasStencilLightsOfType(LightType.Directional))
                 {

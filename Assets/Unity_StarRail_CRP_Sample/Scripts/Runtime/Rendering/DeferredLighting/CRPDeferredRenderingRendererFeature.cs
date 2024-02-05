@@ -25,7 +25,7 @@ namespace Unity_StarRail_CRP_Sample
         private List<GBufferTextures> _gBufferTextures;
         private List<DepthTextures> _depthTextures;
         private List<ColorTextures> _colorTextures;
-        
+
         // Pass
         private CharacterShadowPass _characterShadowPass;
         private CRPGBufferPass _crpGBufferPass;
@@ -56,7 +56,7 @@ namespace Unity_StarRail_CRP_Sample
             _gBufferTextures = new List<GBufferTextures>();
             _depthTextures = new List<DepthTextures>();
             _colorTextures = new List<ColorTextures>();
-            
+
             _characterShadowPass = new CharacterShadowPass();
             _crpGBufferPass = new CRPGBufferPass();
             _crpDepthPyramidPass = new CRPDepthPyramidPass();
@@ -86,11 +86,13 @@ namespace Unity_StarRail_CRP_Sample
             _crpTransparentPass.Setup(_gBufferTextures[cameraIndex]);
             
             _motionVectorPass.Setup(_taaCameraData[cameraIndex]);
-#if !UNITY_ANDROID
-            _screenSpaceReflectionPass.Setup(_gBufferTextures[cameraIndex], _depthTextures[cameraIndex], _colorTextures[cameraIndex]);
-#endif
-            _crpColorPyramidPass.Setup(_colorTextures[cameraIndex]);
             
+#if !UNITY_ANDROID
+            _screenSpaceReflectionPass.Setup(_gBufferTextures[cameraIndex], _depthTextures[cameraIndex], 
+                _colorTextures[cameraIndex]);
+            _crpColorPyramidPass.Setup(_colorTextures[cameraIndex]);
+#endif
+
             _temporalAAPass.Setup();
             _postProcessingPass.Setup(_gBufferTextures[cameraIndex]);
         }
@@ -129,10 +131,12 @@ namespace Unity_StarRail_CRP_Sample
             }
 
 #if !UNITY_ANDROID
-            renderer.EnqueuePass(_screenSpaceReflectionPass);
+            if (camera.cameraType != CameraType.Preview)
+            {
+                renderer.EnqueuePass(_screenSpaceReflectionPass);
+                renderer.EnqueuePass(_crpColorPyramidPass);
+            }
 #endif
-            
-            renderer.EnqueuePass(_crpColorPyramidPass);
 
             if (taa.IsActive())
             {

@@ -61,11 +61,6 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            if (!CheckExecute(ref renderingData))
-            {
-                return;
-            }
-            
             CommandBuffer cmd = CommandBufferPool.Get();
             using (new ProfilingScope(cmd, _crpCopyDepthProfilingSampler))
             {
@@ -75,12 +70,12 @@ namespace Unity_StarRail_CRP_Sample
                     _depthTextures.DepthPyramidTexture);
 #else
                 cmd.SetComputeTextureParam(_depthPyramidCS, _depthPyramidKernelCSCopy, 
-                        ShaderIds.DepthPyramidTexture, _depthTextures.DepthPyramidTexture.nameID);
-                    cmd.SetComputeTextureParam(_depthPyramidCS, _depthPyramidKernelCSCopy, 
-                        ShaderIds.CameraDepthAttachment, renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
+                    ShaderIds.DepthPyramidTexture, _depthTextures.DepthPyramidTexture.nameID);
+                cmd.SetComputeTextureParam(_depthPyramidCS, _depthPyramidKernelCSCopy, 
+                    ShaderIds.CameraDepthAttachment, renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
                 
-                    DrawUtils.Dispatch(cmd, _depthPyramidCS, _depthPyramidKernelCSCopy, 
-                        _depthMipmapInfo.textureSize.x, _depthMipmapInfo.textureSize.y);
+                DrawUtils.Dispatch(cmd, _depthPyramidCS, _depthPyramidKernelCSCopy, 
+                    _depthMipmapInfo.textureSize.x, _depthMipmapInfo.textureSize.y);
 
                 for (int i = 1; i < _depthMipmapInfo.mipLevelCount; i++)
                 {
@@ -113,19 +108,6 @@ namespace Unity_StarRail_CRP_Sample
         public void Dispose()
         {
             
-        }
-        
-        private bool CheckExecute(ref RenderingData renderingData)
-        {
-            ref CameraData cameraData = ref renderingData.cameraData;
-            Camera camera = cameraData.camera;
-
-            if (camera.cameraType == CameraType.Preview)
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }

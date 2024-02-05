@@ -169,6 +169,7 @@ Material:
     - _ReceiveShadowsToggle: 1
     - _RenderingMode: 0
     - _RimIntensity: 1
+    - _RimWidth: 1
     - _RimWidth0: 1
     - _RimWidth1: 1
     - _RimWidth2: 1
@@ -204,6 +205,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor0: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor1: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor2: {r: 1, g: 1, b: 1, a: 1}

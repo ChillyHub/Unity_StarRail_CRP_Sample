@@ -44,7 +44,7 @@ float4 GetCharacterShadowCoord(int characterIndex, float3 positionWS)
     return float4(shadowCoord.xyz, 0);
 }
 
-bool NoSample(float4 shadowCoord, int index, float pixelSize, float texSize)
+bool NoSample(float4 shadowCoord, uint index, float pixelSize, float texSize)
 {
     float tileSize = texSize / 4;
     
@@ -56,7 +56,7 @@ bool NoSample(float4 shadowCoord, int index, float pixelSize, float texSize)
     return shadowCoord.x <= minX || shadowCoord.x >= maxX || shadowCoord.y <= minY || shadowCoord.y >= maxY;
 }
 
-real SampleCharacterShadowmap(int index, TEXTURE2D_SHADOW_PARAM(ShadowMap, sampler_ShadowMap), float4 shadowCoord, ShadowSamplingData samplingData, half4 shadowParams, bool isPerspectiveProjection = true)
+real SampleCharacterShadowmap(uint index, TEXTURE2D_SHADOW_PARAM(ShadowMap, sampler_ShadowMap), float4 shadowCoord, ShadowSamplingData samplingData, half4 shadowParams, bool isPerspectiveProjection = true)
 {
     // Compiler will optimize this branch away as long as isPerspectiveProjection is known at compile time
     if (isPerspectiveProjection)
@@ -90,7 +90,7 @@ half CharacterRealtimeShadow(float3 positionWS)
     half4 shadowParams = GetCharacterShadowParams();
 
     half shadow = 1.0;
-    for (int i = 0; i < 5; ++i)
+    for (uint i = 0; i < 5; ++i)
     {
         float4 shadowCoord = GetCharacterShadowCoord(i, positionWS);
         shadow *= SampleCharacterShadowmap(i, TEXTURE2D_ARGS(_CharacterShadowmapTexture, sampler_LinearClampCompare),

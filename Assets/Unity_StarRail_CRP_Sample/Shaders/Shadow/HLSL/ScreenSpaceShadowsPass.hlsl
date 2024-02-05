@@ -137,12 +137,12 @@ half4 CharacterShadowFragment(Varyings1 input) : SV_Target
 {
     float2 uv = input.screenUV.xy / input.screenUV.z;
     
-    #if UNITY_REVERSED_Z
+    //#if UNITY_REVERSED_Z
     float deviceDepth = SampleDepth(uv);
-    #else
-    float deviceDepth = SampleDepth(uv);
-    deviceDepth = deviceDepth * 2.0 - 1.0;
-    #endif
+    //#else
+    //float deviceDepth = SampleDepth(uv);
+    //deviceDepth = deviceDepth * 2.0 - 1.0;
+    //#endif
 
     //Fetch shadow coordinates for cascade.
     float3 wpos = ComputeWorldSpacePosition(uv, deviceDepth, unity_MatrixInvVP);

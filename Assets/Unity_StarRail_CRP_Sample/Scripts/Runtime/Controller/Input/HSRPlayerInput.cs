@@ -146,7 +146,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": ""StickDeadzone(min=0.4)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Mobile"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -168,7 +168,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": ""StickDeadzone(max=0.4)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Mobile"",
                     ""action"": ""WalkMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -201,7 +201,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Mobile"",
                     ""action"": ""FastRun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -223,7 +223,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": ""InvertVector2(invertX=false),StickDeadzone,ScaleVector2(x=300,y=300)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Mobile"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -405,6 +405,15 @@ namespace Unity_StarRail_CRP_Sample
                     ""name"": ""Menu"",
                     ""type"": ""Button"",
                     ""id"": ""595764be-038a-497a-9f11-aff9029fa73e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""type"": ""Button"",
+                    ""id"": ""5ae89bea-a4dd-416b-b6f0-4d11305cb9f7"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -689,6 +698,17 @@ namespace Unity_StarRail_CRP_Sample
                 },
                 {
                     ""name"": """",
+                    ""id"": ""8c510e5b-d1dc-43d1-a151-5f8da1111962"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardMouse"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""996650f4-bf25-44ab-aebf-3fb67f559fc8"",
                     ""path"": ""*/{Cancel}"",
                     ""interactions"": """",
@@ -726,7 +746,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""path"": ""<Touchscreen>/touch*/position"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Touch"",
+                    ""groups"": ""Touch;Mobile"",
                     ""action"": ""Point"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -759,7 +779,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""path"": ""<Touchscreen>/touch*/press"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Touch"",
+                    ""groups"": ""Touch;Mobile"",
                     ""action"": ""Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -836,7 +856,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""KeyboardMouse"",
+                    ""groups"": ""KeyboardMouse;Mobile"",
                     ""action"": ""Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -844,11 +864,22 @@ namespace Unity_StarRail_CRP_Sample
                 {
                     ""name"": """",
                     ""id"": ""18b025ef-31d4-427b-bde2-3cfd898df72d"",
-                    ""path"": ""<XInputController>/start"",
+                    ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e28d67a4-f850-4387-aae2-717b3c1304e5"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardMouse"",
+                    ""action"": ""Alt"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -892,6 +923,27 @@ namespace Unity_StarRail_CRP_Sample
                     ""isOR"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Mobile"",
+            ""bindingGroup"": ""Mobile"",
+            ""devices"": [
+                {
+                    ""devicePath"": ""<Touchscreen>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
+                },
+                {
+                    ""devicePath"": ""<Keyboard>"",
+                    ""isOptional"": true,
+                    ""isOR"": false
+                },
+                {
+                    ""devicePath"": ""<Gamepad>"",
+                    ""isOptional"": true,
+                    ""isOR"": false
+                }
+            ]
         }
     ]
 }");
@@ -916,6 +968,7 @@ namespace Unity_StarRail_CRP_Sample
             m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
             m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
             m_UI_Menu = m_UI.FindAction("Menu", throwIfNotFound: true);
+            m_UI_Alt = m_UI.FindAction("Alt", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -1074,6 +1127,7 @@ namespace Unity_StarRail_CRP_Sample
         private readonly InputAction m_UI_TrackedDevicePosition;
         private readonly InputAction m_UI_TrackedDeviceOrientation;
         private readonly InputAction m_UI_Menu;
+        private readonly InputAction m_UI_Alt;
         public struct UIActions
         {
             private @HSRPlayerInput m_Wrapper;
@@ -1089,6 +1143,7 @@ namespace Unity_StarRail_CRP_Sample
             public InputAction @TrackedDevicePosition => m_Wrapper.m_UI_TrackedDevicePosition;
             public InputAction @TrackedDeviceOrientation => m_Wrapper.m_UI_TrackedDeviceOrientation;
             public InputAction @Menu => m_Wrapper.m_UI_Menu;
+            public InputAction @Alt => m_Wrapper.m_UI_Alt;
             public InputActionMap Get() { return m_Wrapper.m_UI; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1131,6 +1186,9 @@ namespace Unity_StarRail_CRP_Sample
                 @Menu.started += instance.OnMenu;
                 @Menu.performed += instance.OnMenu;
                 @Menu.canceled += instance.OnMenu;
+                @Alt.started += instance.OnAlt;
+                @Alt.performed += instance.OnAlt;
+                @Alt.canceled += instance.OnAlt;
             }
 
             private void UnregisterCallbacks(IUIActions instance)
@@ -1168,6 +1226,9 @@ namespace Unity_StarRail_CRP_Sample
                 @Menu.started -= instance.OnMenu;
                 @Menu.performed -= instance.OnMenu;
                 @Menu.canceled -= instance.OnMenu;
+                @Alt.started -= instance.OnAlt;
+                @Alt.performed -= instance.OnAlt;
+                @Alt.canceled -= instance.OnAlt;
             }
 
             public void RemoveCallbacks(IUIActions instance)
@@ -1203,6 +1264,15 @@ namespace Unity_StarRail_CRP_Sample
                 return asset.controlSchemes[m_GamepadSchemeIndex];
             }
         }
+        private int m_MobileSchemeIndex = -1;
+        public InputControlScheme MobileScheme
+        {
+            get
+            {
+                if (m_MobileSchemeIndex == -1) m_MobileSchemeIndex = asset.FindControlSchemeIndex("Mobile");
+                return asset.controlSchemes[m_MobileSchemeIndex];
+            }
+        }
         public interface IPlayerActions
         {
             void OnMove(InputAction.CallbackContext context);
@@ -1225,6 +1295,7 @@ namespace Unity_StarRail_CRP_Sample
             void OnTrackedDevicePosition(InputAction.CallbackContext context);
             void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
             void OnMenu(InputAction.CallbackContext context);
+            void OnAlt(InputAction.CallbackContext context);
         }
     }
 }

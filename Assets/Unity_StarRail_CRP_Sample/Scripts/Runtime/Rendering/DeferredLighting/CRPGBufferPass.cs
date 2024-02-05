@@ -103,7 +103,7 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
-            _gBufferTextures.ReAllocIfNeed(cameraTextureDescriptor);
+            _gBufferTextures?.ReAllocIfNeed(cameraTextureDescriptor);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -125,10 +125,14 @@ namespace Unity_StarRail_CRP_Sample
                 DrawingSettings unlitDrawingSettings = CreateDrawingSettings(
                     _unlitShaderTagIds, ref renderingData, cameraData.defaultOpaqueSortFlags);
                 
-                _depthTextures.SetGlobalDepthPyramidTexture(cmd);
+                _depthTextures?.SetGlobalDepthPyramidTexture(cmd);
 
-                _gBufferTextures.GBuffers[2] = cameraData.renderer.cameraColorTargetHandle;
-                cmd.SetRenderTarget(_gBufferTextures.GBufferIds, cameraData.renderer.cameraDepthTargetHandle.nameID);
+                if (_gBufferTextures != null)
+                {
+                    _gBufferTextures.GBuffers[2] = cameraData.renderer.cameraColorTargetHandle;
+                    cmd.SetRenderTarget(_gBufferTextures.GBufferIds, cameraData.renderer.cameraDepthTargetHandle.nameID);
+                }
+                
                 cmd.ClearRenderTarget(true, true, Color.clear);
 
                 CoreUtils.SetKeyword(cmd, "_GBUFFER_NORMALS_OCT", true);

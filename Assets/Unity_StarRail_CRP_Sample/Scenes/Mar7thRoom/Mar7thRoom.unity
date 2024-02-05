@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 38224313}
   - component: {fileID: 38224312}
   m_Layer: 0
-  m_Name: Main Camera (2)
+  m_Name: MainCamera(2)
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -308,7 +308,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 19.36, y: 6.95, z: 15}
-  m_Center: {x: 0, y: 1.24, z: -3.26}
+  m_Center: {x: 0, y: 1.24, z: -7.27}
 --- !u!4 &60166406
 Transform:
   m_ObjectHideFlags: 0
@@ -318,7 +318,7 @@ Transform:
   m_GameObject: {fileID: 60166403}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -1.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -519,7 +519,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &596272551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,8 +556,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 19.36, y: 6.95, z: 15}
-  m_Center: {x: 0, y: 1.24, z: 2.87}
+  m_Size: {x: 126.77, y: 6.95, z: 15}
+  m_Center: {x: 0, y: 1.24, z: 7.91}
 --- !u!4 &596272553
 Transform:
   m_ObjectHideFlags: 0
@@ -567,7 +567,7 @@ Transform:
   m_GameObject: {fileID: 596272550}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -585,7 +585,7 @@ GameObject:
   - component: {fileID: 656758894}
   - component: {fileID: 656758893}
   m_Layer: 0
-  m_Name: Main Camera (1)
+  m_Name: MainCamera(1)
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -934,6 +934,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6701291628743003263, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
+      propertyPath: m_Dithering
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6701291628743003263, guid: f6d148d888ffbf54b9afe9936dfaec1f,
+        type: 3}
       propertyPath: m_Antialiasing
       value: 0
       objectReference: {fileID: 0}
@@ -1039,7 +1044,7 @@ GameObject:
   - component: {fileID: 2121044656}
   - component: {fileID: 2121044655}
   m_Layer: 0
-  m_Name: Main Camera (3)
+  m_Name: MainCamera(3)
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
