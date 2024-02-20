@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Unity_StarRail_CRP_Sample/Scenes/Mar7thRoom/Mar7thRoom.unity
     guid: bc93431f6dbd5164691a2a07e7196e95
   - enabled: 1
+    path: Assets/Unity_StarRail_CRP_Sample/Scenes/ParlorCar/ParlorCar.unity
+    guid: 44be35a5fb343564d820079b0bda0b1a
+  - enabled: 1
+    path: Assets/Unity_StarRail_CRP_Sample/Scenes/CharactersShow/CharactersShow.unity
+    guid: f6d4a9933eb389f46876be15d9c55fb3
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:

@@ -1,5 +1,7 @@
 ﻿using UnityEditor;
 using UnityEditor.Rendering;
+using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 namespace Unity_StarRail_CRP_Sample.Editor
@@ -82,6 +84,26 @@ namespace Unity_StarRail_CRP_Sample.Editor
             {
                 PropertyField(shadowLight);
             }
+        }
+    }
+    
+    [VolumeParameterDrawer(typeof(CustomColorParameter))]
+    public class CustomColorParameterDrawer : VolumeParameterDrawer
+    {
+        public override bool OnGUI(SerializedDataParameter parameter, GUIContent title)
+        {
+            var value = parameter.value;
+
+            if (value.propertyType != SerializedPropertyType.Color)
+                return false;
+
+            var o = parameter.GetObjectRef<CustomColorParameter>();
+
+            var rect = EditorGUILayout.GetControlRect();
+            EditorGUI.BeginProperty(rect, title, value);
+            value.colorValue = EditorGUI.ColorField(rect, title, value.colorValue, o.showEyeDropper, o.showAlpha, o.hdr);
+            EditorGUI.EndProperty();
+            return true;
         }
     }
 }

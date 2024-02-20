@@ -84,14 +84,20 @@
 
             float3 GetReflectSampleColor(float2 screenUV)
             {
-                const float2 offsets[5] = {float2(0, 0), float2(1, 0), float2(0, 1), float2(-1, 0), float2(0, -1)};
+                const float2 offsets[9] = {float2(0, 0), float2(1, 0), float2(0, 1), float2(-1, 0), float2(0, -1),
+                    float2(1, 1), float2(-1, 1), float2(1, -1), float2(-1, -1)};
+                
+                float smooth = LOAD_TEXTURE2D_X(_PackedNormalSmoothnessTexture, int2(screenUV * _ScreenSize.xy)).w;
+                float perceptualRough = PerceptualSmoothnessToPerceptualRoughness(smooth);
+                float step = lerp(0.0, 10.0, perceptualRough);
 
                 float weightTotal = 0.0;
                 float3 colorTotal = 0.0;
-                for (int i = 0; i < 5; ++i)
+                for (int i = 0; i < 9; ++i)
                 {
-                    float2 sampleCoord = int2(screenUV * _ScreenSize.xy) + offsets[i] * 1;
-                    float2 hitUV = LOAD_TEXTURE2D_X(_SSRReflectUVTexture, sampleCoord).xy;
+                    float2 sampleCoord = int2(screenUV * _ScreenSize.xy) + offsets[i] * step;
+                    float2 motionVec = LOAD_TEXTURE2D_X(_MotionVectorTexture, sampleCoord).xy;
+                    float2 hitUV = LOAD_TEXTURE2D_X(_SSRReflectUVTexture, sampleCoord - motionVec * _ScreenSize.xy).xy;
                     int2 hitCoord = int2(hitUV * _ScreenSize.xy);
 
                     float hitDeviceDepth = LOAD_TEXTURE2D_X(_DepthPyramidTexture, hitCoord).r;
@@ -137,8 +143,8 @@
                     
                     if (!(hitUV.x == 0.0 && hitUV.y == 0.0))
                     {
-                        float2 motionVec = LOAD_TEXTURE2D_X(_MotionVectorTexture, sampleCoord).xy;
-                        float2 prevHitUV = hitUV - motionVec;
+                        //float2 motionVec = LOAD_TEXTURE2D_X(_MotionVectorTexture, sampleCoord).xy;
+                        float2 prevHitUV = hitUV;// - motionVec;
                         screenReflect = SAMPLE_TEXTURE2D_LOD(_ColorPyramidTexture, sampler_ColorPyramidTexture, prevHitUV, mipLevel).rgb;
                         fade = GetScreenFade(prevHitUV);
 

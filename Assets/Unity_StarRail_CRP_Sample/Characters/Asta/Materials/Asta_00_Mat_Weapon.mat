@@ -1,0 +1,292 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6749426904978932977
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Asta_00_Mat_Weapon
+  m_Shader: {fileID: 4800000, guid: 961d9a5f31594d439e91ea0ca07578d2, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _CUSTOMBLOOMCOLORVARENUM_DISABLE
+  - _CUSTOMBLOOMVARENUM_DISABLE
+  - _CUSTOMOUTLINEVARENUM_MULTIPLY
+  - _CUSTOMRIMVARENUM_MULTIPLY
+  - _CUSTOMSPECULARVARENUM_MULTIPLY
+  - _CUSTOM_RAMP_MAPPING
+  - _ENABLE_DIFFUSE
+  - _ENABLE_GI
+  - _ENABLE_OUTLINE
+  - _ENABLE_RIM
+  - _ENABLE_SPECULAR
+  - _OUTLINENORMALCHANNEL_TANGENT
+  - _RECEIVE_SHADOWS
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 5394e8116e2b0d94680d3a10a81a2205, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CoolRampMap:
+        m_Texture: {fileID: 2800000, guid: d6bbbdace0e2671439c1400a65c0b2f2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DissolveMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightMap:
+        m_Texture: {fileID: 2800000, guid: 3aae96ed81602af408387211b3174fbf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 5394e8116e2b0d94680d3a10a81a2205, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WarmRampMap:
+        m_Texture: {fileID: 2800000, guid: b167b722e5af74a4a8bec9af86c84e9c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _AnisotropySpecularToggle: 0
+    - _Blend: 0
+    - _BlendModePreserveSpecular: 1
+    - _BloomIntensity: 0.37
+    - _BloomIntensity0: 1
+    - _BloomIntensity1: 1
+    - _BloomIntensity2: 1
+    - _BloomIntensity3: 1
+    - _BloomIntensity4: 1
+    - _BloomIntensity5: 1
+    - _BloomIntensity6: 1
+    - _BloomIntensity7: 1
+    - _BumpScale: 1
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
+    - _Cull: 2
+    - _CullMode: 2
+    - _CustomBloomColorVarEnum: 0
+    - _CustomBloomVarEnum: 0
+    - _CustomOutlineVarEnum: 1
+    - _CustomRampMappingToggle: 1
+    - _CustomRimVarEnum: 1
+    - _CustomSpecularVarEnum: 1
+    - _Cutoff: 0.5
+    - _DetailAlbedoMapScale: 1
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _EmissionIntensity: 1
+    - _EmissionThreshold: 1
+    - _EnableAddLightToggle: 0
+    - _EnableDiffuseToggle: 1
+    - _EnableDissolveToggle: 0
+    - _EnableEmissionToggle: 0
+    - _EnableGIToggle: 1
+    - _EnableOutlineToggle: 1
+    - _EnableRimToggle: 1
+    - _EnableSpecularToggle: 1
+    - _EnvironmentReflections: 1
+    - _FresnelIntensity: 1
+    - _GI_Flatten: 0
+    - _GI_Intensity: 1
+    - _GI_UseMainColor: 1
+    - _GlossMapScale: 1
+    - _Glossiness: 0.4472136
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _NormalScale: 1
+    - _OcclusionStrength: 1
+    - _OutlineNormalChannel: 1
+    - _OutlineWidth: 0.0035
+    - _OutlineWidthMax: 30
+    - _OutlineWidthMin: 2
+    - _Parallax: 0.02
+    - _QueueOffset: 0
+    - _RampV0: 0
+    - _RampV1: 1
+    - _RampV2: 2
+    - _RampV3: 3
+    - _RampV4: 4
+    - _RampV5: 5
+    - _RampV6: 6
+    - _RampV7: 7
+    - _ReceiveShadows: 1
+    - _ReceiveShadowsToggle: 1
+    - _RenderingMode: 0
+    - _RimIntensity: 1
+    - _RimWidth: 1
+    - _RimWidth0: 1
+    - _RimWidth1: 1
+    - _RimWidth2: 1
+    - _RimWidth3: 1
+    - _RimWidth4: 1
+    - _RimWidth5: 1
+    - _RimWidth6: 1
+    - _RimWidth7: 1
+    - _ShadowBoost: 1
+    - _ShadowOffset: 0
+    - _ShadowRamp: 0.1
+    - _Smoothness: 0.4472136
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SpecularIntensity: 1
+    - _SpecularIntensity0: 1
+    - _SpecularIntensity1: 1
+    - _SpecularIntensity2: 1
+    - _SpecularIntensity3: 1
+    - _SpecularIntensity4: 1
+    - _SpecularIntensity5: 1
+    - _SpecularIntensity6: 1
+    - _SpecularIntensity7: 1
+    - _SpecularRoughness: 0.1
+    - _SpecularRoughness0: 0.02
+    - _SpecularRoughness1: 0.02
+    - _SpecularRoughness2: 0.02
+    - _SpecularRoughness3: 0.02
+    - _SpecularRoughness4: 0.02
+    - _SpecularRoughness5: 0.02
+    - _SpecularRoughness6: 0.02
+    - _SpecularRoughness7: 0.02
+    - _SpecularShininess: 10
+    - _SpecularShininess0: 10
+    - _SpecularShininess1: 10
+    - _SpecularShininess2: 10
+    - _SpecularShininess3: 10
+    - _SpecularShininess4: 10
+    - _SpecularShininess5: 10
+    - _SpecularShininess6: 10
+    - _SpecularShininess7: 10
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _StencilComp: 8
+    - _StencilOP: 2
+    - _StencilRef: 16
+    - _Surface: 0
+    - _UVSec: 0
+    - _UseNormalMapToggle: 0
+    - _WorkflowMode: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor0: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor7: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutlineColor0: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor1: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor2: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor3: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor4: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor5: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor6: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor7: {r: 0, g: 0, b: 0, a: 1}
+    - _RimColor0: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor7: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor0: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor7: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

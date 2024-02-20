@@ -6,6 +6,12 @@
 #include "../../Deferred/HLSL/CRPGBuffer.hlsl"
 #include "../../TAA/HLSL/MotionVectorPass.hlsl"
 
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+#if defined(LOD_FADE_CROSSFADE)
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+#endif
+
 struct Attributes
 {
     float4 positionOS : POSITION;
@@ -600,6 +606,43 @@ PerObjectMotionVectorPassVertexOutput CharacterOutlineMotionVectorPassVertex(Att
 half4 CharacterMotionVectorFragment(PerObjectMotionVectorPassVertexOutput input) : SV_Target
 {
     return ObjectMotionVectorPassFragment(input);
+}
+
+// Shadow Pass
+// -----------------------------------------------------------------------------------------------------------
+float4 GetShadowPositionHClip(Attributes input)
+{
+    float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
+    float4 positionCS = TransformWorldToHClip(positionWS);
+
+    #if UNITY_REVERSED_Z
+    positionCS.z = min(positionCS.z, UNITY_NEAR_CLIP_VALUE);
+    #else
+    positionCS.z = max(positionCS.z, UNITY_NEAR_CLIP_VALUE);
+    #endif
+
+    return positionCS;
+}
+
+Varyings ShadowPassVertex(Attributes input)
+{
+    Varyings output = (Varyings)0;
+    UNITY_SETUP_INSTANCE_ID(input);
+
+    output.baseUV = TRANSFORM_TEX(input.baseUV, _MainTex);
+    output.positionCS = GetShadowPositionHClip(input);
+    return output;
+}
+
+half4 ShadowPassFragment(Varyings input) : SV_TARGET
+{
+    Alpha(SampleAlbedoAlpha(input.baseUV, TEXTURE2D_ARGS(_MainTex, sampler_MainTex)).a, 1.0, 0.0);
+
+    #ifdef LOD_FADE_CROSSFADE
+    LODFadeCrossFade(input.positionCS);
+    #endif
+
+    return 0;
 }
 
 #endif

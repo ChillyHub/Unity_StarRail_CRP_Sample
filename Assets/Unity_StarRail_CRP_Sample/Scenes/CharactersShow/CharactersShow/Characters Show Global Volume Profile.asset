@@ -1,0 +1,203 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7121771896530295150
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e36a287fd21e4637926f677aadb080f4, type: 3}
+  m_Name: TemporalAA
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    m_OverrideState: 1
+    m_Value: 1
+--- !u!114 &-2855117805813960185
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ce730b32a343a2826f8122622500bc, type: 3}
+  m_Name: LightSettingVolume
+  m_EditorClassIdentifier: 
+  active: 0
+  mainLightMode:
+    m_OverrideState: 1
+    m_Value: 2
+  shadowLightMode:
+    m_OverrideState: 1
+    m_Value: 2
+  mainLightRotation:
+    m_OverrideState: 1
+    m_Value: {x: 0, y: 95, z: 40}
+  mainLightColor:
+    m_OverrideState: 1
+    m_Value: {r: 0.8666667, g: 0.69411767, b: 0.627451, a: 1}
+  shadowLightRotation:
+    m_OverrideState: 1
+    m_Value: {x: 0, y: 95, z: 40}
+  mainLight:
+    m_OverrideState: 1
+    m_Value: {fileID: 3973037901533884118, guid: 34785074b7e935147ae7f3cc809b9915,
+      type: 3}
+  shadowLight:
+    m_OverrideState: 1
+    m_Value: {fileID: 3973037901533884118, guid: 34785074b7e935147ae7f3cc809b9915,
+      type: 3}
+  mainLightIntensity:
+    m_OverrideState: 0
+    m_Value: 1
+  mainVirtualLight:
+    m_OverrideState: 0
+    m_Value: {fileID: 0}
+  shadowVirtualLight:
+    m_OverrideState: 0
+    m_Value: {fileID: 0}
+  overrideMainLightColor:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
+  m_Name: Characters Show Global Volume Profile
+  m_EditorClassIdentifier: 
+  components:
+  - {fileID: -2855117805813960185}
+  - {fileID: -7121771896530295150}
+  - {fileID: 4181573622107204048}
+  - {fileID: 3667455871370461099}
+  - {fileID: 5637977007130569863}
+  - {fileID: 9102216871928288959}
+--- !u!114 &3667455871370461099
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0489efafe8d9475591b2024ddbd38b09, type: 3}
+  m_Name: CRPBloom
+  m_EditorClassIdentifier: 
+  active: 1
+  threshold:
+    m_OverrideState: 1
+    m_Value: 1
+  intensity:
+    m_OverrideState: 1
+    m_Value: 1
+  scatter:
+    m_OverrideState: 0
+    m_Value: 0.7
+  clamp:
+    m_OverrideState: 0
+    m_Value: 65472
+  tint:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  highQualityFiltering:
+    m_OverrideState: 0
+    m_Value: 0
+  downscale:
+    m_OverrideState: 0
+    m_Value: 0
+  maxIterations:
+    m_OverrideState: 0
+    m_Value: 6
+--- !u!114 &4181573622107204048
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d68d8df6549c4f70b3669eca6a944b5c, type: 3}
+  m_Name: CRPScreenSpaceReflection
+  m_EditorClassIdentifier: 
+  active: 1
+  enable:
+    m_OverrideState: 1
+    m_Value: 1
+  maxIterCount:
+    m_OverrideState: 1
+    m_Value: 128
+  thickness:
+    m_OverrideState: 1
+    m_Value: 0.008
+--- !u!114 &5637977007130569863
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49fe05fa59f43d7a9ac4582f539b080, type: 3}
+  m_Name: CRPToneMapping
+  m_EditorClassIdentifier: 
+  active: 1
+  mode:
+    m_OverrideState: 1
+    m_Value: 1
+  ACESParamA:
+    m_OverrideState: 0
+    m_Value: 2.8
+  ACESParamB:
+    m_OverrideState: 0
+    m_Value: 0.4
+  ACESParamC:
+    m_OverrideState: 0
+    m_Value: 2.1
+  ACESParamD:
+    m_OverrideState: 0
+    m_Value: 0.5
+  ACESParamE:
+    m_OverrideState: 0
+    m_Value: 1.5
+--- !u!114 &9102216871928288959
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
+  m_Name: ColorAdjustments
+  m_EditorClassIdentifier: 
+  active: 0
+  postExposure:
+    m_OverrideState: 1
+    m_Value: 6.13
+  contrast:
+    m_OverrideState: 0
+    m_Value: 0
+  colorFilter:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  hueShift:
+    m_OverrideState: 0
+    m_Value: 0
+  saturation:
+    m_OverrideState: 0
+    m_Value: 0

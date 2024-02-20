@@ -82,15 +82,15 @@ namespace Unity_StarRail_CRP_Sample
                 case DirectionMode.FromDirectionLight:
                     if (renderer.mainDirectionLight != null)
                     {
-                        lightInfo.mainLightDirection = renderer.mainDirectionLight.transform.forward;
-                        lightInfo.mainLightColor = renderer.mainDirectionLight.color;
+                        lightInfo.mainLightDirection = -renderer.mainDirectionLight.transform.forward;
+                        lightInfo.mainLightColor = renderer.overrideColor ? renderer.mainLightOverrideColor : renderer.mainDirectionLight.color;
                     }
                     break;
                 case DirectionMode.FromPointLight:
                     if (renderer.mainPointLight != null)
                     {
                         lightInfo.mainLightDirection = (renderer.mainPointLight.transform.position - transform.position).normalized;
-                        lightInfo.mainLightColor = renderer.mainPointLight.color;
+                        lightInfo.mainLightColor = renderer.overrideColor ? renderer.mainLightOverrideColor : renderer.mainDirectionLight.color;
                     }
                     break;
             }
@@ -110,7 +110,7 @@ namespace Unity_StarRail_CRP_Sample
                 case DirectionMode.FromDirectionLight:
                     if (renderer.shadowDirectionLight != null)
                     {
-                        lightInfo.shadowLightDirection = renderer.shadowDirectionLight.transform.forward;
+                        lightInfo.shadowLightDirection = -renderer.shadowDirectionLight.transform.forward;
                     }
                     break;
                 case DirectionMode.FromPointLight:

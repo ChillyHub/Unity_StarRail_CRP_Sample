@@ -284,9 +284,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IsGlobal: 0
-  priority: 0
-  blendDistance: 1
-  weight: 0.5
+  priority: 1
+  blendDistance: 4
+  weight: 1
   sharedProfile: {fileID: 11400000, guid: eff8ae550675bd94990964d86685b601, type: 2}
 --- !u!65 &60166405
 BoxCollider:
@@ -519,7 +519,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &596272551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -535,7 +535,7 @@ MonoBehaviour:
   m_IsGlobal: 0
   priority: 0
   blendDistance: 1
-  weight: 0.5
+  weight: 1
   sharedProfile: {fileID: 11400000, guid: c0829776c44085648bbb61b6814abe7e, type: 2}
 --- !u!65 &596272552
 BoxCollider:
@@ -556,7 +556,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 126.77, y: 6.95, z: 15}
+  m_Size: {x: 126.77, y: 6.95, z: 22.5}
   m_Center: {x: 0, y: 1.24, z: 7.91}
 --- !u!4 &596272553
 Transform:

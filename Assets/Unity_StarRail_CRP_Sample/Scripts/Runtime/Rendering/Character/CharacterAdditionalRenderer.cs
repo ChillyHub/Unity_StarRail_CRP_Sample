@@ -77,8 +77,12 @@ namespace Unity_StarRail_CRP_Sample
         public Vector3 mainLightRotation = Vector3.zero;
         public Vector3 shadowLightDirection = Vector3.forward;
         
+        public bool overrideColor = false;
+        
         [ColorUsage(true, true)]
         public Color mainLightColor = Color.white;
+        [ColorUsage(true, true)]
+        public Color mainLightOverrideColor = Color.white;
 
         public GameObject headBinding;
 

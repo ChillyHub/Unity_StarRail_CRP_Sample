@@ -30,7 +30,7 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
         _GI_UseMainColor("GI Use Main Color", Range(0, 1)) = 1
         
         [Header(Additional Light)][Space]
-        [Toggle(_ENABLE_ADDITIONAL_LIGHT)] _EnableAddLightToggle("Enable Addition Light", Float) = 1
+        [Toggle(_ENABLE_ADDITIONAL_LIGHT)] _EnableAddLightToggle("Enable Addition Light", Float) = 0
         
         [Header(Diffuse)][Space]
         [Toggle(_ENABLE_DIFFUSE)] _EnableDiffuseToggle("Enable Diffuse", Float) = 1
@@ -89,7 +89,7 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
         _SpecularIntensity7("Specualr Intensity 7", Range(0, 50)) = 1
         
         [Header(Emission)][Space]
-        [Toggle(_ENABLE_EMISSION)] _EnableEmissionToggle("Enable Emission", Float) = 1
+        [Toggle(_ENABLE_EMISSION)] _EnableEmissionToggle("Enable Emission", Float) = 0
         _EmissionIntensity("Emission Intensity", Range(0, 4)) = 1
         _EmissionThreshold("Emission Threshold", Range(0, 1)) = 1
         
@@ -128,9 +128,9 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
         _OutlineColor5("Outline Color 5", Color) = (0, 0, 0, 1)
         _OutlineColor6("Outline Color 6", Color) = (0, 0, 0, 1)
         _OutlineColor7("Outline Color 7", Color) = (0, 0, 0, 1)
-        _OutlineWidth("OutlineWidth (WS)(m)", Range(0, 0.01)) = 0.001
-        _OutlineWidthMin("Outline Width Min (SS)(pixel)", Range(0, 10)) = 0
-        _OutlineWidthMax("Outline Width Max (SS)(pixel)", Range(0, 30)) = 10
+        _OutlineWidth("OutlineWidth (WS)(m)", Range(0, 0.01)) = 0.0035
+        _OutlineWidthMin("Outline Width Min (SS)(pixel)", Range(0, 10)) = 2
+        _OutlineWidthMax("Outline Width Max (SS)(pixel)", Range(0, 30)) = 30
         
         [Header(Bloom)][Space]
         _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 1.0
@@ -195,7 +195,7 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
             Cull Off
             
             Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-            ZWrite Off
+            ZWrite On
             
             HLSLPROGRAM
 
@@ -234,34 +234,34 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
 
             ENDHLSL
         }
-        Pass
-        {
-            Name "Character Base Transparent Outline"
-            Tags { "Lightmode"="CharacterTransparentOutline" "Queue"="Transparent+40" }
-            
-            Cull Front
-            
-            Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
-            ZWrite [_ZWrite]
-            
-            HLSLPROGRAM
-
-            #pragma shader_feature _ENABLE_OUTLINE
-            #pragma shader_feature _OUTLINENORMALCHANNEL_NORMAL _OUTLINENORMALCHANNEL_TANGENT _OUTLINENORMALCHANNEL_UV2
-            #pragma shader_feature _CUSTOMOUTLINEVARENUM_DISABLE _CUSTOMOUTLINEVARENUM_MULTIPLY _CUSTOMOUTLINEVARENUM_OVERLAY
-            #pragma shader_feature _CUSTOMBLOOMVARENUM_DISABLE _CUSTOMBLOOMVARENUM_MULTIPLY _CUSTOMBLOOMVARENUM_OVERLAY
-
-            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
-
-            #pragma vertex CharacterOutlinePassVertex
-            #pragma fragment CharacterBaseOutlinePassFragment
-
-            #include "HLSL/CharacterInput.hlsl"
-            #include "HLSL/CharacterFunction.hlsl"
-            #include "HLSL/CharacterPass.hlsl"
-
-            ENDHLSL
-        }
+        //Pass
+        //{
+        //    Name "Character Base Transparent Outline"
+        //    Tags { "Lightmode"="CharacterTransparentOutline" "Queue"="Transparent+40" }
+        //    
+        //    Cull Front
+        //    
+        //    Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
+        //    ZWrite [_ZWrite]
+        //    
+        //    HLSLPROGRAM
+//
+        //    #pragma shader_feature _ENABLE_OUTLINE
+        //    #pragma shader_feature _OUTLINENORMALCHANNEL_NORMAL _OUTLINENORMALCHANNEL_TANGENT _OUTLINENORMALCHANNEL_UV2
+        //    #pragma shader_feature _CUSTOMOUTLINEVARENUM_DISABLE _CUSTOMOUTLINEVARENUM_MULTIPLY _CUSTOMOUTLINEVARENUM_OVERLAY
+        //    #pragma shader_feature _CUSTOMBLOOMVARENUM_DISABLE _CUSTOMBLOOMVARENUM_MULTIPLY _CUSTOMBLOOMVARENUM_OVERLAY
+//
+        //    #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+//
+        //    #pragma vertex CharacterOutlinePassVertex
+        //    #pragma fragment CharacterBaseOutlinePassFragment
+//
+        //    #include "HLSL/CharacterInput.hlsl"
+        //    #include "HLSL/CharacterFunction.hlsl"
+        //    #include "HLSL/CharacterPass.hlsl"
+//
+        //    ENDHLSL
+        //}
         Pass
         {
             Name "Character Shadow Caster"
@@ -273,7 +273,6 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
             Cull[_CullMode]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             // -------------------------------------
@@ -295,8 +294,9 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            #include "HLSL/CharacterInput.hlsl"
+            #include "HLSL/CharacterFunction.hlsl"
+            #include "HLSL/CharacterPass.hlsl"
             ENDHLSL
         }
         Pass
@@ -322,28 +322,28 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
 
             ENDHLSL
         }
-        Pass
-        {
-            Name "Object Motion Vectors"
-
-            Tags { "LightMode" = "ObjectOutlineMotionVector" }
-
-            HLSLPROGRAM
-            #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
-            #pragma target 3.5
-
-            #pragma vertex CharacterOutlineMotionVectorPassVertex
-            #pragma fragment CharacterMotionVectorFragment
-
-            //--------------------------------------
-            // GPU Instancing
-            #pragma multi_compile_instancing
-
-            #include "HLSL/CharacterInput.hlsl"
-            #include "HLSL/CharacterFunction.hlsl"
-            #include "HLSL/CharacterPass.hlsl"
-
-            ENDHLSL
-        }
+        //Pass
+        //{
+        //    Name "Object Motion Vectors"
+//
+        //    Tags { "LightMode" = "ObjectOutlineMotionVector" }
+//
+        //    HLSLPROGRAM
+        //    #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
+        //    #pragma target 3.5
+//
+        //    #pragma vertex CharacterOutlineMotionVectorPassVertex
+        //    #pragma fragment CharacterMotionVectorFragment
+//
+        //    //--------------------------------------
+        //    // GPU Instancing
+        //    #pragma multi_compile_instancing
+//
+        //    #include "HLSL/CharacterInput.hlsl"
+        //    #include "HLSL/CharacterFunction.hlsl"
+        //    #include "HLSL/CharacterPass.hlsl"
+//
+        //    ENDHLSL
+        //}
     }
 }

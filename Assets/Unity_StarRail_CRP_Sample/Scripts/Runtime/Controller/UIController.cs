@@ -18,6 +18,7 @@ namespace Unity_StarRail_CRP_Sample
 
         private InputActionAsset _inputActionAsset;
         private InputActionMap _player;
+        private InputActionMap _camera;
         private InputAction _point;
         private InputAction _click;
         private InputAction _esc;
@@ -34,6 +35,7 @@ namespace Unity_StarRail_CRP_Sample
         {
             _inputActionAsset = GetComponent<InputSystemUIInputModule>().actionsAsset;
             _player = _inputActionAsset.FindActionMap("Player");
+            _camera = _inputActionAsset.FindActionMap("Camera");
             //_point = _inputActionAsset.FindActionMap("UI").FindAction("Point");
             //_click = _inputActionAsset.FindActionMap("UI").FindAction("Click");
             _esc = _inputActionAsset.FindActionMap("UI").FindAction("Menu");
@@ -106,6 +108,7 @@ namespace Unity_StarRail_CRP_Sample
             if (_isPause || _isPressingAlt)
             {
                 _player.Disable();
+                _camera.Disable();
 #if !UNITY_ANDROID
                 Cursor.lockState = CursorLockMode.None;
 #endif
@@ -113,6 +116,7 @@ namespace Unity_StarRail_CRP_Sample
             else
             {
                 _player.Enable();
+                _camera.Enable();
 #if !UNITY_ANDROID
                 Cursor.lockState = CursorLockMode.Locked;
 #endif

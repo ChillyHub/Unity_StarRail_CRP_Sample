@@ -19,7 +19,7 @@ Shader "StarRail_CRP/Charater/CharacterHair"
         _GI_UseMainColor("GI Use Main Color", Range(0, 1)) = 1
         
         [Header(Additional Light)][Space]
-        [Toggle(_ENABLE_ADDITIONAL_LIGHT)] _EnableAddLightToggle("Enable Addition Light", Float) = 1
+        [Toggle(_ENABLE_ADDITIONAL_LIGHT)] _EnableAddLightToggle("Enable Addition Light", Float) = 0
         
         [Header(Diffuse)][Space]
         [Toggle(_ENABLE_DIFFUSE)] _EnableDiffuseToggle("Enable Diffuse", Float) = 1
@@ -36,7 +36,7 @@ Shader "StarRail_CRP/Charater/CharacterHair"
         _SpecularIntensity("Specualr Intensity", Range(0, 50)) = 1
         
         [Header(Emission)][Space]
-        [Toggle(_ENABLE_EMISSION)] _EnableEmissionToggle("Enable Emission", Float) = 1
+        [Toggle(_ENABLE_EMISSION)] _EnableEmissionToggle("Enable Emission", Float) = 0
         _EmissionIntensity("Emission Intensity", Range(0, 4)) = 1
         _EmissionThreshold("Emission Threshold", Range(0, 1)) = 1
         
@@ -52,9 +52,9 @@ Shader "StarRail_CRP/Charater/CharacterHair"
         [Toggle(_ENABLE_OUTLINE)] _EnableOutlineToggle("Enable Outline", Float) = 1
         [KeywordEnum(Normal, Tangent, UV2)] _OutlineNormalChannel("Outline Normal Channel", Float) = 0
         _OutlineColor("Outline Color", Color) = (1, 1, 1, 1)
-        _OutlineWidth("OutlineWidth (WS)(m)", Range(0, 0.01)) = 0.001
-        _OutlineWidthMin("Outline Width Min (SS)(pixel)", Range(0, 10)) = 0
-        _OutlineWidthMax("Outline Width Max (SS)(pixel)", Range(0, 30)) = 10
+        _OutlineWidth("OutlineWidth (WS)(m)", Range(0, 0.01)) = 0.0035
+        _OutlineWidthMin("Outline Width Min (SS)(pixel)", Range(0, 10)) = 2
+        _OutlineWidthMax("Outline Width Max (SS)(pixel)", Range(0, 30)) = 30
         
         [Header(Bloom)][Space]
         _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 1.0
@@ -242,7 +242,6 @@ Shader "StarRail_CRP/Charater/CharacterHair"
             Cull[_CullMode]
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             // -------------------------------------
@@ -264,8 +263,9 @@ Shader "StarRail_CRP/Charater/CharacterHair"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            #include "HLSL/CharacterInput.hlsl"
+            #include "HLSL/CharacterFunction.hlsl"
+            #include "HLSL/CharacterPass.hlsl"
             ENDHLSL
         }
         Pass
@@ -278,7 +278,6 @@ Shader "StarRail_CRP/Charater/CharacterHair"
             Cull Off
         
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
         
             #pragma vertex CharacterDepthOnlyVertex

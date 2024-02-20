@@ -16,7 +16,9 @@ namespace Unity_StarRail_CRP_Sample.Editor
         private SerializedProperty _shadowPointLightProp;
         private SerializedProperty _mainLightRotationProp;
         private SerializedProperty _shadowLightDirectionProp;
+        private SerializedProperty _overrideColorProp;
         private SerializedProperty _mainLightColorProp;
+        private SerializedProperty _mainLightOverrideColorProp;
         private SerializedProperty _headBindingProp;
         private SerializedProperty _overrideKeywordsProp;
         private SerializedProperty _keywordsValuesProp;
@@ -40,7 +42,9 @@ namespace Unity_StarRail_CRP_Sample.Editor
             _shadowPointLightProp = serializedObject.FindProperty("shadowPointLight");
             _mainLightRotationProp = serializedObject.FindProperty("mainLightRotation");
             _shadowLightDirectionProp = serializedObject.FindProperty("shadowLightDirection");
+            _overrideColorProp = serializedObject.FindProperty("overrideColor");
             _mainLightColorProp = serializedObject.FindProperty("mainLightColor");
+            _mainLightOverrideColorProp = serializedObject.FindProperty("mainLightOverrideColor");
             _headBindingProp = serializedObject.FindProperty("headBinding");
             _overrideKeywordsProp = serializedObject.FindProperty("overrideKeywords");
             _keywordsValuesProp = serializedObject.FindProperty("keywordsValues");
@@ -74,10 +78,20 @@ namespace Unity_StarRail_CRP_Sample.Editor
             else if (_mainLightDirectionModeProp.enumValueFlag == (int)DirectionMode.FromDirectionLight)
             {
                 EditorGUILayout.PropertyField(_mainDirectionLightProp);
+                EditorGUILayout.PropertyField(_overrideColorProp);
+                if (_overrideColorProp.boolValue)
+                {
+                    EditorGUILayout.PropertyField(_mainLightOverrideColorProp);
+                }
             }
             else if (_mainLightDirectionModeProp.enumValueFlag == (int)DirectionMode.FromPointLight)
             {
                 EditorGUILayout.PropertyField(_mainPointLightProp);
+                EditorGUILayout.PropertyField(_overrideColorProp);
+                if (_overrideColorProp.boolValue)
+                {
+                    EditorGUILayout.PropertyField(_mainLightOverrideColorProp);
+                }
             }
             
             EditorGUILayout.Space();

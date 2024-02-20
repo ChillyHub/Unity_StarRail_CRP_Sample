@@ -9,6 +9,7 @@
 #include "../../Utils/HLSL/Depth.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
+float4 _MainTex_ST;
 float _NormalScale;
 
 // Setting
@@ -159,7 +160,6 @@ float3 _HeadRight;
 float3 _HeadUp;
 float _DayTime;
 
-
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 TEXTURE2D(_LightMap);
@@ -263,6 +263,24 @@ float4 SampleCameraColorTexture(float2 uv)
 float SampleTempDepthTexture(float2 uv)
 {
     return SAMPLE_DEPTH_TEXTURE(_TempDepthTexture, sampler_TempDepthTexture, uv);
+}
+
+half4 SampleAlbedoAlpha(float2 uv, TEXTURE2D_PARAM(albedoAlphaMap, sampler_albedoAlphaMap))
+{
+    return half4(SAMPLE_TEXTURE2D(albedoAlphaMap, sampler_albedoAlphaMap, uv));
+}
+
+half Alpha(half albedoAlpha, half4 color, half cutoff)
+{
+#if !defined(_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A) && !defined(_GLOSSINESS_FROM_BASE_ALPHA)
+    half alpha = albedoAlpha * color.a;
+    #else
+    half alpha = color.a;
+#endif
+
+    alpha = AlphaDiscard(alpha, cutoff);
+
+return alpha;
 }
 
 // Lights
