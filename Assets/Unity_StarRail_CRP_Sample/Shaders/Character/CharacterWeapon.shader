@@ -133,16 +133,16 @@
         _OutlineWidthMax("Outline Width Max (SS)(pixel)", Range(0, 30)) = 30
         
         [Header(Bloom)][Space]
-        _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 1.0
+        _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 0.8
         [KeywordEnum(Disable, Multiply, Overlay)] _CustomBloomVarEnum("Custom Bloom Intensity State", Float) = 0
-        _BloomIntensity0("Bloom Intensity 0", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity1("Bloom Intensity 1", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity2("Bloom Intensity 2", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity3("Bloom Intensity 3", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity4("Bloom Intensity 4", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity5("Bloom Intensity 5", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity6("Bloom Intensity 6", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity7("Bloom Intensity 7", Range(0.0, 6.0)) = 1.0
+        _BloomIntensity0("Bloom Intensity 0", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity1("Bloom Intensity 1", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity2("Bloom Intensity 2", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity3("Bloom Intensity 3", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity4("Bloom Intensity 4", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity5("Bloom Intensity 5", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity6("Bloom Intensity 6", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity7("Bloom Intensity 7", Range(0.0, 6.0)) = 0.8
         _BloomColor("Bloom Color", Color) = (1.0, 1.0, 1.0, 1.0)
         [KeywordEnum(Disable, Tint, Overlay)] _CustomBloomColorVarEnum("Custom Bloom Color State", Float) = 0
         _BloomColor0("Bloom Color 0", Color) = (1.0, 1.0, 1.0, 1.0)
@@ -185,7 +185,7 @@
             
             Cull [_CullMode]
             
-            Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
+            Blend [_SrcBlend] [_DstBlend], One Zero
             ZWrite [_ZWrite]
             
             Stencil 
@@ -242,7 +242,7 @@
             
             Cull Front
             
-            Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
+            Blend [_SrcBlend] [_DstBlend], One Zero
             ZWrite [_ZWrite]
             
             Stencil 
@@ -262,6 +262,7 @@
             #pragma shader_feature _OUTLINENORMALCHANNEL_NORMAL _OUTLINENORMALCHANNEL_TANGENT _OUTLINENORMALCHANNEL_UV2
             #pragma shader_feature _CUSTOMOUTLINEVARENUM_DISABLE _CUSTOMOUTLINEVARENUM_MULTIPLY _CUSTOMOUTLINEVARENUM_OVERLAY
             #pragma shader_feature _CUSTOMBLOOMVARENUM_DISABLE _CUSTOMBLOOMVARENUM_MULTIPLY _CUSTOMBLOOMVARENUM_OVERLAY
+            #pragma shader_feature _CUSTOMBLOOMCOLORVARENUM_DISABLE _CUSTOMBLOOMCOLORVARENUM_TINT _CUSTOMBLOOMCOLORVARENUM_OVERLAY
 
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
 

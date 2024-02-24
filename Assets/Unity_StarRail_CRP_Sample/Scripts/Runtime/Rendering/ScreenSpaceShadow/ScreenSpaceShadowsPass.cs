@@ -205,6 +205,8 @@ namespace Unity_StarRail_CRP_Sample
         
         private void RenderCharacterShadow(CommandBuffer cmd, ref RenderingData renderingData)
         {
+            CoreUtils.SetKeyword(cmd, "_CHARACTER_SHADOWS_SOFT", true);
+            
             for (int i = 0; i < _entityManager.chunkCount; i++)
             {
                 CharacterEntityChunk entityChunk = _entityManager.entityChunks[i];

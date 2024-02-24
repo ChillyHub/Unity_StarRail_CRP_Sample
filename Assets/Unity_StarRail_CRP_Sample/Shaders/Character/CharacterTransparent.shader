@@ -94,7 +94,7 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
         _EmissionThreshold("Emission Threshold", Range(0, 1)) = 1
         
         [Header(Rim)][Space]
-        [Toggle(_ENABLE_RIM)] _EnableRimToggle("Enable Rim", Float) = 1
+        [Toggle(_ENABLE_RIM)] _EnableRimToggle("Enable Rim", Float) = 0
         _RimWidth("Rim Width", Float) = 1
         [KeywordEnum(Disable, Multiply, Overlay)] _CustomRimVarEnum("Custom Rim Var State", Float) = 0
         _RimColor0("Rim Color 0", Color) = (1, 1, 1, 1)
@@ -133,16 +133,16 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
         _OutlineWidthMax("Outline Width Max (SS)(pixel)", Range(0, 30)) = 30
         
         [Header(Bloom)][Space]
-        _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 1.0
+        _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 0.8
         [KeywordEnum(Disable, Multiply, Overlay)] _CustomBloomVarEnum("Custom Bloom Color Var State", Float) = 0
-        _BloomIntensity0("Bloom Intensity 0", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity1("Bloom Intensity 1", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity2("Bloom Intensity 2", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity3("Bloom Intensity 3", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity4("Bloom Intensity 4", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity5("Bloom Intensity 5", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity6("Bloom Intensity 6", Range(0.0, 6.0)) = 1.0
-        _BloomIntensity7("Bloom Intensity 7", Range(0.0, 6.0)) = 1.0
+        _BloomIntensity0("Bloom Intensity 0", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity1("Bloom Intensity 1", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity2("Bloom Intensity 2", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity3("Bloom Intensity 3", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity4("Bloom Intensity 4", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity5("Bloom Intensity 5", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity6("Bloom Intensity 6", Range(0.0, 6.0)) = 0.8
+        _BloomIntensity7("Bloom Intensity 7", Range(0.0, 6.0)) = 0.8
         _BloomColor("Bloom Color", Color) = (1.0, 1.0, 1.0, 1.0)
         [KeywordEnum(Disable, Tint, Overlay)] _CustomBloomColorVarEnum("Custom Bloom Color State", Float) = 0
         _BloomColor0("Bloom Color 0", Color) = (1.0, 1.0, 1.0, 1.0)
@@ -194,7 +194,7 @@ Shader "StarRail_CRP/Charater/CharacterTransparent"
             
             Cull Off
             
-            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+            Blend SrcAlpha OneMinusSrcAlpha, One Zero
             ZWrite On
             
             HLSLPROGRAM

@@ -143,7 +143,7 @@
             }
 
             HLSLPROGRAM
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _CHARACTER_SHADOWS_SOFT
 
             #pragma vertex   VolumeVertex
             #pragma fragment CharacterShadowFragment

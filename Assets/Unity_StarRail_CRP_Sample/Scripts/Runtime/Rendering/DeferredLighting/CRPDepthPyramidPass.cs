@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -12,6 +13,7 @@ namespace Unity_StarRail_CRP_Sample
             public static readonly int SampleSize = Shader.PropertyToID("_SampleSize");
             public static readonly int CameraDepthAttachment = Shader.PropertyToID("_CameraDepthAttachment");
             public static readonly int DepthPyramidTexture = Shader.PropertyToID("_DepthPyramidTexture");
+            public static readonly int StencilTexture = Shader.PropertyToID("_StencilTexture");
             public static readonly int MipLevelParam = Shader.PropertyToID("_MipLevelParam");
             public static readonly int DepthPyramidMipLevelMax = Shader.PropertyToID("_DepthPyramidMipLevelMax");
         }
@@ -100,6 +102,21 @@ namespace Unity_StarRail_CRP_Sample
                 cmd.SetGlobalTexture(ShaderIds.DepthPyramidTexture, _depthTextures.DepthPyramidTexture.nameID);
                 cmd.SetGlobalVectorArray(ShaderIds.MipLevelParam, _depthMipmapInfo.GetMipLevelParam());
                 cmd.SetGlobalInt(ShaderIds.DepthPyramidMipLevelMax, _depthMipmapInfo.mipLevelCount - 1);
+
+                if (renderingData.cameraData.cameraType != CameraType.Preview)
+                {
+                    if (renderingData.cameraData.renderer.cameraDepthTargetHandle.rt.stencilFormat == GraphicsFormat.None)
+                    {
+                        cmd.SetGlobalTexture(ShaderIds.StencilTexture, 
+                            renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
+                    }
+                    else
+                    {
+                        cmd.SetGlobalTexture(ShaderIds.StencilTexture, 
+                            renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID, 
+                            RenderTextureSubElement.Stencil);
+                    }
+                }
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);

@@ -597,19 +597,19 @@ float GetBloomIntensity(half materialId)
     float overlay = overlays[GetRampLineIndex(materialId)];
 
     #ifdef _CUSTOMBLOOMVARENUM_DISABLE
-        return _BloomIntensity;
+        return _BloomIntensity * 0.1;
     #elif _CUSTOMBLOOMVARENUM_MULTIPLY
-        return _BloomIntensity * overlay;
+        return _BloomIntensity * overlay * 0.1;
     #elif _CUSTOMBLOOMVARENUM_OVERLAY
-        return overlay;
+        return overlay * 0.1;
     #else
-        return _BloomIntensity;
+        return _BloomIntensity * 0.1;
     #endif
 }
 
 float GetBloomIntensity()
 {
-    return _BloomIntensity;
+    return _BloomIntensity * 0.1;
 }
 
 half3 GetBloomColor(half materialId, half3 mainColor)
@@ -630,7 +630,7 @@ half3 GetBloomColor(half materialId, half3 mainColor)
     #ifdef _CUSTOMBLOOMCOLORVARENUM_DISABLE
     return mainColor;
     #elif _CUSTOMBLOOMCOLORVARENUM_TINT
-    return mainColor * overlay;
+    return mainColor * overlay * _BloomColor;
     #elif _CUSTOMBLOOMCOLORVARENUM_OVERLAY
     return overlay;
     #else

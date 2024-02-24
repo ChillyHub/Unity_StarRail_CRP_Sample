@@ -63,7 +63,9 @@ Shader "StarRail_CRP/Charater/CharacterFace"
         _OutlineWidthMax("Outline Width Max (SS)(pixel)", Range(0, 30)) = 30
         
         [Header(Bloom)][Space]
-        _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 1.0
+        _BloomIntensity("Bloom Intensity", Range(0.0, 6.0)) = 0.8
+        [KeywordEnum(Disable, Tint, Overlay)] _CustomBloomColorVarEnum("Custom Bloom Color State", Float) = 0
+        _BloomColor("Bloom Color", Color) = (1.0, 1.0, 1.0, 1.0)
         
         [Header(Fresnel)][Space]
         _FresnelColor("Fresnel Color", Color) = (0, 0, 0, 0)
@@ -98,7 +100,7 @@ Shader "StarRail_CRP/Charater/CharacterFace"
             
             Cull [_CullMode]
             
-            Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
+            Blend [_SrcBlend] [_DstBlend], One Zero
             ZWrite [_ZWrite]
             
             Stencil {
@@ -132,6 +134,7 @@ Shader "StarRail_CRP/Charater/CharacterFace"
             #pragma shader_feature _CUSTOMRIMVARENUM_DISABLE _CUSTOMRIMVARENUM_MULTIPLY _CUSTOMRIMVARENUM_OVERLAY
             #pragma shader_feature _OUTLINENORMALCHANNEL_NORMAL _OUTLINENORMALCHANNEL_TANGENT _OUTLINENORMALCHANNEL_UV2
             #pragma shader_feature _CUSTOMOUTLINEVARENUM_DISABLE _CUSTOMOUTLINEVARENUM_MULTIPLY _CUSTOMOUTLINEVARENUM_OVERLAY
+            #pragma shader_feature _CUSTOMBLOOMCOLORVARENUM_DISABLE _CUSTOMBLOOMCOLORVARENUM_TINT _CUSTOMBLOOMCOLORVARENUM_OVERLAY
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _SHADOWS_SOFT
@@ -153,7 +156,7 @@ Shader "StarRail_CRP/Charater/CharacterFace"
             
             Cull Front
             
-            Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
+            Blend [_SrcBlend] [_DstBlend], One Zero
             ZWrite [_ZWrite]
             
             Stencil {
@@ -171,6 +174,7 @@ Shader "StarRail_CRP/Charater/CharacterFace"
             #pragma shader_feature _IS_FACE
             #pragma shader_feature _ENABLE_OUTLINE
             #pragma shader_feature _OUTLINENORMALCHANNEL_NORMAL _OUTLINENORMALCHANNEL_TANGENT _OUTLINENORMALCHANNEL_UV2
+            #pragma shader_feature _CUSTOMBLOOMCOLORVARENUM_DISABLE _CUSTOMBLOOMCOLORVARENUM_TINT _CUSTOMBLOOMCOLORVARENUM_OVERLAY
 
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
 
@@ -191,7 +195,7 @@ Shader "StarRail_CRP/Charater/CharacterFace"
             
             Cull [_CullMode]
             
-            Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
+            Blend [_SrcBlend] [_DstBlend], One Zero
             ZWrite [_ZWrite]
             ZTest LEqual
             
@@ -230,6 +234,7 @@ Shader "StarRail_CRP/Charater/CharacterFace"
             #pragma shader_feature _CUSTOMRIMVARENUM_DISABLE _CUSTOMRIMVARENUM_MULTIPLY _CUSTOMRIMVARENUM_OVERLAY
             #pragma shader_feature _OUTLINENORMALCHANNEL_NORMAL _OUTLINENORMALCHANNEL_TANGENT _OUTLINENORMALCHANNEL_UV2
             #pragma shader_feature _CUSTOMOUTLINEVARENUM_DISABLE _CUSTOMOUTLINEVARENUM_MULTIPLY _CUSTOMOUTLINEVARENUM_OVERLAY
+            #pragma shader_feature _CUSTOMBLOOMCOLORVARENUM_DISABLE _CUSTOMBLOOMCOLORVARENUM_TINT _CUSTOMBLOOMCOLORVARENUM_OVERLAY
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _SHADOWS_SOFT

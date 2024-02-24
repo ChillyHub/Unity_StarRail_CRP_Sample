@@ -12,6 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _CUSTOMBLOOMCOLORVARENUM_TINT
   - _CUSTOMRIMVARENUM_MULTIPLY
   - _ENABLE_DIFFUSE
   - _ENABLE_GI
@@ -114,12 +115,13 @@ Material:
     - _AnisotropySpecularToggle: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BloomIntensity: 0.37
+    - _BloomIntensity: 0.8
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _CullMode: 2
+    - _CustomBloomColorVarEnum: 1
     - _CustomRimVarEnum: 1
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
@@ -180,6 +182,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor: {r: 0.9433962, g: 0.6888572, b: 0.7887697, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}

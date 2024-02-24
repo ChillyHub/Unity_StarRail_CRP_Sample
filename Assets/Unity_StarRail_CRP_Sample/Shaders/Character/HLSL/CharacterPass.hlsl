@@ -212,7 +212,7 @@ float4 CharacterBaseFragment(Varyings input, half4 mainTex, half4 lightMap)
     half3 bloom = GetBloomColor(surface.materialId, surface.color) * GetBloomIntensity(surface.materialId);
     
     // Total
-    half3 resultColor = TotalColor(gi, addLight, diffuse, specular, emission, rim) + bloom;
+    half3 resultColor = TotalColor(gi, addLight, diffuse, specular, emission, rim);// + bloom;
     
     return float4(resultColor, surface.alpha);
 }
@@ -265,7 +265,7 @@ float4 CharacterFaceFragment(Varyings input, half4 mainTex)
     half3 bloom = GetBloomColor(surface.color) * GetBloomIntensity();
 
     // Total
-    half3 resultColor = TotalColor(gi, addLight, diffuse, specular, emission, rim) + bloom;
+    half3 resultColor = TotalColor(gi, addLight, diffuse, specular, emission, rim);// + bloom;
     
     return float4(resultColor, surface.alpha);
 }
@@ -306,7 +306,7 @@ float4 CharacterHairFragment(Varyings input, half4 mainTex, half4 lightMap)
     half3 bloom = GetBloomColor(surface.color) * GetBloomIntensity();
 
     // Total
-    half3 resultColor = TotalColor(gi, addLight, diffuse, specular, emission, rim) + bloom;
+    half3 resultColor = TotalColor(gi, addLight, diffuse, specular, emission, rim);// + bloom;
     
     return float4(resultColor, surface.alpha);
 }
@@ -325,7 +325,7 @@ FragmentOutputs CharacterBaseGBufferPassFragment(Varyings input) : SV_Target
     half4 lightMap = SampleLightMap(input.baseUV);
     
     FragmentOutputs output = (FragmentOutputs)0;
-    output.GBuffer0 = half4(mainTex.rgb, 0.0);
+    output.GBuffer0 = half4(GetBloomColor(lightMap.a, mainTex.rgb), GetBloomIntensity(lightMap.a));
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = CharacterBaseFragment(input, mainTex, lightMap);
 
@@ -358,7 +358,7 @@ FragmentOutputs CharacterBaseGBufferOutlinePassFragment(Varyings input) : SV_Tar
     half4 lightMap = SampleLightMap(input.baseUV);
 
     FragmentOutputs output = (FragmentOutputs)0;
-    output.GBuffer0 = half4(mainTex.rgb, 0.0);
+    output.GBuffer0 = half4(GetBloomColor(lightMap.a, mainTex.rgb), GetBloomIntensity(lightMap.a));
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = float4(GetOutlineColor(lightMap.a, mainTex.rgb) * light.color, 1.0);
 
@@ -377,7 +377,7 @@ FragmentOutputs CharacterFaceGBufferPassFragment(Varyings input) : SV_Target
     half4 mainTex = SampleMainTex(input.baseUV);
     
     FragmentOutputs output = (FragmentOutputs)0;
-    output.GBuffer0 = half4(mainTex.rgb, 0.0);
+    output.GBuffer0 = half4(GetBloomColor(mainTex.rgb), GetBloomIntensity());
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = CharacterFaceFragment(input, mainTex);
     
@@ -426,7 +426,7 @@ FragmentOutputs CharacterFaceGBufferOutlinePassFragment(Varyings input) : SV_Tar
     half4 mainTex = SampleMainTex(input.baseUV);
     
     FragmentOutputs output = (FragmentOutputs)0;
-    output.GBuffer0 = half4(mainTex.rgb, 0.0);
+    output.GBuffer0 = half4(GetBloomColor(mainTex.rgb), GetBloomIntensity());
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
     
@@ -478,7 +478,7 @@ FragmentOutputs CharacterHairGBufferStencilOutPassFragment(Varyings input) : SV_
     half4 lightMap = SampleLightMap(input.baseUV);
 
     FragmentOutputs output = (FragmentOutputs)0;
-    output.GBuffer0 = half4(mainTex.rgb, 0.0);
+    output.GBuffer0 = half4(GetBloomColor(mainTex.rgb), GetBloomIntensity());
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = CharacterHairFragment(input, mainTex, lightMap);
     
@@ -497,7 +497,7 @@ FragmentOutputs CharacterHairGBufferStencilInPassFragment(Varyings input) : SV_T
     fragment.a *= 1.0 - saturate(dot(_HeadForward, viewDirWS) * 0.2);
 
     FragmentOutputs output = (FragmentOutputs)0;
-    output.GBuffer0 = half4(mainTex.rgb, 0.0);
+    output.GBuffer0 = half4(GetBloomColor(mainTex.rgb), GetBloomIntensity());
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = fragment;
 
@@ -528,7 +528,7 @@ FragmentOutputs CharacterHairGBufferOutlinePassFragment(Varyings input) : SV_Tar
     half4 mainTex = SampleMainTex(input.baseUV);
 
     FragmentOutputs output = (FragmentOutputs)0;
-    output.GBuffer0 = half4(mainTex.rgb, 0.0);
+    output.GBuffer0 = half4(GetBloomColor(mainTex.rgb), GetBloomIntensity());
     output.GBuffer1 = half4(PackNormal(input.normalWS), input.positionCS.z);
     output.GBuffer2 = float4(GetOutlineColor(mainTex.rgb) * light.color, 1.0);
 

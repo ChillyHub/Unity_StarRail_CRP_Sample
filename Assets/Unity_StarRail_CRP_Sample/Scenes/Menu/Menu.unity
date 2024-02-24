@@ -156,25 +156,10 @@ PrefabInstance:
       objectReference: {fileID: 347928918}
     - target: {fileID: 1920502022449456236, guid: b7347d9df7584f349a3437e18ccbd243,
         type: 3}
-      propertyPath: m_Options.m_Options.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1920502022449456236, guid: b7347d9df7584f349a3437e18ccbd243,
-        type: 3}
-      propertyPath: m_Options.m_Options.Array.data[1].m_Text
-      value: ParlorCar
-      objectReference: {fileID: 0}
-    - target: {fileID: 1920502022449456236, guid: b7347d9df7584f349a3437e18ccbd243,
-        type: 3}
-      propertyPath: m_Options.m_Options.Array.data[2].m_Text
-      value: CharactersShow
-      objectReference: {fileID: 0}
-    - target: {fileID: 1920502022449456236, guid: b7347d9df7584f349a3437e18ccbd243,
-        type: 3}
-      propertyPath: m_Options.m_Options.Array.data[3].m_Text
-      value: SceneSample
-      objectReference: {fileID: 0}
-    - target: {fileID: 1920502022449456236, guid: b7347d9df7584f349a3437e18ccbd243,
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 347928918}
+    - target: {fileID: 5080010613143793701, guid: b7347d9df7584f349a3437e18ccbd243,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

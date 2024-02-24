@@ -129,6 +129,11 @@ namespace Unity_StarRail_CRP_Sample
             Cursor.lockState = CursorLockMode.Locked;
 #endif
         }
+        
+        public void OnValueChangedVSync(Int32 value)
+        {
+            QualitySettings.vSyncCount = value;
+        }
 
         public void OnValueChangedScene(Int32 value)
         {

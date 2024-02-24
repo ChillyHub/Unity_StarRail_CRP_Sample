@@ -40,7 +40,7 @@ namespace Unity_StarRail_CRP_Sample
             CommandBuffer cmd = CommandBufferPool.Get();
             using (new ProfilingScope(cmd, _postProcessingSampler))
             {
-                _bloomPass.Execute(cmd, renderingData.cameraData.renderer.cameraColorTargetHandle);
+                _bloomPass.Execute(ref renderingData, cmd, renderingData.cameraData.renderer.cameraColorTargetHandle);
                 _toneMappingPass.Execute(ref renderingData, cmd, this, 
                     renderingData.cameraData.renderer.cameraColorTargetHandle, 
                     renderingData.cameraData.renderer.cameraColorTargetHandle);

@@ -1,7 +1,7 @@
 ﻿Shader "Hidden/StarRail_CRP/PostProcessing/Bloom"
 {
     HLSLINCLUDE
-        #pragma exclude_renderers gles
+        //#pragma exclude_renderers gles
         #pragma multi_compile_local _ _USE_RGBM
 
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
@@ -14,6 +14,7 @@
 
         TEXTURE2D(_AdditionalBloomColorTexture);
         float4 _AdditionalBloomColorTexture_TexelSize;
+        Texture2D<uint2> _StencilTexture;
 
         TEXTURE2D_X(_SourceTexLowMip);
         float4 _SourceTexLowMip_TexelSize;
@@ -88,34 +89,42 @@
 
             half3 color = o.xyz;
 
-            //texelSize = _AdditionalBloomColorTexture_TexelSize.x;
-            //A = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, -1.0));
-            //B = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, -1.0));
-            //C = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, -1.0));
-            //D = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, -0.5));
-            //E = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, -0.5));
-            //F = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 0.0));
-            //G = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv);
-            //H = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 0.0));
-            //I = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, 0.5));
-            //J = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, 0.5));
-            //K = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 1.0));
-            //L = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, 1.0));
-            //M = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 1.0));
-
-            //div = (1.0 / 4.0) * half2(0.5, 0.125);
-
-            //o = (D + E + I + J) * div.x;
-            //o += (A + B + G + F) * div.y;
-            //o += (B + C + H + G) * div.y;
-            //o += (F + G + L + K) * div.y;
-            //o += (G + H + M + L) * div.y;
-
-            //color += o.xyz;
+            uint stencil = GetStencilValue(LOAD_TEXTURE2D_X(_StencilTexture, int2(uv * _ScreenSize.xy)));
+            if ((stencil & 96u) == 32u)
+            {
+                texelSize = _AdditionalBloomColorTexture_TexelSize.x;
+                A = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, -1.0));
+                B = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, -1.0));
+                C = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, -1.0));
+                D = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, -0.5));
+                E = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, -0.5));
+                F = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 0.0));
+                G = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv);
+                H = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 0.0));
+                I = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, 0.5));
+                J = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, 0.5));
+                K = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 1.0));
+                L = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, 1.0));
+                M = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 1.0));
+    
+                div = (1.0 / 4.0) * half2(0.5, 0.125);
+    
+                o = (D + E + I + J) * div.x;
+                o += (A + B + G + F) * div.y;
+                o += (B + C + H + G) * div.y;
+                o += (F + G + L + K) * div.y;
+                o += (G + H + M + L) * div.y;
+    
+                color += o.xyz * o.w * 10.0;
+            }
         #else
             half3 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv).xyz;
-            //half4 colorAdd = SAMPLE_TEXTURE2D_X(_AdditionalBloomColorTexture, sampler_LinearClamp, uv);
-            //color += colorAdd.xyz * colorAdd.w;
+            uint stencil = GetStencilValue(LOAD_TEXTURE2D_X(_StencilTexture, int2(uv * _ScreenSize.xy)));
+            if ((stencil & 96u) == 32u)
+            {
+                half4 colorAdd = LOAD_TEXTURE2D_X(_AdditionalBloomColorTexture, int2(uv * _ScreenSize.xy));
+                color += colorAdd.xyz * colorAdd.w * 10.0;
+            }
         #endif
 
             // User controlled clamp to limit crazy high broken spec

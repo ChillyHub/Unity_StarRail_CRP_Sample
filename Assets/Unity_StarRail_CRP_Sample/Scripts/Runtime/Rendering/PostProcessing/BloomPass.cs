@@ -14,6 +14,7 @@ namespace Unity_StarRail_CRP_Sample
             public static readonly int SourceTexLowMip = Shader.PropertyToID("_SourceTexLowMip");
             public static readonly int BloomTexture = Shader.PropertyToID("_BloomTexture");
             public static readonly int AdditionalBloomColorTexture = Shader.PropertyToID("_AdditionalBloomColorTexture");
+            public static readonly int StencilTexture = Shader.PropertyToID("_StencilTexture");
         }
         
         // Profiling samplers
@@ -51,7 +52,7 @@ namespace Unity_StarRail_CRP_Sample
             _gBufferTextures = gBufferTextures;
         }
         
-        public void Execute(CommandBuffer cmd, RTHandle source)
+        public void Execute(ref RenderingData renderingData, CommandBuffer cmd, RTHandle source)
         {
             var bloom = VolumeManager.instance.stack.GetComponent<CRPBloom>();
 

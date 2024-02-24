@@ -12,7 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _CUSTOMBLOOMCOLORVARENUM_DISABLE
+  - _CUSTOMBLOOMCOLORVARENUM_TINT
   - _CUSTOMBLOOMVARENUM_DISABLE
   - _CUSTOMOUTLINEVARENUM_MULTIPLY
   - _CUSTOMRIMVARENUM_MULTIPLY
@@ -119,7 +119,7 @@ Material:
     - _AnisotropySpecularToggle: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BloomIntensity: 0.37
+    - _BloomIntensity: 0.8
     - _BloomIntensity0: 1
     - _BloomIntensity1: 1
     - _BloomIntensity2: 1
@@ -133,7 +133,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _CullMode: 2
-    - _CustomBloomColorVarEnum: 0
+    - _CustomBloomColorVarEnum: 1
     - _CustomBloomVarEnum: 0
     - _CustomOutlineVarEnum: 1
     - _CustomRampMappingToggle: 1
@@ -183,7 +183,7 @@ Material:
     - _ReceiveShadows: 1
     - _ReceiveShadowsToggle: 1
     - _RenderingMode: 0
-    - _RimIntensity: 1
+    - _RimIntensity: 0.6
     - _RimWidth: 1
     - _RimWidth0: 1
     - _RimWidth1: 1
@@ -238,7 +238,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BloomColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BloomColor: {r: 0.9254902, g: 0.72156864, b: 1, a: 1}
     - _BloomColor0: {r: 1, g: 1, b: 1, a: 1}
     - _BloomColor1: {r: 1, g: 1, b: 1, a: 1}
     - _BloomColor2: {r: 1, g: 1, b: 1, a: 1}
