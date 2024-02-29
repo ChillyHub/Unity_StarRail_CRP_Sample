@@ -49,7 +49,7 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/2d956c18-
 
 ### Demo
 
-Here is a very simple demo for Windows x64: [Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.2)
+Here is a very simple demo for Windows x64: [Demo Release v0.0.3](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.3)
 
 Demo for Android is coming.
 
@@ -73,7 +73,7 @@ Demo for Android is coming.
 >
 > Use ``git lfs clone https://github.com/ChillyHub/Unity_StarRail_CRP_Sample.git`` to clone.
 >
-> If still cannot download it completely, please download the unitypackage package from [Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.1).
+> If still cannot download it completely, please download the unitypackage package from [Demo Release v0.0.3](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.3).
 
 > [!WARNING]
 >

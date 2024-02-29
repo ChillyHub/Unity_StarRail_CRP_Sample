@@ -45,7 +45,7 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/c6adbb45-
 
 ### 实例程序 Demo
 
-下面是一个非常简单的程序实例，基于 Windows 64 平台：[Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.2)
+下面是一个非常简单的程序实例，基于 Windows 64 平台：[Demo Release v0.0.3](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.3)
 
 Android 版 Demo 鸽了。
 
@@ -68,7 +68,7 @@ Android 版 Demo 鸽了。
 >
 > 再运行  ``git lfs clone https://github.com/ChillyHub/Unity_StarRail_CRP_Sample.git`` 克隆。
 >
-> 如果仍然无法完整下载，可以从[Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.2)下载 unitypackage 包。
+> 如果仍然无法完整下载，可以从[Demo Release v0.0.3](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.3)下载 unitypackage 包。
 
 > [!WARNING]
 >
