@@ -22,12 +22,13 @@ An example of a custom rendering pipeline that restores the rendering of HSR
 
 ![5](./Documents~/README.assets/5.png)
 
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/b2778f2f-7ed6-43fa-a1aa-f8636c7432f4
 
-
-
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/847f259c-47a8-4d7f-846b-8b1872e4df36
 
 > **Support Decal Light with Shadow --** 
 
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/b0f7fae2-c645-4997-8faa-c3b4c6153563
 
 
 ##### [New Scene]  Parlor Car:
@@ -40,7 +41,7 @@ An example of a custom rendering pipeline that restores the rendering of HSR
 
 > The character has no self shadow, but can receive scene shadow at the same time.
 
-
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/2d956c18-dd95-41ee-bbd3-9efd5f171f68
 
 > [!TIP]
 >
