@@ -35,7 +35,7 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/b0f7fae2-
 
 > Unfinished
 
-![ParlorCar](./README.assets/ParlorCar.png)
+![ParlorCar](./Documents~/README.assets/ParlorCar.png)
 
 ##### [New Scene]  Characters Show:
 

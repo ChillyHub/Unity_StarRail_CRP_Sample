@@ -34,7 +34,7 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/783b5b65-
 
 > 未完工
 
-![ParlorCar](./README_CN.assets/ParlorCar.png)
+![ParlorCar](./Documents~/README.assets/ParlorCar.png)
 
 ##### [场景] 角色展示：
 
