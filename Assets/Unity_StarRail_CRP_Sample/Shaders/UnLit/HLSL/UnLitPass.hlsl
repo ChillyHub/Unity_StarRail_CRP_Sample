@@ -17,6 +17,7 @@ struct Varyings
 {
     float2 uv                       : TEXCOORD0;
     float3 normalWS                 : TEXCOORD1;
+    float3 positionWS               : TEXCOORD2;
     float4 positionCS               : SV_POSITION;
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -31,6 +32,7 @@ Varyings UnLitPassVertex(Attributes input)
 
     output.uv = GetTransformedUV(input.uv);
     output.normalWS = normalInput.normalWS;
+    output.positionWS = vertexInput.positionWS;
     output.positionCS = vertexInput.positionCS;
 
     return output;

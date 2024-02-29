@@ -63,6 +63,11 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            if (_depthTextures.DepthPyramidTexture == null)
+            {
+                return;
+            }
+
             CommandBuffer cmd = CommandBufferPool.Get();
             using (new ProfilingScope(cmd, _crpCopyDepthProfilingSampler))
             {

@@ -33,4 +33,13 @@ float SampleDepth(float2 uv)
     return SampleDepth(uv, 0).r;
 }
 
+float DeviceDepth(float sampleDepth)
+{
+    #if SHADER_API_GLES || SHADER_API_GLES3 || SHADER_API_GLCORE
+    sampleDepth = sampleDepth * 2.0 - 1.0;
+    #endif
+
+    return sampleDepth;
+}
+
 #endif

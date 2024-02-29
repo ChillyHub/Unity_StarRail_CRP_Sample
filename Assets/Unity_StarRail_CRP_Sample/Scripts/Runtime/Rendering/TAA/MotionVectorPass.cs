@@ -106,10 +106,10 @@ namespace Unity_StarRail_CRP_Sample
                 
                 // Draw Object Motion Vector
                 var drawingSettings = CreateDrawingSettings(_objectShaderTagIds, ref renderingData, cameraData.defaultOpaqueSortFlags);
-                drawingSettings.perObjectData = PerObjectData.MotionVectors;
+                drawingSettings.perObjectData |= PerObjectData.MotionVectors;
 
                 context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref _filteringSettings);
-                
+
                 // Set Motion Vector Texture
                 cmd.SetGlobalTexture(ShaderIds.MotionVectorTexture, _motionVectorTexture.nameID);
                 
@@ -134,10 +134,10 @@ namespace Unity_StarRail_CRP_Sample
             ref CameraData cameraData = ref renderingData.cameraData;
             Camera camera = cameraData.camera;
 
-            if (camera.cameraType == CameraType.Preview)
-            {
-                return false;
-            }
+            //if (camera.cameraType == CameraType.Preview)
+            //{
+            //    return false;
+            //}
 
             if (_cameraMotionMaterial == null)
             {

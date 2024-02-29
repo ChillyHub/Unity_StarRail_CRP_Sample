@@ -30,7 +30,13 @@ namespace Unity_StarRail_CRP_Sample
         public ref RTHandle ScreenSpaceShadowTexture => ref _shadowTextures[0];
         public ref RTHandle CharacterShadowTexture => ref _shadowTextures[1];
 
-        private RTHandle[] _shadowTextures = new RTHandle[2];
+        private readonly RTHandle[] _shadowTextures = new RTHandle[2];
+        
+        public ShadowTextures()
+        {
+            _shadowTextures[0] = RTHandles.Alloc(1, 1);
+            _shadowTextures[1] = RTHandles.Alloc(1, 1);
+        }
         
         public void ReAllocIfNeed(RenderTextureDescriptor descriptor)
         {
@@ -47,23 +53,25 @@ namespace Unity_StarRail_CRP_Sample
 
         public void Release()
         {
-            _shadowTextures[0]?.Release();
-            _shadowTextures[1]?.Release();
+            RTHandles.Release(_shadowTextures[0]);
+            RTHandles.Release(_shadowTextures[1]);
+            _shadowTextures[0] = null;
+            _shadowTextures[1] = null;
         }
     }
 
-    public class CharacterShadowData
-    {
-        //public readonly Matrix4x4[] 
-    }
+    //public class CharacterShadowData
+    //{
+    //    //public readonly Matrix4x4[] 
+    //}
     
-    public class ShadowTexturesManager
-    {
-        private static readonly Lazy<ShadowTexturesManager> Ins =
-            new Lazy<ShadowTexturesManager>(() => new ShadowTexturesManager());
-
-        public static ShadowTextures Textures => Ins.Value.ShadowTextures;
-
-        public readonly ShadowTextures ShadowTextures = new ShadowTextures();
-    }
+    //public class ShadowTexturesManager
+    //{
+    //    private static readonly Lazy<ShadowTexturesManager> Ins =
+    //        new Lazy<ShadowTexturesManager>(() => new ShadowTexturesManager());
+    //
+    //    public static ShadowTextures Textures => Ins.Value.ShadowTextures;
+    //
+    //    public readonly ShadowTextures ShadowTextures = new ShadowTextures();
+    //}
 }

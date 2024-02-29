@@ -38,6 +38,7 @@ namespace Unity_StarRail_CRP_Sample
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
+        private InputActionMap _player;
         private InputAction _moveAction;
         private InputAction _walkMoveAction;
         private InputAction _lookAction;
@@ -106,12 +107,13 @@ namespace Unity_StarRail_CRP_Sample
 
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
-            _moveAction = _playerInput.actions["Move"];
-            _walkMoveAction = _playerInput.actions["WalkMove"];
-            _lookAction = _playerInput.actions["Look"];
-            _walkAction = _playerInput.actions["Walk"];
-            _fastRunAction = _playerInput.actions["FastRun"];
-            _zoomAction = _playerInput.actions["Zoom"];
+            _player = _playerInput.actions.FindActionMap("Player");
+            _moveAction = _player.FindAction("Move");
+            _walkMoveAction = _player.FindAction("WalkMove");
+            _lookAction = _player.FindAction("Look");
+            _walkAction = _player.FindAction("Walk");
+            _fastRunAction = _player.FindAction("FastRun");
+            _zoomAction = _player.FindAction("Zoom");
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
@@ -141,6 +143,19 @@ namespace Unity_StarRail_CRP_Sample
         private void LateUpdate()
         {
             CameraRotation();
+        }
+
+        private void OnDestroy()
+        {
+#if ENABLE_INPUT_SYSTEM 
+            _player.Disable();
+            //_moveAction.Disable();
+            //_walkMoveAction.Disable();
+            //_lookAction.Disable();
+            //_walkAction.Disable();
+            //_fastRunAction.Disable();
+            //_zoomAction.Disable();
+#endif
         }
 
         private void OnDrawGizmosSelected()

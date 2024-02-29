@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: CRP Deferred Rendering Pipeline
   m_EditorClassIdentifier: 
   m_Active: 1
+  decalMaxDrawDistance: 1000
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -89,13 +89,8 @@ half4 WhiteFragment(Varyings1 input) : SV_Target
 half4 DirectionalShadowFragment(Varyings input) : SV_Target
 {
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-
-    #if UNITY_REVERSED_Z
-    float deviceDepth = SampleDepth(input.texcoord.xy);
-    #else
-    float deviceDepth = SampleDepth(input.texcoord.xy);
-    deviceDepth = deviceDepth * 2.0 - 1.0;
-    #endif
+    
+    float deviceDepth = DeviceDepth(SampleDepth(input.texcoord.xy));
 
     //Fetch shadow coordinates for cascade.
     float3 wpos = ComputeWorldSpacePosition(input.texcoord.xy, deviceDepth, unity_MatrixInvVP);
@@ -111,12 +106,7 @@ half4 AdditionalShadowFragment(Varyings1 input) : SV_Target
 {
     float2 uv = input.screenUV.xy / input.screenUV.z;
     
-    #if UNITY_REVERSED_Z
-    float deviceDepth = SampleDepth(uv);
-    #else
-    float deviceDepth = SampleDepth(uv);
-    deviceDepth = deviceDepth * 2.0 - 1.0;
-    #endif
+    float deviceDepth = DeviceDepth(SampleDepth(uv));
 
     //Fetch shadow coordinates for cascade.
     float3 wpos = ComputeWorldSpacePosition(uv, deviceDepth, unity_MatrixInvVP);
@@ -137,12 +127,7 @@ half4 CharacterShadowFragment(Varyings1 input) : SV_Target
 {
     float2 uv = input.screenUV.xy / input.screenUV.z;
     
-    //#if UNITY_REVERSED_Z
-    float deviceDepth = SampleDepth(uv);
-    //#else
-    //float deviceDepth = SampleDepth(uv);
-    //deviceDepth = deviceDepth * 2.0 - 1.0;
-    //#endif
+    float deviceDepth = DeviceDepth(SampleDepth(uv));
 
     //Fetch shadow coordinates for cascade.
     float3 wpos = ComputeWorldSpacePosition(uv, deviceDepth, unity_MatrixInvVP);

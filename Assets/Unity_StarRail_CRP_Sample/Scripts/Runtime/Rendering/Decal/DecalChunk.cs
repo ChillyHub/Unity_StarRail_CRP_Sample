@@ -19,13 +19,13 @@ namespace Unity_StarRail_CRP_Sample
 
         public virtual void Dispose() { }
 
-        protected void ResizeNativeArray(ref TransformAccessArray array, DecalRenderer[] decalRenderers, int capacity)
+        protected void ResizeNativeArray(ref TransformAccessArray array, DecalProjector[] decalProjectors, int capacity)
         {
             var newArray = new TransformAccessArray(capacity);
             if (array.isCreated)
             {
                 for (int i = 0; i < array.length; ++i)
-                    newArray.Add(decalRenderers[i].transform);
+                    newArray.Add(decalProjectors[i].transform);
                 array.Dispose();
             }
             array = newArray;

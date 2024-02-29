@@ -40,11 +40,11 @@ namespace Unity_StarRail_CRP_Sample
                     decal.decalEntity = _decalEntityManager.CreateDecalEntity(decal);
                 }
                 
-                DecalRenderer.onDecalAdd += OnDecalAdd;
-                DecalRenderer.onDecalRemove += OnDecalRemove;
-                DecalRenderer.onDecalPropertyChange += OnDecalPropertyChange;
-                DecalRenderer.onDecalMaterialChange += OnDecalMaterialChange;
-                DecalRenderer.onAllDecalPropertyChange += OnAllDecalPropertyChange;
+                DecalRenderer.onDecalRendererAdd += OnDecalAdd;
+                DecalRenderer.onDecalRendererRemove += OnDecalRemove;
+                DecalRenderer.onDecalRendererPropertyChange += OnDecalPropertyChange;
+                DecalRenderer.onDecalRendererMaterialChange += OnDecalMaterialChange;
+                DecalRenderer.onAllDecalRendererPropertyChange += OnAllDecalPropertyChange;
             }
 
             _referenceCount++;
@@ -52,7 +52,7 @@ namespace Unity_StarRail_CRP_Sample
             return _decalEntityManager;
         }
         
-        public void Release(CharacterEntityManager characterEntityManager)
+        public void Release(DecalEntityManager decalEntityManager)
         {
             if (_referenceCount == 0)
             {
@@ -73,25 +73,25 @@ namespace Unity_StarRail_CRP_Sample
             _decalEntityManager = null;
             _referenceCount = 0;
             
-            DecalRenderer.onDecalAdd -= OnDecalAdd;
-            DecalRenderer.onDecalRemove -= OnDecalRemove;
-            DecalRenderer.onDecalPropertyChange -= OnDecalPropertyChange;
-            DecalRenderer.onDecalMaterialChange -= OnDecalMaterialChange;
-            DecalRenderer.onAllDecalPropertyChange -= OnAllDecalPropertyChange;
+            DecalRenderer.onDecalRendererAdd -= OnDecalAdd;
+            DecalRenderer.onDecalRendererRemove -= OnDecalRemove;
+            DecalRenderer.onDecalRendererPropertyChange -= OnDecalPropertyChange;
+            DecalRenderer.onDecalRendererMaterialChange -= OnDecalMaterialChange;
+            DecalRenderer.onAllDecalRendererPropertyChange -= OnAllDecalPropertyChange;
         }
         
-        private void OnDecalAdd(DecalRenderer decalProjector)
+        private void OnDecalAdd(DecalProjector decalProjector)
         {
             if (!_decalEntityManager.IsValid(decalProjector.decalEntity))
                 decalProjector.decalEntity = _decalEntityManager.CreateDecalEntity(decalProjector);
         }
 
-        private void OnDecalRemove(DecalRenderer decalProjector)
+        private void OnDecalRemove(DecalProjector decalProjector)
         {
             _decalEntityManager.DestroyDecalEntity(decalProjector.decalEntity);
         }
 
-        private void OnDecalPropertyChange(DecalRenderer decalProjector)
+        private void OnDecalPropertyChange(DecalProjector decalProjector)
         {
             if (_decalEntityManager.IsValid(decalProjector.decalEntity))
                 _decalEntityManager.UpdateDecalEntityData(decalProjector.decalEntity, decalProjector);
@@ -103,7 +103,7 @@ namespace Unity_StarRail_CRP_Sample
             _decalEntityManager.UpdateAllDecalEntitiesData();
         }
 
-        private void OnDecalMaterialChange(DecalRenderer decalProjector)
+        private void OnDecalMaterialChange(DecalProjector decalProjector)
         {
             // Decal will end up in new chunk after material change
             OnDecalRemove(decalProjector);
@@ -116,7 +116,7 @@ namespace Unity_StarRail_CRP_Sample
         public List<DecalEntityChunk> entityChunks = new List<DecalEntityChunk>();
         public List<DecalCachedChunk> cachedChunks = new List<DecalCachedChunk>();
         public List<DecalCulledChunk> culledChunks = new List<DecalCulledChunk>();
-        public List<DecalObjectDrawCallChunk> objectDrawCallChunks = new List<DecalObjectDrawCallChunk>();
+        public List<DecalDrawCallChunk> objectDrawCallChunks = new List<DecalDrawCallChunk>();
         public int chunkCount;
 
         private ProfilingSampler m_AddDecalSampler;
@@ -131,7 +131,7 @@ namespace Unity_StarRail_CRP_Sample
             public DecalEntityChunk entityChunk;
             public DecalCachedChunk cachedChunk;
             public DecalCulledChunk culledChunk;
-            public DecalObjectDrawCallChunk objectDrawCallChunk;
+            [FormerlySerializedAs("objectDrawCallChunk")] public DecalDrawCallChunk drawCallChunk;
             public int previousChunkIndex;
             public bool valid;
         }
@@ -172,9 +172,9 @@ namespace Unity_StarRail_CRP_Sample
             return _mDecalEntityIndexer.IsValid(decalEntity);
         }
 
-        public DecalEntity CreateDecalEntity(DecalRenderer decalRenderer)
+        public DecalEntity CreateDecalEntity(DecalProjector decalProjector)
         {
-            var material = decalRenderer.Material;
+            var material = decalProjector.material;
             if (material == null)
                 material = errorMaterial;
 
@@ -188,7 +188,7 @@ namespace Unity_StarRail_CRP_Sample
                 DecalEntityChunk entityChunk = entityChunks[chunkIndex];
                 DecalCachedChunk cachedChunk = cachedChunks[chunkIndex];
                 DecalCulledChunk culledChunk = culledChunks[chunkIndex];
-                DecalObjectDrawCallChunk objectDrawCallChunk = objectDrawCallChunks[chunkIndex];
+                DecalDrawCallChunk drawCallChunk = objectDrawCallChunks[chunkIndex];
 
                 // Make sure we have space to add new entity
                 if (entityChunks[chunkIndex].capacity == entityChunks[chunkIndex].count)
@@ -201,20 +201,20 @@ namespace Unity_StarRail_CRP_Sample
                         entityChunk.SetCapacity(newCapacity);
                         cachedChunk.SetCapacity(newCapacity);
                         culledChunk.SetCapacity(newCapacity);
-                        objectDrawCallChunk.SetCapacity(newCapacity);
+                        drawCallChunk.SetCapacity(newCapacity);
                     }
                 }
 
                 entityChunk.Push();
                 cachedChunk.Push();
                 culledChunk.Push();
-                objectDrawCallChunk.Push();
+                drawCallChunk.Push();
 
-                entityChunk.decalRenderers[entityIndex] = decalRenderer;
+                entityChunk.DecalProjectors[entityIndex] = decalProjector;
                 entityChunk.decalEntities[entityIndex] = entity;
-                entityChunk.transformAccessArray.Add(decalRenderer.transform);
+                entityChunk.transformAccessArray.Add(decalProjector.transform);
 
-                UpdateDecalEntityData(entity, decalRenderer);
+                UpdateDecalEntityData(entity, decalProjector);
 
                 return entity;
             }
@@ -237,7 +237,7 @@ namespace Unity_StarRail_CRP_Sample
                 });
 
                 culledChunks.Add(new DecalCulledChunk());
-                objectDrawCallChunks.Add(new DecalObjectDrawCallChunk() { subCallCounts = new NativeArray<int>(1, Allocator.Persistent) });
+                objectDrawCallChunks.Add(new DecalDrawCallChunk() { subCallCounts = new NativeArray<int>(1, Allocator.Persistent) });
 
                 m_CombinedChunks.Add(new CombinedChunks());
                 m_CombinedChunkRemmap.Add(0);
@@ -255,20 +255,20 @@ namespace Unity_StarRail_CRP_Sample
             {
                 for (int i = 0; i < entityChunk.count; ++i)
                 {
-                    var decalProjector = entityChunk.decalRenderers[i];
-                    if (decalProjector == null)
+                    var decalRenderer = entityChunk.DecalProjectors[i];
+                    if (decalRenderer == null)
                         continue;
 
                     var entity = entityChunk.decalEntities[i];
                     if (!IsValid(entity))
                         continue;
 
-                    UpdateDecalEntityData(entity, decalProjector);
+                    UpdateDecalEntityData(entity, decalRenderer);
                 }
             }
         }
 
-        public void UpdateDecalEntityData(DecalEntity decalEntity, DecalRenderer decalRenderer)
+        public void UpdateDecalEntityData(DecalEntity decalEntity, DecalProjector decalProjector)
         {
             var decalItem = _mDecalEntityIndexer.GetItem(decalEntity);
 
@@ -277,16 +277,16 @@ namespace Unity_StarRail_CRP_Sample
 
             DecalCachedChunk cachedChunk = cachedChunks[chunkIndex];
 
-            cachedChunk.sizeOffsets[arrayIndex] = Matrix4x4.Translate(decalRenderer.decalOffset) * Matrix4x4.Scale(decalRenderer.decalSize);
+            cachedChunk.sizeOffsets[arrayIndex] = Matrix4x4.Translate(decalProjector.decalOffset) * Matrix4x4.Scale(decalProjector.decalSize);
 
-            float drawDistance = decalRenderer.DrawDistance;
-            float fadeScale = decalRenderer.fadeScale;
-            float startAngleFade = decalRenderer.startAngleFade;
-            float endAngleFade = decalRenderer.endAngleFade;
-            Vector4 uvScaleBias = decalRenderer.uvScaleBias;
-            int layerMask = decalRenderer.gameObject.layer;
-            ulong sceneLayerMask = decalRenderer.gameObject.sceneCullingMask;
-            float fadeFactor = decalRenderer.fadeFactor;
+            float drawDistance = decalProjector.drawDistance;
+            float fadeScale = decalProjector.fadeScale;
+            float startAngleFade = decalProjector.startAngleFade;
+            float endAngleFade = decalProjector.endAngleFade;
+            Vector4 uvScaleBias = decalProjector.uvScaleBias;
+            int layerMask = decalProjector.gameObject.layer;
+            ulong sceneLayerMask = decalProjector.gameObject.sceneCullingMask;
+            float fadeFactor = decalProjector.fadeFactor;
 
             cachedChunk.drawDistances[arrayIndex] = new Vector2(drawDistance, fadeScale);
             // In the shader to remap from cosine -1 to 1 to new range 0..1  (with 0 - 0 degree and 1 - 180 degree)
@@ -310,12 +310,14 @@ namespace Unity_StarRail_CRP_Sample
             cachedChunk.layerMasks[arrayIndex] = layerMask;
             cachedChunk.sceneLayerMasks[arrayIndex] = sceneLayerMask;
             cachedChunk.fadeFactors[arrayIndex] = fadeFactor;
-            cachedChunk.scaleModes[arrayIndex] = decalRenderer.scaleMode;
-            cachedChunk.renderingLayerMasks[arrayIndex] = ToValidRenderingLayers(decalRenderer.renderingLayerMask);
+            cachedChunk.scaleModes[arrayIndex] = decalProjector.scaleMode;
+            cachedChunk.renderingLayerMasks[arrayIndex] = ToValidRenderingLayers(decalProjector.renderingLayerMask);
+            
+            cachedChunk.lightColors[arrayIndex] = (Vector4)decalProjector.lightColor;
 
-            cachedChunk.positions[arrayIndex] = decalRenderer.transform.position;
-            cachedChunk.rotation[arrayIndex] = decalRenderer.transform.rotation;
-            cachedChunk.scales[arrayIndex] = decalRenderer.transform.lossyScale;
+            cachedChunk.positions[arrayIndex] = decalProjector.transform.position;
+            cachedChunk.rotation[arrayIndex] = decalProjector.transform.rotation;
+            cachedChunk.scales[arrayIndex] = decalProjector.transform.lossyScale;
             cachedChunk.dirty[arrayIndex] = true;
         }
 
@@ -333,7 +335,7 @@ namespace Unity_StarRail_CRP_Sample
             DecalEntityChunk entityChunk = entityChunks[chunkIndex];
             DecalCachedChunk cachedChunk = cachedChunks[chunkIndex];
             DecalCulledChunk culledChunk = culledChunks[chunkIndex];
-            DecalObjectDrawCallChunk objectDrawCallChunk = objectDrawCallChunks[chunkIndex];
+            DecalDrawCallChunk drawCallChunk = objectDrawCallChunks[chunkIndex];
 
             int lastArrayIndex = entityChunk.count - 1;
             if (arrayIndex != lastArrayIndex)
@@ -342,7 +344,7 @@ namespace Unity_StarRail_CRP_Sample
             entityChunk.RemoveAtSwapBack(arrayIndex);
             cachedChunk.RemoveAtSwapBack(arrayIndex);
             culledChunk.RemoveAtSwapBack(arrayIndex);
-            objectDrawCallChunk.RemoveAtSwapBack(arrayIndex);
+            drawCallChunk.RemoveAtSwapBack(arrayIndex);
         }
 
         public void Update()
@@ -363,7 +365,7 @@ namespace Unity_StarRail_CRP_Sample
                         entityChunk = entityChunks[i],
                         cachedChunk = cachedChunks[i],
                         culledChunk = culledChunks[i],
-                        objectDrawCallChunk = objectDrawCallChunks[i],
+                        drawCallChunk = objectDrawCallChunks[i],
                         previousChunkIndex = i,
                         valid = entityChunks[i].count != 0,
                     };
@@ -411,12 +413,12 @@ namespace Unity_StarRail_CRP_Sample
                         combinedChunk.entityChunk.currentJobHandle.Complete();
                         combinedChunk.cachedChunk.currentJobHandle.Complete();
                         combinedChunk.culledChunk.currentJobHandle.Complete();
-                        combinedChunk.objectDrawCallChunk.currentJobHandle.Complete();
+                        combinedChunk.drawCallChunk.currentJobHandle.Complete();
 
                         combinedChunk.entityChunk.Dispose();
                         combinedChunk.cachedChunk.Dispose();
                         combinedChunk.culledChunk.Dispose();
-                        combinedChunk.objectDrawCallChunk.Dispose();
+                        combinedChunk.drawCallChunk.Dispose();
 
                         continue;
                     }
@@ -424,7 +426,7 @@ namespace Unity_StarRail_CRP_Sample
                     entityChunks[i] = combinedChunk.entityChunk;
                     cachedChunks[i] = combinedChunk.cachedChunk;
                     culledChunks[i] = combinedChunk.culledChunk;
-                    objectDrawCallChunks[i] = combinedChunk.objectDrawCallChunk;
+                    objectDrawCallChunks[i] = combinedChunk.drawCallChunk;
                     if (!m_MaterialToChunkIndex.ContainsKey(entityChunks[i].material))
                         m_MaterialToChunkIndex.Add(entityChunks[i].material, i);
                     m_CombinedChunkRemmap[combinedChunk.previousChunkIndex] = i;
@@ -501,7 +503,7 @@ namespace Unity_StarRail_CRP_Sample
     {
         public Material material;
         public NativeArray<DecalEntity> decalEntities;
-        public DecalRenderer[] decalRenderers;
+        public DecalProjector[] DecalProjectors;
         public TransformAccessArray transformAccessArray;
 
         public override void Push()
@@ -512,7 +514,7 @@ namespace Unity_StarRail_CRP_Sample
         public override void RemoveAtSwapBack(int entityIndex)
         {
             RemoveAtSwapBack(ref decalEntities, entityIndex, count);
-            RemoveAtSwapBack(ref decalRenderers, entityIndex, count);
+            RemoveAtSwapBack(ref DecalProjectors, entityIndex, count);
             transformAccessArray.RemoveAtSwapBack(entityIndex);
             count--;
         }
@@ -520,8 +522,8 @@ namespace Unity_StarRail_CRP_Sample
         public override void SetCapacity(int newCapacity)
         {
             decalEntities.ResizeArray(newCapacity);
-            ResizeNativeArray(ref transformAccessArray, decalRenderers, newCapacity);
-            ArrayExtensions.ResizeArray(ref decalRenderers, newCapacity);
+            ResizeNativeArray(ref transformAccessArray, DecalProjectors, newCapacity);
+            ArrayExtensions.ResizeArray(ref DecalProjectors, newCapacity);
             capacity = newCapacity;
         }
 
@@ -532,7 +534,7 @@ namespace Unity_StarRail_CRP_Sample
 
             decalEntities.Dispose();
             transformAccessArray.Dispose();
-            decalRenderers = null;
+            DecalProjectors = null;
             count = 0;
             capacity = 0;
         }

@@ -93,7 +93,7 @@ QualitySettings:
     asyncUploadTimeSlice: 2
     asyncUploadBufferSize: 16
     asyncUploadPersistentBuffer: 1
-    resolutionScalingFixedDPIFactor: 1
+    resolutionScalingFixedDPIFactor: 0.8
     customRenderPipeline: {fileID: 11400000, guid: a7e754c988451bd47882a3e1018c1e76,
       type: 2}
     terrainQualityOverrides: 0
@@ -158,7 +158,7 @@ QualitySettings:
     excludedTargetPlatforms: []
   m_TextureMipmapLimitGroupNames: []
   m_PerPlatformDefaultQuality:
-    Android: 2
+    Android: 1
     CloudRendering: 2
     GameCoreScarlett: 2
     GameCoreXboxOne: 2

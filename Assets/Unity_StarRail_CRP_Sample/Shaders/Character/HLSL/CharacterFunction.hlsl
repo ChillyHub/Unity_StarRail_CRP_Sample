@@ -88,21 +88,6 @@ half3 GrayColor(half3 color)
     return gray.xxx;
 }
 
-void DoDitherAlphaEffect(float4 svPosition, float ditherAlpha)
-{
-    static const float4 thresholds[4] =
-    {
-        float4(01.0 / 17.0, 09.0 / 17.0, 03.0 / 17.0, 11.0 / 17.0),
-        float4(13.0 / 17.0, 05.0 / 17.0, 15.0 / 17.0, 07.0 / 17.0),
-        float4(04.0 / 17.0, 12.0 / 17.0, 02.0 / 17.0, 10.0 / 17.0),
-        float4(16.0 / 17.0, 08.0 / 17.0, 14.0 / 17.0, 06.0 / 17.0)
-    };
-
-    uint xIndex = fmod(svPosition.x - 0.5, 4);
-    uint yIndex = fmod(svPosition.y - 0.5, 4);
-    clip(ditherAlpha - thresholds[yIndex][xIndex]);
-}
-
 half3 RenderStocking(Surface surface, float3 normalWS, float3 viewDirWS, float3 brightColor, float3 darkColor,
     float power, float darkWidth, float thickness)
 {

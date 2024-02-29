@@ -38,8 +38,14 @@ float4 GetCharacterShadowCoord(int characterIndex, float3 positionWS)
 {
     float4 shadowCoord = mul(_CharacterLightWorldToShadow[characterIndex], float4(positionWS, 1.0));
 
+    #if SHADER_API_GLES || SHADER_API_GLES3 || SHADER_API_GLCORE
+    shadowCoord.xy = saturate(shadowCoord.xy);
+    shadowCoord.z = clamp(shadowCoord.z, -1.0, 1.0);
+    shadowCoord.z -= 0.0001;
+    #else
     shadowCoord = saturate(shadowCoord);
     shadowCoord.z += 0.0001;
+    #endif
 
     return float4(shadowCoord.xyz, 0);
 }

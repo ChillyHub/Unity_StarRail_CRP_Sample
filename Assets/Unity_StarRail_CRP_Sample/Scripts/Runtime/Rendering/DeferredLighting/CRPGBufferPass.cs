@@ -130,10 +130,12 @@ namespace Unity_StarRail_CRP_Sample
                 if (_gBufferTextures != null)
                 {
                     _gBufferTextures.GBuffers[2] = cameraData.renderer.cameraColorTargetHandle;
+                    cmd.SetRenderTarget(_gBufferTextures.GBufferIds01, cameraData.renderer.cameraDepthTargetHandle.nameID);
+                    
+                    cmd.ClearRenderTarget(true, true, Color.clear);
+                    
                     cmd.SetRenderTarget(_gBufferTextures.GBufferIds, cameraData.renderer.cameraDepthTargetHandle.nameID);
                 }
-                
-                cmd.ClearRenderTarget(true, true, Color.clear);
 
                 CoreUtils.SetKeyword(cmd, "_GBUFFER_NORMALS_OCT", true);
 
@@ -151,7 +153,7 @@ namespace Unity_StarRail_CRP_Sample
                 context.DrawRenderers(renderingData.cullResults, 
                     ref unlitDrawingSettings, ref _filteringSettings, ref _unlitRenderStateBlock);
 
-                cmd.SetRenderTarget(cameraData.renderer.cameraColorTargetHandle, cameraData.renderer.cameraDepthTargetHandle);
+                cmd.SetRenderTarget(cameraData.renderer.cameraColorTargetHandle.nameID, cameraData.renderer.cameraDepthTargetHandle.nameID);
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);

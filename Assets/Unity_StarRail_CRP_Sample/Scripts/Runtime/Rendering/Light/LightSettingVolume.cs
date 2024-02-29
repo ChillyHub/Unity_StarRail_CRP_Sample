@@ -264,20 +264,12 @@ namespace Unity_StarRail_CRP_Sample
             //Debug.Log($"Rotation1: {from}, Rotation2: {to}, T: {_rotationLerpInfo.T}");
             _rotationLerpInfo = new RotationLerpInfo()
             {
-                Rotation1 = from,
+                Rotation1 = to,
                 Rotation2 = to,
                 T = t
             };
-        }
-
-        public override object Clone()
-        {
-            var t = new RotationParameter(GetValue<Vector3>(), overrideState)
-            { 
-                _rotationLerpInfo = RotationLerpInfo
-            };
-
-            return t;
+            
+            value = from;
         }
 
         public Vector3 Rotation1ToDirection()
@@ -309,7 +301,7 @@ namespace Unity_StarRail_CRP_Sample
         {
             _colorLerpInfo = new ColorLerpInfo()
             {
-                Color1 = from,
+                Color1 = to,
                 Color2 = to,
                 T = t
             };

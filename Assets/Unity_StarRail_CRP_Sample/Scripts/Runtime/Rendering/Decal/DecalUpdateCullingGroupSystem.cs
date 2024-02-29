@@ -104,7 +104,7 @@ namespace Unity_StarRail_CRP_Sample
 #endif
         }
 
-        internal static UInt64 GetSceneCullingMaskFromCamera(Camera camera)
+        private static UInt64 GetSceneCullingMaskFromCamera(Camera camera)
         {
 #if UNITY_EDITOR
             if (camera.overrideSceneCullingMask != 0)

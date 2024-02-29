@@ -16,8 +16,9 @@ namespace Unity_StarRail_CRP_Sample
     /// <summary>
     /// Contains information about <see cref="DecalEntity"/> draw calls.
     /// </summary>
-    public class DecalObjectDrawCallChunk : DecalChunk
+    public class DecalDrawCallChunk : DecalChunk
     {
+        public NativeArray<float4> lightColors;
         public NativeArray<float4x4> decalToWorlds;
         public NativeArray<float4x4> normalToDecals;
         public NativeArray<float> renderingLayerMasks;
@@ -28,6 +29,7 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void RemoveAtSwapBack(int entityIndex)
         {
+            RemoveAtSwapBack(ref lightColors, entityIndex, count);
             RemoveAtSwapBack(ref decalToWorlds, entityIndex, count);
             RemoveAtSwapBack(ref normalToDecals, entityIndex, count);
             RemoveAtSwapBack(ref renderingLayerMasks, entityIndex, count);
@@ -37,6 +39,7 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void SetCapacity(int newCapacity)
         {
+            lightColors.ResizeArray(newCapacity);
             decalToWorlds.ResizeArray(newCapacity);
             normalToDecals.ResizeArray(newCapacity);
             renderingLayerMasks.ResizeArray(newCapacity);
@@ -51,6 +54,7 @@ namespace Unity_StarRail_CRP_Sample
             if (capacity == 0)
                 return;
 
+            lightColors.Dispose();
             decalToWorlds.Dispose();
             normalToDecals.Dispose();
             renderingLayerMasks.Dispose();
@@ -61,7 +65,7 @@ namespace Unity_StarRail_CRP_Sample
     }
 
     /// <summary>
-    /// Outputs draw calls into <see cref="DecalObjectDrawCallChunk"/>.
+    /// Outputs draw calls into <see cref="DecalDrawCallChunk"/>.
     /// </summary>
     public class DecalCreateDrawCallSystem
     {
@@ -94,13 +98,14 @@ namespace Unity_StarRail_CRP_Sample
             }
         }
 
-        private void Execute(DecalCachedChunk cachedChunk, DecalCulledChunk culledChunk, DecalObjectDrawCallChunk objectDrawCallChunk, int count)
+        private void Execute(DecalCachedChunk cachedChunk, DecalCulledChunk culledChunk, DecalDrawCallChunk drawCallChunk, int count)
         {
             if (count == 0)
                 return;
 
             DrawCallJob drawCallJob = new DrawCallJob()
             {
+                lightColors = cachedChunk.lightColors,
                 decalToWorlds = cachedChunk.decalToWorlds,
                 normalToWorlds = cachedChunk.normalToWorlds,
                 sizeOffsets = cachedChunk.sizeOffsets,
@@ -120,15 +125,16 @@ namespace Unity_StarRail_CRP_Sample
                 visibleDecalCount = culledChunk.visibleDecalCount,
                 maxDrawDistance = m_MaxDrawDistance,
 
-                decalToWorldsDraw = objectDrawCallChunk.decalToWorlds,
-                normalToDecalsDraw = objectDrawCallChunk.normalToDecals,
-                renderingLayerMasksDraw = objectDrawCallChunk.renderingLayerMasks,
-                subCalls = objectDrawCallChunk.subCalls,
-                subCallCount = objectDrawCallChunk.subCallCounts,
+                lightColorsDraw = drawCallChunk.lightColors,
+                decalToWorldsDraw = drawCallChunk.decalToWorlds,
+                normalToDecalsDraw = drawCallChunk.normalToDecals,
+                renderingLayerMasksDraw = drawCallChunk.renderingLayerMasks,
+                subCalls = drawCallChunk.subCalls,
+                subCallCount = drawCallChunk.subCallCounts,
             };
 
             var handle = drawCallJob.Schedule(cachedChunk.currentJobHandle);
-            objectDrawCallChunk.currentJobHandle = handle;
+            drawCallChunk.currentJobHandle = handle;
             cachedChunk.currentJobHandle = handle;
         }
 
@@ -137,6 +143,7 @@ namespace Unity_StarRail_CRP_Sample
 #endif
         struct DrawCallJob : IJob
         {
+            [ReadOnly] public NativeArray<float4> lightColors;
             [ReadOnly] public NativeArray<float4x4> decalToWorlds;
             [ReadOnly] public NativeArray<float4x4> normalToWorlds;
             [ReadOnly] public NativeArray<float4x4> sizeOffsets;
@@ -156,6 +163,7 @@ namespace Unity_StarRail_CRP_Sample
             public int visibleDecalCount;
             public float maxDrawDistance;
 
+            [WriteOnly] public NativeArray<float4> lightColorsDraw;
             [WriteOnly] public NativeArray<float4x4> decalToWorldsDraw;
             [WriteOnly] public NativeArray<float4x4> normalToDecalsDraw;
             [WriteOnly] public NativeArray<float> renderingLayerMasksDraw;
@@ -189,6 +197,7 @@ namespace Unity_StarRail_CRP_Sample
                     if (distanceToDecal > cullDistance)
                         continue;
 
+                    lightColorsDraw[instanceIndex] = lightColors[decalIndex];
                     decalToWorldsDraw[instanceIndex] = decalToWorlds[decalIndex];
 
                     float fadeFactorScaler = fadeFactors[decalIndex];

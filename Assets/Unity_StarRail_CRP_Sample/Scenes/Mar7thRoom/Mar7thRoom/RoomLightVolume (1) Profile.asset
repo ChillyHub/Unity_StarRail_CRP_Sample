@@ -47,7 +47,7 @@ MonoBehaviour:
       type: 3}
   overrideMainLightColor:
     m_OverrideState: 1
-    m_Value: {r: 0.8679245, g: 0.69480747, b: 0.6255607, a: 1}
+    m_Value: {r: 1, g: 0.908805, b: 0.89056605, a: 1}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

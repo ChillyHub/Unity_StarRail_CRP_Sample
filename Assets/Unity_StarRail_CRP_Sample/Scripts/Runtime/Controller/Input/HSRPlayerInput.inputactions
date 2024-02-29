@@ -313,6 +313,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Up",
+                    "type": "Value",
+                    "id": "8e405006-6ede-4dbd-945a-6fc464f82ba6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Down",
+                    "type": "Value",
+                    "id": "b2dcf495-dad9-4164-b3e1-13846bd438fb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -409,7 +427,7 @@
                     "id": "c1dfa372-fa88-40dc-8e14-70923cef248f",
                     "path": "OneModifier",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.3,y=0.3)",
                     "groups": "",
                     "action": "Look",
                     "isComposite": true,
@@ -445,6 +463,50 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Shift",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5dcc4c05-0bf8-44ff-b2d3-3cc26cb91264",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97f8185d-3710-4bd6-b2b9-3fb82b49d326",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1b1b57f6-597d-4216-878f-318d3ba156d9",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b57df853-6c96-4a2c-bf67-04e48141535f",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

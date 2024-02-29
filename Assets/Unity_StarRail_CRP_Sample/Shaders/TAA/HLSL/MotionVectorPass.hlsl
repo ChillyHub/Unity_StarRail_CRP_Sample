@@ -63,7 +63,7 @@ half4 CameraMotionVectorFragment(VaryingsMV input) : SV_Target
 
     float2 uv = input.position.xy / _ScaledScreenParams.xy;
 
-    float depth = SampleDepth(uv);
+    float depth = DeviceDepth(SampleDepth(uv));
 
     #if !UNITY_REVERSED_Z
     depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleDepth(uv));

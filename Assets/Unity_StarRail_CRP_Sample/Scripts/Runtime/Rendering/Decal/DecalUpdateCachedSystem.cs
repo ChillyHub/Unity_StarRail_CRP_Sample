@@ -9,12 +9,15 @@ namespace Unity_StarRail_CRP_Sample
     public class DecalCachedChunk : DecalChunk
     {
         public MaterialPropertyBlock propertyBlock;
-        public int passIndexDBuffer;
-        public int passIndexEmissive;
-        public int passIndexScreenSpace;
-        public int passIndexGBuffer;
+        //public int passIndexDBuffer;
+        //public int passIndexEmissive;
+        //public int passIndexScreenSpace;
+        //public int passIndexGBuffer;
+        public int passIndex;
         public int drawOrder;
         public bool isCreated;
+        
+        public NativeArray<float4> lightColors;
 
         public NativeArray<float4x4> decalToWorlds;
         public NativeArray<float4x4> normalToWorlds;
@@ -37,6 +40,7 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void RemoveAtSwapBack(int entityIndex)
         {
+            RemoveAtSwapBack(ref lightColors, entityIndex, count);
             RemoveAtSwapBack(ref decalToWorlds, entityIndex, count);
             RemoveAtSwapBack(ref normalToWorlds, entityIndex, count);
             RemoveAtSwapBack(ref sizeOffsets, entityIndex, count);
@@ -59,6 +63,7 @@ namespace Unity_StarRail_CRP_Sample
 
         public override void SetCapacity(int newCapacity)
         {
+            lightColors.ResizeArray(newCapacity);
             decalToWorlds.ResizeArray(newCapacity);
             normalToWorlds.ResizeArray(newCapacity);
             sizeOffsets.ResizeArray(newCapacity);
@@ -85,6 +90,7 @@ namespace Unity_StarRail_CRP_Sample
             if (capacity == 0)
                 return;
 
+            lightColors.Dispose();
             decalToWorlds.Dispose();
             normalToWorlds.Dispose();
             sizeOffsets.Dispose();
@@ -145,18 +151,7 @@ namespace Unity_StarRail_CRP_Sample
             if (!cachedChunk.isCreated)
 #endif
             {
-                // TODO: 
-                //int passIndexDBuffer = material.FindPass(DecalShaderPassNames.DBufferProjector);
-                //cachedChunk.passIndexDBuffer = passIndexDBuffer;
-//
-                //int passIndexEmissive = material.FindPass(DecalShaderPassNames.DecalProjectorForwardEmissive);
-                //cachedChunk.passIndexEmissive = passIndexEmissive;
-//
-                //int passIndexScreenSpace = material.FindPass(DecalShaderPassNames.DecalScreenSpaceProjector);
-                //cachedChunk.passIndexScreenSpace = passIndexScreenSpace;
-//
-                //int passIndexGBuffer = material.FindPass(DecalShaderPassNames.DecalGBufferProjector);
-                //cachedChunk.passIndexGBuffer = passIndexGBuffer;
+                cachedChunk.passIndex = -1;
 
                 cachedChunk.isCreated = true;
             }

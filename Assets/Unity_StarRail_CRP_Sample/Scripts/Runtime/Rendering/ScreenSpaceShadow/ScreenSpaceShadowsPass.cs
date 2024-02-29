@@ -43,7 +43,8 @@ namespace Unity_StarRail_CRP_Sample
         
         // Draw system
         private CharacterEntityManager _entityManager;
-        private CharacterScreenShadowDrawSystem _drawSystem;
+        private CharacterScreenShadowDrawSystem _characterDrawSystem;
+        private DecalScreenSpaceShadowDrawSystem _decalLightDrawSystem;
         
         // Material
         private Material _material;
@@ -51,6 +52,9 @@ namespace Unity_StarRail_CRP_Sample
         
         // Light
         private DeferredLight _deferredLight;
+        
+        // Textures
+        private ShadowTextures _shadowTextures;
         
         // Data
         private Mesh _sphereMesh;
@@ -76,11 +80,15 @@ namespace Unity_StarRail_CRP_Sample
             }
         }
 
-        public void Setup(DeferredLight deferredLight, CharacterEntityManager entityManager, CharacterScreenShadowDrawSystem drawSystem)
+        public void Setup(DeferredLight deferredLight, ShadowTextures shadowTextures, 
+            CharacterEntityManager entityManager, CharacterScreenShadowDrawSystem drawSystem, 
+            DecalScreenSpaceShadowDrawSystem decalLightDrawSystem)
         {
             _deferredLight = deferredLight;
+            _shadowTextures = shadowTextures;
             _entityManager = entityManager;
-            _drawSystem = drawSystem;
+            _characterDrawSystem = drawSystem;
+            _decalLightDrawSystem = decalLightDrawSystem;
         }
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
@@ -91,18 +99,26 @@ namespace Unity_StarRail_CRP_Sample
             desc.graphicsFormat = RenderingUtils.SupportsGraphicsFormat(GraphicsFormat.R8_UNorm, FormatUsage.Linear | FormatUsage.Render)
                 ? GraphicsFormat.R8_UNorm
                 : GraphicsFormat.B8G8R8A8_UNorm;
-            
-            RenderingUtils.ReAllocateIfNeeded(ref ShadowTexturesManager.Textures.ScreenSpaceShadowTexture, desc, 
+
+            if (_shadowTextures == null)
+            {
+                return;
+            }
+
+            RenderingUtils.ReAllocateIfNeeded(ref _shadowTextures.ScreenSpaceShadowTexture, desc, 
                 FilterMode.Point, TextureWrapMode.Clamp, name: ShadowTextures.ScreenSpaceShadowTextureName);
 
-            cmd.SetGlobalTexture(ShadowTexturesManager.Textures.ScreenSpaceShadowTexture.name, 
-                ShadowTexturesManager.Textures.ScreenSpaceShadowTexture.nameID);
+            cmd.SetGlobalTexture(_shadowTextures.ScreenSpaceShadowTexture.name, 
+                _shadowTextures.ScreenSpaceShadowTexture.nameID);
             
             ConfigureClear(ClearFlag.None, Color.white);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            ref CameraData cameraData = ref renderingData.cameraData;
+            Camera camera = cameraData.camera;
+            
             _deferredLight.ResolveMixedLightingMode(ref renderingData);
             _deferredLight.SetupLights(context, ref renderingData);
             
@@ -117,7 +133,7 @@ namespace Unity_StarRail_CRP_Sample
                 // Render Main Directional Light Shadow To Screen Space Shadow Texture
                 bool mainLight = RenderMainLightShadow(cmd, ref renderingData);
 
-                cmd.SetRenderTarget(ShadowTexturesManager.Textures.ScreenSpaceShadowTexture.nameID, 
+                cmd.SetRenderTarget(_shadowTextures.ScreenSpaceShadowTexture.nameID, 
                     renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
                 
                 if (!mainLight)
@@ -130,10 +146,16 @@ namespace Unity_StarRail_CRP_Sample
                 
                 // Render Additional Lights Shadow To Screen Space Shadow Texture
                 RenderAdditionalLightsShadow(cmd, ref renderingData);
+                
+                // Render Decal Light Shadow To Screen Space Shadow Texture
+                _decalLightDrawSystem?.Execute(cmd);
 
                 // Render Character Shadow To Screen Space Shadow Texture
-                RenderCharacterShadow(cmd, ref renderingData);
-                
+                if (camera.cameraType != CameraType.Reflection)
+                {
+                    RenderCharacterShadow(cmd, ref renderingData);
+                }
+
                 cmd.SetRenderTarget(renderingData.cameraData.renderer.cameraColorTargetHandle.nameID, 
                     renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
                 
@@ -170,8 +192,8 @@ namespace Unity_StarRail_CRP_Sample
                 return false;
             }
             
-            Blitter.BlitCameraTexture(cmd, ShadowTexturesManager.Textures.ScreenSpaceShadowTexture, 
-                ShadowTexturesManager.Textures.ScreenSpaceShadowTexture, _material, (int)MaterialPass.SceneCascadeShadow);
+            Blitter.BlitCameraTexture(cmd, _shadowTextures.ScreenSpaceShadowTexture, 
+                _shadowTextures.ScreenSpaceShadowTexture, _material, (int)MaterialPass.SceneCascadeShadow);
 
             return true;
         }
@@ -215,7 +237,7 @@ namespace Unity_StarRail_CRP_Sample
                     continue;
                 }
 
-                _drawSystem.Execute(cmd, i);
+                _characterDrawSystem.Execute(cmd, i);
             }
         }
 

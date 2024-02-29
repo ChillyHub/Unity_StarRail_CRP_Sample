@@ -337,6 +337,24 @@ namespace Unity_StarRail_CRP_Sample
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Up"",
+                    ""type"": ""Value"",
+                    ""id"": ""8e405006-6ede-4dbd-945a-6fc464f82ba6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Down"",
+                    ""type"": ""Value"",
+                    ""id"": ""b2dcf495-dad9-4164-b3e1-13846bd438fb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -433,7 +451,7 @@ namespace Unity_StarRail_CRP_Sample
                     ""id"": ""c1dfa372-fa88-40dc-8e14-70923cef248f"",
                     ""path"": ""OneModifier"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=0.3,y=0.3)"",
                     ""groups"": """",
                     ""action"": ""Look"",
                     ""isComposite"": true,
@@ -469,6 +487,50 @@ namespace Unity_StarRail_CRP_Sample
                     ""processors"": """",
                     ""groups"": ""KeyboardMouse"",
                     ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5dcc4c05-0bf8-44ff-b2d3-3cc26cb91264"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Up"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""97f8185d-3710-4bd6-b2b9-3fb82b49d326"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardMouse"",
+                    ""action"": ""Up"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1b1b57f6-597d-4216-878f-318d3ba156d9"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Down"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b57df853-6c96-4a2c-bf67-04e48141535f"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardMouse"",
+                    ""action"": ""Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1127,6 +1189,8 @@ namespace Unity_StarRail_CRP_Sample
             m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
             m_Camera_Look = m_Camera.FindAction("Look", throwIfNotFound: true);
             m_Camera_Shift = m_Camera.FindAction("Shift", throwIfNotFound: true);
+            m_Camera_Up = m_Camera.FindAction("Up", throwIfNotFound: true);
+            m_Camera_Down = m_Camera.FindAction("Down", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1291,6 +1355,8 @@ namespace Unity_StarRail_CRP_Sample
         private readonly InputAction m_Camera_Move;
         private readonly InputAction m_Camera_Look;
         private readonly InputAction m_Camera_Shift;
+        private readonly InputAction m_Camera_Up;
+        private readonly InputAction m_Camera_Down;
         public struct CameraActions
         {
             private @HSRPlayerInput m_Wrapper;
@@ -1298,6 +1364,8 @@ namespace Unity_StarRail_CRP_Sample
             public InputAction @Move => m_Wrapper.m_Camera_Move;
             public InputAction @Look => m_Wrapper.m_Camera_Look;
             public InputAction @Shift => m_Wrapper.m_Camera_Shift;
+            public InputAction @Up => m_Wrapper.m_Camera_Up;
+            public InputAction @Down => m_Wrapper.m_Camera_Down;
             public InputActionMap Get() { return m_Wrapper.m_Camera; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1316,6 +1384,12 @@ namespace Unity_StarRail_CRP_Sample
                 @Shift.started += instance.OnShift;
                 @Shift.performed += instance.OnShift;
                 @Shift.canceled += instance.OnShift;
+                @Up.started += instance.OnUp;
+                @Up.performed += instance.OnUp;
+                @Up.canceled += instance.OnUp;
+                @Down.started += instance.OnDown;
+                @Down.performed += instance.OnDown;
+                @Down.canceled += instance.OnDown;
             }
 
             private void UnregisterCallbacks(ICameraActions instance)
@@ -1329,6 +1403,12 @@ namespace Unity_StarRail_CRP_Sample
                 @Shift.started -= instance.OnShift;
                 @Shift.performed -= instance.OnShift;
                 @Shift.canceled -= instance.OnShift;
+                @Up.started -= instance.OnUp;
+                @Up.performed -= instance.OnUp;
+                @Up.canceled -= instance.OnUp;
+                @Down.started -= instance.OnDown;
+                @Down.performed -= instance.OnDown;
+                @Down.canceled -= instance.OnDown;
             }
 
             public void RemoveCallbacks(ICameraActions instance)
@@ -1521,6 +1601,8 @@ namespace Unity_StarRail_CRP_Sample
             void OnMove(InputAction.CallbackContext context);
             void OnLook(InputAction.CallbackContext context);
             void OnShift(InputAction.CallbackContext context);
+            void OnUp(InputAction.CallbackContext context);
+            void OnDown(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {

@@ -23,6 +23,7 @@ namespace Unity_StarRail_CRP_Sample
             public static readonly int DepthPyramidTexture = Shader.PropertyToID("_DepthPyramidTexture");
             public static readonly int ColorPyramidTexture = Shader.PropertyToID("_ColorPyramidTexture");
             public static readonly int StencilTexture = Shader.PropertyToID("_StencilTexture");
+            public static readonly int Unity_SpecCube0 = Shader.PropertyToID("unity_SpecCube0");
             
             public static readonly int SSRMaxIterCount = Shader.PropertyToID("_SSRMaxIterCount");
             public static readonly int SSRThicknessScale = Shader.PropertyToID("_SSRThicknessScale");
@@ -142,19 +143,7 @@ namespace Unity_StarRail_CRP_Sample
                     _colorTextures.ColorPyramidTexture.rt);
                 _screenSpaceReflectionMat.SetTexture(ShaderIds.SSRReflectUVTexture, 
                     _ssrReflectUVTexture.rt);
-                
-                if (renderingData.cameraData.renderer.cameraDepthTargetHandle.rt.stencilFormat == GraphicsFormat.None)
-                {
-                    _screenSpaceReflectionMat.SetTexture(ShaderIds.StencilTexture, 
-                        renderingData.cameraData.renderer.cameraDepthTargetHandle.rt);
-                }
-                else
-                {
-                    _screenSpaceReflectionMat.SetTexture(ShaderIds.StencilTexture, 
-                        renderingData.cameraData.renderer.cameraDepthTargetHandle.rt, 
-                        RenderTextureSubElement.Stencil);
-                }
-                
+
                 Blit(cmd, ref renderingData, _screenSpaceReflectionMat);
             }
             context.ExecuteCommandBuffer(cmd);
@@ -187,10 +176,10 @@ namespace Unity_StarRail_CRP_Sample
             ref CameraData cameraData = ref renderingData.cameraData;
             Camera camera = cameraData.camera;
 
-            //if (camera.cameraType == CameraType.Preview)
-            //{
-            //    return false;
-            //}
+            if (camera.cameraType == CameraType.Reflection)
+            {
+                return false;
+            }
 
             if (ssr == null || !ssr.IsActive())
             {

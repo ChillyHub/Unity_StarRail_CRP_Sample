@@ -244,7 +244,7 @@ namespace Unity_StarRail_CRP_Sample
             ref CameraData cameraData = ref renderingData.cameraData;
             Camera camera = cameraData.camera;
 
-            if (camera.cameraType == CameraType.Preview)
+            if (camera.cameraType == CameraType.Reflection)
             {
                 return false;
             }

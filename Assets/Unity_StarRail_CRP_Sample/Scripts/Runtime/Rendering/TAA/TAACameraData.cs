@@ -33,6 +33,11 @@ namespace Unity_StarRail_CRP_Sample
 
         public void Update(ref CameraData cameraData, bool taaEnabled)
         {
+            if (cameraData.cameraType == CameraType.Preview || cameraData.cameraType == CameraType.Reflection)
+            {
+                return;
+            }
+
             if (cameraData.camera.aspect != _lastFrameAspect)
             {
                 Reset();

@@ -14,23 +14,43 @@ An example of a custom rendering pipeline that restores the rendering of HSR
 
 > [!NOTE] 
 >
-> Initial results. Will continue to adjust and optimize later.
+> Initial effect. Will continue to adjust and optimize later.
+
+##### [Scene]  March 7th Room:
 
 ![6](./Documents~/README.assets/6.png)
 
 ![5](./Documents~/README.assets/5.png)
 
-###### Video:
 
-https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/70a140ba-5c9e-45eb-a1bd-00d58aa083cb
 
-https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/d4a82116-1efc-464e-8d14-abc0946d0067
+
+
+> **Support Decal Light with Shadow --** 
+
+
+
+##### [New Scene]  Parlor Car:
+
+> Unfinished
+
+![ParlorCar](./README.assets/ParlorCar.png)
+
+##### [New Scene]  Characters Show:
+
+> The character has no self shadow, but can receive scene shadow at the same time.
+
+
+
+> [!TIP]
+>
+> For more Effects Pictures and Videos, look at folder [Temp](./Documents~/Temp).
 
 ### Demo
 
-Here is a very simple demo for Windows x64:
+Here is a very simple demo for Windows x64: [Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.2)
 
-[Demo Release v0.0.1](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.1)
+Demo for Android is coming.
 
 > [!Tip]
 >
@@ -52,7 +72,7 @@ Here is a very simple demo for Windows x64:
 >
 > Use ``git lfs clone https://github.com/ChillyHub/Unity_StarRail_CRP_Sample.git`` to clone.
 >
-> If still cannot download it completely, please download the unitypackage package from [Demo Release v0.0.1](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.1).
+> If still cannot download it completely, please download the unitypackage package from [Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.1).
 
 > [!WARNING]
 >
@@ -83,8 +103,6 @@ The following is the flow chart of the rendering pipeline:
 
 ### Future
 
-- To support decal rendering
-- To support decal screen space shadow
 - Add HBAO
 - Add Volume Light
 - Add Screen Space Fog

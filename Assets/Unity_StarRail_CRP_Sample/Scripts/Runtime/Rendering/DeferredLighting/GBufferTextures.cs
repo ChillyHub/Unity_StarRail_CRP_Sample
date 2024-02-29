@@ -26,6 +26,11 @@ namespace Unity_StarRail_CRP_Sample
             _gBuffers[1].nameID,
             _gBuffers[2].nameID,
         };
+        public RenderTargetIdentifier[] GBufferIds01 => new[]
+        {
+            _gBuffers[0].nameID,
+            _gBuffers[1].nameID
+        };
 
         private RTHandle[] _gBuffers = new RTHandle[3];
 

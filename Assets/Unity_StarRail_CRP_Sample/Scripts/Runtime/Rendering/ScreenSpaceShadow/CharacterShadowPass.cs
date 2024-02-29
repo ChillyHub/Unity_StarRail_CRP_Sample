@@ -25,6 +25,9 @@ namespace Unity_StarRail_CRP_Sample
         
         private FilteringSettings _filteringSettings;
         
+        // Render Texture
+        private ShadowTextures _shadowTextures;
+        
         // Draw system
         private CharacterEntityManager _entityManager;
         private CharacterShadowCasterDrawSystem _drawSystem;
@@ -58,9 +61,11 @@ namespace Unity_StarRail_CRP_Sample
             _shadowSliceData = new ShadowSliceData[MaxCharacterCounts];
         }
 
-        public bool Setup(CharacterEntityManager entityManager, CharacterShadowCasterDrawSystem drawSystem)
+        public bool Setup(ShadowTextures shadowTextures, CharacterEntityManager entityManager, CharacterShadowCasterDrawSystem drawSystem)
         {
             Clear();
+            
+            _shadowTextures = shadowTextures;
             
             _entityManager = entityManager;
             _drawSystem = drawSystem;
@@ -89,11 +94,21 @@ namespace Unity_StarRail_CRP_Sample
             RenderTextureDescriptor desc = ShadowTextures.CharacterShadowTextureDesc;
 
             RenderingUtils.ReAllocateIfNeeded(
-                ref ShadowTexturesManager.Textures.CharacterShadowTexture,
+                ref _shadowTextures.CharacterShadowTexture,
                 desc, name: ShadowTextures.CharacterShadowTextureName);
 
-            ConfigureTarget(ShadowTexturesManager.Textures.CharacterShadowTexture);
-            ConfigureClear(ClearFlag.All, Color.clear);
+            ConfigureTarget(_shadowTextures.CharacterShadowTexture);
+
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore ||
+                SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 ||
+                SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3)
+            {
+                ConfigureClear(ClearFlag.All, Color.white);
+            }
+            else
+            {
+                ConfigureClear(ClearFlag.All, Color.clear);
+            }
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -208,7 +223,7 @@ namespace Unity_StarRail_CRP_Sample
         {
             CommandBuffer cmd = CommandBufferPool.Get();
             CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.MainLightShadows, true);
-            cmd.SetGlobalTexture(ShadowTextures.CharacterShadowTextureName, ShadowTexturesManager.Textures.CharacterShadowTexture);
+            cmd.SetGlobalTexture(ShadowTextures.CharacterShadowTextureName, _shadowTextures.CharacterShadowTexture.nameID);
             cmd.SetGlobalVector(CharacterShadowConstantBuffer.ShadowParamsId,
                 new Vector4(1, 0, 1, 0));
             int width = ShadowTextures.CharacterShadowTextureDesc.width;
@@ -241,7 +256,7 @@ namespace Unity_StarRail_CRP_Sample
             float invHalfShadowAtlasHeight = 0.5f * invShadowAtlasHeight;
             float softShadowsProp = GetSoftShadowQuality(softShadows);
 
-            cmd.SetGlobalTexture(ShadowTextures.CharacterShadowTextureName, ShadowTexturesManager.Textures.CharacterShadowTexture.nameID);
+            cmd.SetGlobalTexture(ShadowTextures.CharacterShadowTextureName, _shadowTextures.CharacterShadowTexture.nameID);
             cmd.SetGlobalMatrixArray(CharacterShadowConstantBuffer.WorldToShadowId, _characterLightShadowMatrices);
             cmd.SetGlobalVector(CharacterShadowConstantBuffer.ShadowParamsId,
                 new Vector4(1.0f, softShadowsProp, 0.0f, 0.0f));

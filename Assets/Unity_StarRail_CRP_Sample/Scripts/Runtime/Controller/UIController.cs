@@ -36,19 +36,14 @@ namespace Unity_StarRail_CRP_Sample
             _inputActionAsset = GetComponent<InputSystemUIInputModule>().actionsAsset;
             _player = _inputActionAsset.FindActionMap("Player");
             _camera = _inputActionAsset.FindActionMap("Camera");
-            //_point = _inputActionAsset.FindActionMap("UI").FindAction("Point");
-            //_click = _inputActionAsset.FindActionMap("UI").FindAction("Click");
             _esc = _inputActionAsset.FindActionMap("UI").FindAction("Menu");
             _alt = _inputActionAsset.FindActionMap("UI").FindAction("Alt");
             
-            //_point.Enable();
-            //_click.Enable();
             _esc.Enable();
             _alt.Enable();
 
             // Init load
-            SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
-            _currentSceneId = 1;
+            InitLoadScene();
             
 #if UNITY_ANDROID
             if (touchZone != null)
@@ -168,13 +163,18 @@ namespace Unity_StarRail_CRP_Sample
             Application.Quit();
 #endif
         }
+        
+        private void InitLoadScene(int sceneId = 1)
+        {
+            StartCoroutine(InitLoadSceneCoroutine(sceneId));
+        }
 
         private void LoadScene(int sceneId)
         {
             StartCoroutine(LoadSceneCoroutine(sceneId));
         }
-
-        private IEnumerator LoadSceneCoroutine(int sceneId)
+        
+        private IEnumerator InitLoadSceneCoroutine(int sceneId)
         {
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneId, LoadSceneMode.Additive);
 
@@ -183,8 +183,24 @@ namespace Unity_StarRail_CRP_Sample
                 yield return null;
             }
             
+            SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(sceneId));
+
+            _currentSceneId = 1;
+        }
+
+        private IEnumerator LoadSceneCoroutine(int sceneId)
+        {
             SceneManager.UnloadSceneAsync(_currentSceneId);
             
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneId, LoadSceneMode.Additive);
+
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+            
+            SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(sceneId));
+
             // AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(_currentSceneId);
             // 
             // while (!asyncUnload.isDone)

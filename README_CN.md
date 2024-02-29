@@ -16,26 +16,41 @@
 >
 > 初步的效果实例。后面会继续调整并优化相关渲染效果。
 
+##### [场景] 三月七房间：
+
 ![6](./Documents~/README.assets/6.png)
 
 ![5](./Documents~/README.assets/5.png)
 
-###### 视频:
 
-https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/70a140ba-5c9e-45eb-a1bd-00d58aa083cb
 
-https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/d4a82116-1efc-464e-8d14-abc0946d0067
+
+
+**支持角色阴影的贴画光照 --**
+
+
+
+##### [场景] 星穹列车：
+
+> 未完工
+
+![ParlorCar](./README_CN.assets/ParlorCar.png)
+
+##### [场景] 角色展示：
+
+> 角色不接受自阴影的同时，能够接受来自场景环境的阴影。
+
+
 
 ### 实例程序 Demo
 
-下面是一个非常简单的程序实例，基于 Windows 64 平台。
+下面是一个非常简单的程序实例，基于 Windows 64 平台：[Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.2)
 
-[Demo Release v0.0.1](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.1)
+Android 版 Demo 鸽了。
 
 > [!Tip]
 >
 > 输入操作类似星穹铁道游戏，详细可看 Release 中的解释。
-
 
 ### 项目依赖
 
@@ -52,7 +67,7 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/d4a82116-
 >
 > 再运行  ``git lfs clone https://github.com/ChillyHub/Unity_StarRail_CRP_Sample.git`` 克隆。
 >
-> 如果仍然无法完整下载，可以从[Demo Release v0.0.1](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.1)下载 unitypackage 包。
+> 如果仍然无法完整下载，可以从[Demo Release v0.0.2](https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/releases/tag/v0.0.2)下载 unitypackage 包。
 
 > [!WARNING]
 >
@@ -83,8 +98,6 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/d4a82116-
 
 ### 未来计划
 
-- 支持贴花渲染
-- 支持贴花屏幕空间阴影
 - 添加 HBAO 屏幕空间阴影
 - 添加体积光
 - 添加屏幕空间雾效
