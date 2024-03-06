@@ -24,7 +24,7 @@
 
 https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/2e4ecfe2-7448-4b26-bdde-54d03e07c71a
 
-https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/0be8118c-f2dc-488b-bf2d-ce515bf3dd05
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/33a7544c-381a-43cf-be3d-5270421afbbd
 
 **支持角色阴影的贴画光照 --**
 
@@ -40,7 +40,7 @@ https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/783b5b65-
 
 > 角色不接受自阴影的同时，能够接受来自场景环境的阴影。
 
-https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/c6adbb45-d92e-4af0-ae3c-3de62aabdd3c
+https://github.com/ChillyHub/Unity_StarRail_CRP_Sample/assets/75598757/150c6759-0e02-4491-ae4e-f34ffc18eb3f
 
 
 ### 实例程序 Demo
