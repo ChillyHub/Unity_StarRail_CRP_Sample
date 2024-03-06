@@ -27,6 +27,8 @@ namespace Unity_StarRail_CRP_Sample
     [Serializable, VolumeComponentMenuForRenderPipeline("CRP/Post-processing/Bloom", typeof(UniversalRenderPipeline))]
     public sealed partial class CRPBloom : VolumeComponent, IPostProcessComponent
     {
+        public BoolParameter useComputeShader = new BoolParameter(true);
+        
         /// <summary>
         /// Set the level of brightness to filter out pixels under this level.
         /// This value is expressed in gamma-space.

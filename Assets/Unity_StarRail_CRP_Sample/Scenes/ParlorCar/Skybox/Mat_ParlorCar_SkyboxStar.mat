@@ -126,11 +126,11 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Background: {r: 0.005945191, g: 0.0039515933, b: 0.009433985, a: 0}
-    - _BackgroundColor: {r: 0.06666667, g: 0.0627451, b: 0.07450981, a: 0}
+    - _BackgroundColor: {r: 0.014524732, g: 0.012353141, b: 0.01886791, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MukiWayColorTint: {r: 0.6320754, g: 0.12760767, b: 0.28479704, a: 0}
+    - _MukiWayColorTint: {r: 0.3773585, g: 0.08330365, b: 0.17419338, a: 0}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Tilling: {r: 1, g: 1, b: 0, a: 0}

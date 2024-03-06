@@ -10,6 +10,7 @@ namespace Unity_StarRail_CRP_Sample
         private static class TextureName
         {
             public static readonly string SSRReflectUVTexture = "_SSRReflectUVTexture";
+            public static readonly string SSRLightingTexture = "_SSRLightingTexture";
             public static readonly string PackedNormalSmoothnessTexture = "_PackedNormalSmoothnessTexture";
             public static readonly string DepthPyramidTexture = "_DepthPyramidTexture";
             public static readonly string ColorPyramidTexture = "_ColorPyramidTexture";
@@ -18,18 +19,23 @@ namespace Unity_StarRail_CRP_Sample
         private static class ShaderIds
         {
             public static readonly int SSRReflectUVTexture = Shader.PropertyToID("_SSRReflectUVTexture");
+            public static readonly int SSRLightingCurrTexture = Shader.PropertyToID("_SSRLightingCurrTexture");
+            public static readonly int SSRLightingPrevTexture = Shader.PropertyToID("_SSRLightingPrevTexture");
             public static readonly int AlbedoMetallicTexture = Shader.PropertyToID("_AlbedoMetallicTexture");
             public static readonly int PackedNormalSmoothnessTexture = Shader.PropertyToID("_PackedNormalSmoothnessTexture");
             public static readonly int DepthPyramidTexture = Shader.PropertyToID("_DepthPyramidTexture");
             public static readonly int ColorPyramidTexture = Shader.PropertyToID("_ColorPyramidTexture");
+            public static readonly int MotionVectorTexture = Shader.PropertyToID("_MotionVectorTexture");
             public static readonly int StencilTexture = Shader.PropertyToID("_StencilTexture");
-            public static readonly int Unity_SpecCube0 = Shader.PropertyToID("unity_SpecCube0");
-            
+
+            public static readonly int SSRSkyBox = Shader.PropertyToID("_SSRSkybox");
             public static readonly int SSRMaxIterCount = Shader.PropertyToID("_SSRMaxIterCount");
             public static readonly int SSRThicknessScale = Shader.PropertyToID("_SSRThicknessScale");
             public static readonly int SSRThicknessBias = Shader.PropertyToID("_SSRThicknessBias");
             
             public static readonly int DepthPyramidMipLevelMax = Shader.PropertyToID("_DepthPyramidMipLevelMax");
+            
+            public static readonly int FrameCount = Shader.PropertyToID("_FrameCount");
         }
         
         private readonly ProfilingSampler _screenSpaceReflectionSampler;
@@ -37,6 +43,7 @@ namespace Unity_StarRail_CRP_Sample
         // Compute Shader
         private ComputeShader _screenSpaceReflectionCS;
         private int _kernelCSScreenSpaceReflectionUVMapping;
+        private int _kernelCSScreenSpaceReflectionResolveColor;
         
         // Material
         private Material _screenSpaceReflectionMat;
@@ -45,8 +52,10 @@ namespace Unity_StarRail_CRP_Sample
         private GBufferTextures _gBufferTextures;
         private DepthTextures _depthTextures;
         private ColorTextures _colorTextures;
+        private MotionVectorTexture _motionVectorTexture;
 
         private RTHandle _ssrReflectUVTexture;
+        private SwapChainTextures _ssrLightingTextures;
         
         public ScreenSpaceReflectionPass()
         {
@@ -66,13 +75,17 @@ namespace Unity_StarRail_CRP_Sample
             {
                 _screenSpaceReflectionMat = CoreUtils.CreateEngineMaterial(screenSpaceReflectionShader);
             }
+            
+            _ssrLightingTextures = new SwapChainTextures("SSRLighting");
         }
         
-        public void Setup(GBufferTextures gBufferTextures, DepthTextures depthTextures, ColorTextures colorTextures)
+        public void Setup(GBufferTextures gBufferTextures, DepthTextures depthTextures, 
+            ColorTextures colorTextures, MotionVectorTexture motionVectorTexture)
         {
             _gBufferTextures = gBufferTextures;
             _depthTextures = depthTextures;
             _colorTextures = colorTextures;
+            _motionVectorTexture = motionVectorTexture;
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -84,6 +97,12 @@ namespace Unity_StarRail_CRP_Sample
             
             RenderingUtils.ReAllocateIfNeeded(ref _ssrReflectUVTexture, desc, FilterMode.Point, TextureWrapMode.Clamp, 
                 name: TextureName.SSRReflectUVTexture);
+            
+            desc = cameraTextureDescriptor;
+            desc.depthBufferBits = 0;
+            desc.enableRandomWrite = true;
+
+            _ssrLightingTextures.ReAllocSwapChainTexturesIfNeed(desc);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -128,23 +147,72 @@ namespace Unity_StarRail_CRP_Sample
 
                 cmd.SetComputeIntParam(_screenSpaceReflectionCS, ShaderIds.DepthPyramidMipLevelMax, 
                     _depthTextures.DepthPyramidMipmapInfo.mipLevelCount - 1);
+                cmd.SetComputeIntParam(_screenSpaceReflectionCS, ShaderIds.SSRSkyBox, ssr.tracingSkybox.value ? 1 : 0);
                 cmd.SetComputeIntParam(_screenSpaceReflectionCS, ShaderIds.SSRMaxIterCount, ssr.maxIterCount.value);
                 cmd.SetComputeFloatParam(_screenSpaceReflectionCS, ShaderIds.SSRThicknessScale, ssrThicknessScale);
                 cmd.SetComputeFloatParam(_screenSpaceReflectionCS, ShaderIds.SSRThicknessBias, ssrThicknessBias);
+                cmd.SetComputeFloatParam(_screenSpaceReflectionCS, ShaderIds.FrameCount, Time.frameCount);
 
                 DrawUtils.Dispatch(cmd, _screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionUVMapping, 
                     _ssrReflectUVTexture.rt.width, _ssrReflectUVTexture.rt.height);
-                
-                _screenSpaceReflectionMat.SetTexture(ShaderIds.AlbedoMetallicTexture, 
-                    _gBufferTextures.GBuffer0.rt);
-                _screenSpaceReflectionMat.SetTexture(ShaderIds.PackedNormalSmoothnessTexture, 
-                    _gBufferTextures.GBuffer1.rt);
-                _screenSpaceReflectionMat.SetTexture(ShaderIds.ColorPyramidTexture, 
-                    _colorTextures.ColorPyramidTexture.rt);
-                _screenSpaceReflectionMat.SetTexture(ShaderIds.SSRReflectUVTexture, 
-                    _ssrReflectUVTexture.rt);
 
-                Blit(cmd, ref renderingData, _screenSpaceReflectionMat);
+                if (ssr.stochasticSSR.value)
+                {
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.SSRReflectUVTexture, _ssrReflectUVTexture.nameID);
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.SSRLightingCurrTexture, _ssrLightingTextures.BackBuffer.nameID);
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.SSRLightingPrevTexture, _ssrLightingTextures.FrontBuffer.nameID);
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.AlbedoMetallicTexture, _gBufferTextures.GBuffer0.nameID);
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.PackedNormalSmoothnessTexture, _gBufferTextures.GBuffer1.nameID);
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.DepthPyramidTexture, _depthTextures.DepthPyramidTexture.nameID);
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.ColorPyramidTexture, _colorTextures.ColorPyramidTexture.nameID);
+                    cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        ShaderIds.MotionVectorTexture, _motionVectorTexture.Texture.nameID);
+
+                    if (renderingData.cameraData.renderer.cameraDepthTargetHandle.rt.stencilFormat ==
+                        GraphicsFormat.None)
+                    {
+                        cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                            ShaderIds.StencilTexture, renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID);
+                    }
+                    else
+                    {
+                        cmd.SetComputeTextureParam(_screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                            ShaderIds.StencilTexture, renderingData.cameraData.renderer.cameraDepthTargetHandle.nameID,
+                            0, RenderTextureSubElement.Stencil);
+                    }
+
+                    cmd.SetComputeIntParam(_screenSpaceReflectionCS, ShaderIds.DepthPyramidMipLevelMax,
+                        _depthTextures.DepthPyramidMipmapInfo.mipLevelCount - 1);
+                    cmd.SetComputeFloatParam(_screenSpaceReflectionCS, ShaderIds.FrameCount, Time.frameCount);
+
+                    DrawUtils.Dispatch(cmd, _screenSpaceReflectionCS, _kernelCSScreenSpaceReflectionResolveColor,
+                        _ssrLightingTextures.BackBuffer.rt.width, _ssrLightingTextures.BackBuffer.rt.height);
+                    
+                    Blitter.BlitCameraTexture(cmd, _ssrLightingTextures.BackBuffer, renderingData.cameraData.renderer.cameraColorTargetHandle,
+                        RenderBufferLoadAction.Load, RenderBufferStoreAction.Store, _screenSpaceReflectionMat, 1);
+                    
+                    _ssrLightingTextures.SwapBuffer();
+                }
+                else
+                {
+                    _screenSpaceReflectionMat.SetTexture(ShaderIds.AlbedoMetallicTexture, 
+                        _gBufferTextures.GBuffer0.rt);
+                    _screenSpaceReflectionMat.SetTexture(ShaderIds.PackedNormalSmoothnessTexture, 
+                        _gBufferTextures.GBuffer1.rt);
+                    _screenSpaceReflectionMat.SetTexture(ShaderIds.ColorPyramidTexture, 
+                        _colorTextures.ColorPyramidTexture.rt);
+                    _screenSpaceReflectionMat.SetTexture(ShaderIds.SSRReflectUVTexture, 
+                        _ssrReflectUVTexture.rt);
+
+                    Blit(cmd, ref renderingData, _screenSpaceReflectionMat, 0);
+                }
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
@@ -152,6 +220,9 @@ namespace Unity_StarRail_CRP_Sample
         
         public void Dispose()
         {
+            _ssrLightingTextures.Release();
+            _ssrLightingTextures = null;
+            
             RTHandles.Release(_ssrReflectUVTexture);
             _ssrReflectUVTexture = null;
             
@@ -169,6 +240,9 @@ namespace Unity_StarRail_CRP_Sample
 
             _kernelCSScreenSpaceReflectionUVMapping = 
                 _screenSpaceReflectionCS.FindKernel("CSScreenSpaceReflectionUVMapping");
+            
+            _kernelCSScreenSpaceReflectionResolveColor = 
+                _screenSpaceReflectionCS.FindKernel("CSScreenSpaceReflectionResolveColor");
         }
 
         private bool CheckExecute(ref RenderingData renderingData, CRPScreenSpaceReflection ssr)

@@ -11,6 +11,7 @@ namespace Unity_StarRail_CRP_Sample
 
         // Sub Pass
         private BloomPass _bloomPass;
+        private CSBloomPass _csBloomPass;
         private ToneMappingPass _toneMappingPass;
 
         public PostProcessingPass()
@@ -21,12 +22,14 @@ namespace Unity_StarRail_CRP_Sample
             _postProcessingSampler = new ProfilingSampler("CRP Post Processing");
             
             _bloomPass = new BloomPass();
+            _csBloomPass = new CSBloomPass();
             _toneMappingPass = new ToneMappingPass();
         }
 
         public void Setup(GBufferTextures gBufferTextures)
         {
             _bloomPass.Setup(gBufferTextures);
+            _csBloomPass.Setup(gBufferTextures);
             _toneMappingPass.Setup();
         }
         
@@ -40,7 +43,16 @@ namespace Unity_StarRail_CRP_Sample
             CommandBuffer cmd = CommandBufferPool.Get();
             using (new ProfilingScope(cmd, _postProcessingSampler))
             {
-                _bloomPass.Execute(ref renderingData, cmd, renderingData.cameraData.renderer.cameraColorTargetHandle);
+                var bloom = VolumeManager.instance.stack.GetComponent<CRPBloom>();
+                if (bloom.useComputeShader.value)
+                {
+                    _csBloomPass.Execute(ref renderingData, cmd, renderingData.cameraData.renderer.cameraColorTargetHandle);
+                }
+                else
+                {
+                    _bloomPass.Execute(ref renderingData, cmd, renderingData.cameraData.renderer.cameraColorTargetHandle);
+                }
+                
                 _toneMappingPass.Execute(ref renderingData, cmd, this, 
                     renderingData.cameraData.renderer.cameraColorTargetHandle, 
                     renderingData.cameraData.renderer.cameraColorTargetHandle);

@@ -1,0 +1,245 @@
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GlobalSamplers.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+
+#pragma kernel CSBloomPrefilter KERNEL_SIZE=8
+#pragma kernel CSBloomBlur KERNEL_SIZE=8
+#pragma kernel CSBloomUpSample KERNEL_SIZE=8
+
+#pragma multi_compile_local __ _USE_RGBM
+#pragma multi_compile_local __ _BLOOM_HQ
+
+RW_TEXTURE2D(float4, _OutputTexture);
+TEXTURE2D(_AdditionalBloomColorTexture);
+Texture2D<uint2> _StencilTexture;
+TEXTURE2D_X(_SourceTexLowMip);
+
+CBUFFER_START(BloomCB)
+float4 _AdditionalBloomColorTexture_TexelSize;
+float4 _SourceTexLowMip_TexelSize;
+float4 _BlitTexture_TexelSize;
+float4 _OutputTextureSize;
+float4 _Params; // x: scatter, y: clamp, z: threshold (linear), w: threshold knee
+CBUFFER_END
+
+#define Scatter             _Params.x
+#define ClampMax            _Params.y
+#define Threshold           _Params.z
+#define ThresholdKnee       _Params.w
+
+half4 EncodeHDR(half3 color)
+{
+    #if _USE_RGBM
+    half4 outColor = EncodeRGBM(color);
+    #else
+    half4 outColor = half4(color, 1.0);
+    #endif
+
+    #if UNITY_COLORSPACE_GAMMA
+    return half4(sqrt(outColor.xyz), outColor.w); // linear to γ
+    #else
+    return outColor;
+    #endif
+}
+
+half3 DecodeHDR(half4 color)
+{
+    #if UNITY_COLORSPACE_GAMMA
+            color.xyz *= color.xyz; // γ to linear
+    #endif
+
+    #if _USE_RGBM
+            return DecodeRGBM(color);
+    #else
+    return color.xyz;
+    #endif
+}
+
+half4 Prefilter(float2 uv)
+{
+    #if _BLOOM_HQ
+            float texelSize = _BlitTexture_TexelSize.x;
+            half4 A = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, -1.0), 0);
+            half4 B = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, -1.0), 0);
+            half4 C = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, -1.0), 0);
+            half4 D = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, -0.5), 0);
+            half4 E = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, -0.5), 0);
+            half4 F = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 0.0), 0);
+            half4 G = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv, 0);
+            half4 H = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 0.0), 0);
+            half4 I = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, 0.5), 0);
+            half4 J = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, 0.5), 0);
+            half4 K = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 1.0), 0);
+            half4 L = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, 1.0), 0);
+            half4 M = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 1.0), 0);
+
+            half2 div = (1.0 / 4.0) * half2(0.5, 0.125);
+
+            half4 o = (D + E + I + J) * div.x;
+            o += (A + B + G + F) * div.y;
+            o += (B + C + H + G) * div.y;
+            o += (F + G + L + K) * div.y;
+            o += (G + H + M + L) * div.y;
+
+            half3 color = o.xyz;
+
+            uint stencil = GetStencilValue(LOAD_TEXTURE2D_X(_StencilTexture, int2(uv * _OutputTextureSize.xy)));
+            if ((stencil & 96u) == 32u)
+            {
+                texelSize = _AdditionalBloomColorTexture_TexelSize.x;
+                A = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, -1.0), 0);
+                B = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, -1.0), 0);
+                C = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, -1.0), 0);
+                D = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, -0.5), 0);
+                E = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, -0.5), 0);
+                F = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 0.0), 0);
+                G = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv, 0);
+                H = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 0.0), 0);
+                I = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-0.5, 0.5), 0);
+                J = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.5, 0.5), 0);
+                K = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(-1.0, 1.0), 0);
+                L = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(0.0, 1.0), 0);
+                M = SAMPLE_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, sampler_LinearClamp, uv + texelSize * float2(1.0, 1.0), 0);
+    
+                div = (1.0 / 4.0) * half2(0.5, 0.125);
+    
+                o = (D + E + I + J) * div.x;
+                o += (A + B + G + F) * div.y;
+                o += (B + C + H + G) * div.y;
+                o += (F + G + L + K) * div.y;
+                o += (G + H + M + L) * div.y;
+    
+                color += o.xyz * o.w * 10.0;
+            }
+    #else
+    half3 color = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, uv, 0).xyz;
+    uint stencil = GetStencilValue(LOAD_TEXTURE2D_X(_StencilTexture, int2(uv * _ScreenSize.xy)));
+    if ((stencil & 96u) == 32u)
+    {
+        half4 colorAdd = LOAD_TEXTURE2D_X_LOD(_AdditionalBloomColorTexture, int2(uv * _ScreenSize.xy), 0);
+        color += colorAdd.xyz * colorAdd.w * 10.0;
+    }
+    #endif
+
+    // User controlled clamp to limit crazy high broken spec
+    color = min(ClampMax, color);
+
+    // Thresholding
+    half brightness = Max3(color.r, color.g, color.b);
+    half softness = clamp(brightness - Threshold + ThresholdKnee, 0.0, 2.0 * ThresholdKnee);
+    softness = (softness * softness) / (4.0 * ThresholdKnee + 1e-4);
+    half multiplier = max(brightness - Threshold, softness) / max(brightness, 1e-4);
+    color *= multiplier;
+
+    // Clamp colors to positive once in prefilter. Encode can have a sqrt, and sqrt(-x) == NaN. Up/Down sample passes would then spread the NaN.
+    color = max(color, 0);
+    return EncodeHDR(color);
+}
+
+half3 Upsample(float2 uv, int2 coord)
+{
+    half3 highMip = DecodeHDR(_OutputTexture[coord]);
+
+    #if _BLOOM_HQ && !defined(SHADER_API_GLES)
+    half3 lowMip = DecodeHDR(SampleTexture2DBicubic(TEXTURE2D_X_ARGS(_SourceTexLowMip, sampler_LinearClamp), uv, _SourceTexLowMip_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex));
+    #else
+    half3 lowMip = DecodeHDR(SAMPLE_TEXTURE2D_X_LOD(_SourceTexLowMip, sampler_LinearClamp, uv, 0));
+    #endif
+
+    return lerp(highMip, lowMip, Scatter);
+}
+
+groupshared float3 localDataShared[256];
+
+float3 GaussianBlur(float3 a, float3 b, float3 c, float3 d, float3 e, float3 f, float3 g, float3 h, float3 i)
+{
+    return 0.27343750 * e
+         + 0.21875000 * (d + f)
+         + 0.10937500 * (c + g)
+         + 0.03125000 * (b + h)
+         + 0.00390625 * (a + i);
+}
+
+void LoadToLDS(uint2 groupId, uint2 groupThreadId)
+{
+    int2 sampleIndex = groupId * 8 - 4 + groupThreadId * 2;
+    float2 uv = ((float2)sampleIndex + 0.5) * 2.0 / _BlitTextureSize.xy;
+
+    float3 ld = DecodeHDR(SAMPLE_TEXTURE2D_LOD(_BlitTexture, sampler_LinearClamp, uv + float2(0.0, 0.0) / _BlitTextureSize.xy, 0.0));
+    float3 lu = DecodeHDR(SAMPLE_TEXTURE2D_LOD(_BlitTexture, sampler_LinearClamp, uv + float2(0.0, 2.0) / _BlitTextureSize.xy, 0.0));
+    float3 rd = DecodeHDR(SAMPLE_TEXTURE2D_LOD(_BlitTexture, sampler_LinearClamp, uv + float2(2.0, 0.0) / _BlitTextureSize.xy, 0.0));
+    float3 ru = DecodeHDR(SAMPLE_TEXTURE2D_LOD(_BlitTexture, sampler_LinearClamp, uv + float2(2.0, 2.0) / _BlitTextureSize.xy, 0.0));
+
+    uint index = groupThreadId.x * 2u + groupThreadId.y * 32u;
+
+    localDataShared[index + 0u]  = ld;
+    localDataShared[index + 1u]  = rd;
+    localDataShared[index + 16u] = lu;
+    localDataShared[index + 17u] = ru;
+}
+
+void BlurHorizontal(uint2 groupThreadId)
+{
+    float3 h[10];
+    
+    uint sampleIndex = groupThreadId.y * 32u + groupThreadId.x * 2u + (groupThreadId.x & 4u) * 2u;
+    uint resultIndex = groupThreadId.y * 16u + groupThreadId.x * 2u;
+
+    for (int i = 0; i < 10; ++i)
+    {
+        h[i] = localDataShared[sampleIndex + i];
+    }
+
+    GroupMemoryBarrierWithGroupSync();
+
+    localDataShared[resultIndex + 0u] = GaussianBlur(h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], h[8]);
+    localDataShared[resultIndex + 1u] = GaussianBlur(h[1], h[2], h[3], h[4], h[5], h[6], h[7], h[8], h[9]);
+}
+
+float3 BlurVertical(uint2 groupThreadId)
+{
+    float3 h[9];
+    
+    uint sampleIndex = groupThreadId.y * 8u + groupThreadId.x;
+
+    for (int i = 0; i < 9; ++i)
+    {
+        h[i] = localDataShared[sampleIndex + i * 8u];
+    }
+
+    return GaussianBlur(h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], h[8]);
+}
+
+[numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
+void CSBloomPrefilter(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    PositionInputs posInputs = GetPositionInput(float2(dispatchThreadId.xy), _OutputTextureSize.zw, uint2(KERNEL_SIZE, KERNEL_SIZE));
+    float2 uv = posInputs.positionNDC;
+
+    _OutputTexture[dispatchThreadId.xy] = Prefilter(uv);
+}
+
+[numthreads(8, 8, 1)]
+void CSBloomBlur(uint2 groupId : SV_GroupID, uint2 groupThreadId : SV_GroupThreadID, uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    LoadToLDS(groupId, groupThreadId);
+
+    GroupMemoryBarrierWithGroupSync();
+
+    BlurHorizontal(groupThreadId);
+
+    GroupMemoryBarrierWithGroupSync();
+
+    _OutputTexture[dispatchThreadId.xy] = EncodeHDR(BlurVertical(groupThreadId));
+}
+
+[numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
+void CSBloomUpSample(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    PositionInputs posInputs = GetPositionInput(float2(dispatchThreadId.xy), _OutputTextureSize.zw, uint2(KERNEL_SIZE, KERNEL_SIZE));
+    float2 uv = posInputs.positionNDC;
+    
+    _OutputTexture[dispatchThreadId.xy] = EncodeHDR(Upsample(uv, dispatchThreadId.xy));
+}

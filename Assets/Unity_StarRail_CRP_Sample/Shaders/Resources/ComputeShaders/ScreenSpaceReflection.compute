@@ -1,17 +1,25 @@
 ﻿#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ImageBasedLighting.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
 #include "../../Utils/HLSL/Depth.hlsl"
+#include "../../Utils/HLSL/BlueNoise.hlsl"
 
 #pragma kernel CSScreenSpaceReflection KERNEL_SIZE=8
 #pragma kernel CSScreenSpaceReflectionUVMapping KERNEL_SIZE=8
+#pragma kernel CSScreenSpaceReflectionResolveColor KERNEL_SIZE=8
 
 #pragma multi_compile _ _GBUFFER_NORMALS_OCT
 #pragma multi_compile _ UNITY_REVERSED_Z
 
-RW_TEXTURE2D(float4, _SSRLightingTexture);
+RW_TEXTURE2D(float4, _SSRLightingCurrTexture);
 RW_TEXTURE2D(float2, _SSRReflectUVTexture);
+TEXTURE2D(_SSRLightingPrevTexture);
+SAMPLER(sampler_SSRLightingPrevTexture);
+TEXTURE2D(_AlbedoMetallicTexture);
+SAMPLER(sampler_AlbedoMetallicTexture);
 TEXTURE2D(_PackedNormalSmoothnessTexture);
 SAMPLER(sampler_PackedNormalSmoothnessTexture);
 TEXTURE2D(_ColorPyramidTexture);
@@ -21,9 +29,11 @@ SAMPLER(sampler_MotionVectorTexture);
 Texture2D<uint2> _StencilTexture;
 
 CBUFFER_START(ScreenSpaceReflectionCB)
+int _SSRSkybox;
 int _SSRMaxIterCount;
 float _SSRThicknessScale;
 float _SSRThicknessBias;
+float _FrameCount;
 CBUFFER_END
 
 #define SSR_TRACE_EPS 0.000488281f 
@@ -40,6 +50,38 @@ half3 UnpackNormal(half3 pn)
 //{ return pn; }                                                        // values between [-1, +1]
 //#endif
 
+// Weight for SSR where Fresnel == 1 (returns value/pdf)
+float GetSSRSampleWeight(float3 V, float3 L, float roughness)
+{
+    // Simplification:
+    // value = D_GGX / (lambdaVPlusOne + lambdaL);
+    // pdf = D_GGX / lambdaVPlusOne;
+
+    const float lambdaVPlusOne = Lambda_GGX(roughness, V) + 1.0;
+    const float lambdaL = Lambda_GGX(roughness, L);
+
+    return lambdaVPlusOne / (lambdaVPlusOne + lambdaL);
+}
+
+float GetScreenFade(float2 screenUV)
+{
+    screenUV = screenUV * 2.0 - 1.0;
+    float2 st = 1.0 - smoothstep(0.0, 0.95, abs(screenUV));
+                
+    return st.x * st.y;
+}
+
+void SampleGGX_VNDF_Dir(float2 sample, float3 viewDirWS, float3x3 localToWorld, float roughness,
+    out float3 reflectDirWS)
+{
+    float VdotH = 0.0;
+    float3 localV, localH;
+    SampleGGXVisibleNormal(sample, viewDirWS, localToWorld, roughness, localV, localH, VdotH);
+
+    float3 localL = 2.0 * VdotH * localH - localV;//reflect(-localV, localH);
+    reflectDirWS = mul(localL, localToWorld);
+}
+
 float2 GetHitPointUV(int2 positionSS)
 {
     // Stencil
@@ -52,16 +94,28 @@ float2 GetHitPointUV(int2 positionSS)
     
     // Current Screen Position Info
     float2 positionNDC = (positionSS + 0.5) * _ScreenSize.zw;
-    float deviceDepth = SampleDepth(positionSS);
+    float deviceDepth = DeviceDepth(SampleDepth(positionSS));
     float3 positionWS = ComputeWorldSpacePosition(positionNDC, deviceDepth, UNITY_MATRIX_I_VP);
     float3 viewDirWS = GetWorldSpaceNormalizeViewDir(positionWS);
 
     half4 normalSmooth = LOAD_TEXTURE2D_X(_PackedNormalSmoothnessTexture, positionSS);
     float3 normalWS = UnpackNormal(normalSmooth.xyz);
-    //float smoothness = normalSmooth.w;
+    float smoothness = normalSmooth.w;
 
     // Reflect Ray Info (Simple reflection, no sequence sample)
     float3 reflectWS = reflect(-viewDirWS, normalWS);
+
+    // Reflect Ray Info (GGX VNDF Sample, with blue noise sample)
+    float perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
+    float roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
+    float3x3 localToWorld = GetLocalFrame(normalWS);
+
+    float step = _FrameCount;// - floor(_FrameCount / 100.0) * 100.0;
+    float2 sample = HilbertR1BlueNoiseFloat(uint2(positionSS.xy * step));
+
+    sample.x = lerp(sample.x, 0.0, roughness);
+    
+    SampleGGX_VNDF_Dir(sample, viewDirWS, localToWorld, roughness, reflectWS);
     
     float3 stepReflectPosWS = positionWS + reflectWS;
     float3 stepReflectPosNDC = ComputeNormalizedDeviceCoordinatesWithZ(stepReflectPosWS, UNITY_MATRIX_VP);
@@ -94,13 +148,15 @@ float2 GetHitPointUV(int2 positionSS)
 
     const float halfTexel = 0.5;
 
+    float skyBias = (_SSRSkybox == 0) ? 0.00000024 : -0.00000024;
+
     float3 bounds;
     bounds.x = (invRayDirSS.x >= 0) ? _ScreenSize.x - halfTexel : halfTexel;
     bounds.y = (invRayDirSS.y >= 0) ? _ScreenSize.y - halfTexel : halfTexel;
     #if UNITY_REVERSED_Z
-    bounds.z = (invRayDirSS.z >= 0) ? 1 : -0.00000024;
+    bounds.z = (invRayDirSS.z >= 0) ? 1 : skyBias;
     #else
-    bounds.z = (invRayDirSS.z >= 0) ? -1 : 1.00000024;
+    bounds.z = (invRayDirSS.z >= 0) ? -1 : 1.0 - skyBias;
     #endif
 
     float3 boundDist = (bounds - rayOriginSS) * invRayDirSS;
@@ -173,6 +229,94 @@ float2 GetHitPointUV(int2 positionSS)
     return float2(0.0, 0.0);
 }
 
+float3 GetReflectSampleColor(float2 screenCoord)
+{
+    const float2 offsets[5] = {
+        float2(0, 0), float2(1, 0), float2(0, 1), float2(-1, 0), float2(0, -1)
+    };
+
+    //float smooth = LOAD_TEXTURE2D_X(_PackedNormalSmoothnessTexture, int2(screenCoord)).w;
+    //float perceptualRough = PerceptualSmoothnessToPerceptualRoughness(smooth);
+    //float step = lerp(0.0, 10.0, perceptualRough);
+
+    float weightTotal = 0.0;
+    float3 colorTotal = 0.0;
+    for (int i = 0; i < 5; ++i)
+    {
+        float2 sampleCoord = float2(screenCoord) + offsets[i];// * step;
+        float2 screenUV = (sampleCoord + 0.5) * _ScreenSize.zw;
+        //float2 motionVec = LOAD_TEXTURE2D_X(_MotionVectorTexture, sampleCoord).xy * 2.0;
+        float2 hitUV = LOAD_TEXTURE2D_X(_SSRReflectUVTexture, sampleCoord).xy;
+        int2 hitCoord = int2(hitUV * _ScreenSize.xy);
+
+        float hitDeviceDepth = DeviceDepth(LOAD_TEXTURE2D_X(_DepthPyramidTexture, hitCoord).r);
+        float srcDeviceDepth = DeviceDepth(LOAD_TEXTURE2D_X(_DepthPyramidTexture, sampleCoord).r);
+        float3 hitPointWS = ComputeWorldSpacePosition(hitUV, hitDeviceDepth, UNITY_MATRIX_I_VP);
+        float3 positionWS = ComputeWorldSpacePosition(screenUV, srcDeviceDepth, UNITY_MATRIX_I_VP);
+
+        float3 viewDirWS = GetWorldSpaceNormalizeViewDir(positionWS);
+        float3 reflectDirWS = normalize(hitPointWS - positionWS);
+
+        half4 normalSmooth = LOAD_TEXTURE2D_X(_PackedNormalSmoothnessTexture, sampleCoord);
+        half4 albedoMetallic = LOAD_TEXTURE2D_X(_AlbedoMetallicTexture, sampleCoord);
+        float3 normalWS = UnpackNormal(normalSmooth.xyz);
+        float smoothness = normalSmooth.w;
+        float3 albedo = albedoMetallic.rgb;
+        float metallic = albedoMetallic.a;
+
+        float perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
+        float roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
+        float mipLevel = lerp(0.0, 7.0, perceptualRoughness);
+
+        half3 reflectVector = reflect(-viewDirWS, normalWS);
+        half NoV = saturate(dot(normalWS, viewDirWS));
+        half fresnelTerm = Pow4(1.0 - NoV);
+
+        half oneMinusReflectivity = OneMinusReflectivityMetallic(metallic);
+        half reflectivity = half(1.0) - oneMinusReflectivity;
+        half3 brdfSpecular = lerp(kDieletricSpec.rgb, albedo, metallic);
+
+        BRDFData brdfData = (BRDFData)0;
+        brdfData.perceptualRoughness = perceptualRoughness;
+        brdfData.roughness2 = roughness * roughness;
+        brdfData.specular = brdfSpecular;
+        brdfData.grazingTerm = saturate(smoothness + reflectivity);
+
+        //half3 cubeMapReflect = GlossyEnvironmentReflection(reflectVector, positionWS,
+        //                                                   brdfData.perceptualRoughness, 1.0, 0.0);
+        float environmentSpecular = EnvironmentBRDFSpecular(brdfData, fresnelTerm);
+
+        float3 screenReflect = 0.0;
+        float fade = 0.0;
+        float weight = GetSSRSampleWeight(viewDirWS, reflectDirWS, perceptualRoughness);
+
+        if (!(hitUV.x == 0.0 && hitUV.y == 0.0))
+        {
+            float2 motionVec = LOAD_TEXTURE2D_X(_MotionVectorTexture, hitUV * _ScreenSize.xy).xy;
+            float2 prevHitUV = hitUV - motionVec;
+            screenReflect = SAMPLE_TEXTURE2D_LOD(_ColorPyramidTexture, sampler_ColorPyramidTexture, prevHitUV, 0.0).rgb;
+            fade = GetScreenFade(prevHitUV);
+
+            // Disable SSR for negative, infinite and NaN history values.
+            uint3 intCol = asuint(screenReflect);
+            bool isPosFin = Max3(intCol.r, intCol.g, intCol.b) < 0x7F800000;
+            screenReflect = isPosFin ? screenReflect : 0;
+            screenReflect = clamp(screenReflect, 0.0, 5.0);
+        }
+
+        //colorTotal += lerp(cubeMapReflect, screenReflect, fade) * environmentSpecular * weight;
+        colorTotal += lerp(0.0, screenReflect, fade) * environmentSpecular * weight;
+        weightTotal += weight;
+    }
+
+    if (weightTotal < HALF_EPS)
+    {
+        return 0.0;
+    }
+
+    return colorTotal / weightTotal;
+}
+
 float4 SampleSSRLighting(int2 positionSS, float2 hitUV)
 {
     half4 normalSmooth = LOAD_TEXTURE2D_X(_PackedNormalSmoothnessTexture, positionSS);
@@ -195,11 +339,38 @@ float4 SampleSSRLighting(int2 positionSS, float2 hitUV)
 void CSScreenSpaceReflection(uint3 dispatchThreadId : SV_DispatchThreadID)
 {
     float2 hitUV = GetHitPointUV(dispatchThreadId.xy);
-    _SSRLightingTexture[dispatchThreadId.xy] = SampleSSRLighting(dispatchThreadId.xy, hitUV);
+    _SSRLightingCurrTexture[dispatchThreadId.xy] = SampleSSRLighting(dispatchThreadId.xy, hitUV);
 }
 
 [numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
 void CSScreenSpaceReflectionUVMapping(uint3 dispatchThreadId : SV_DispatchThreadID)
 {
     _SSRReflectUVTexture[dispatchThreadId.xy] = GetHitPointUV(dispatchThreadId.xy);
+}
+
+[numthreads(KERNEL_SIZE, KERNEL_SIZE, 1)]
+void CSScreenSpaceReflectionResolveColor(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    uint stencil = GetStencilValue(LOAD_TEXTURE2D_X(_StencilTexture, int2(dispatchThreadId.xy)));
+    if ((stencil & 4u) == 0)
+    {
+        _SSRLightingCurrTexture[dispatchThreadId.xy] = float4(0.0, 0.0, 0.0, 1.0);
+        return;
+    }
+    
+    float2 screenUV = ((float2)dispatchThreadId.xy + 0.5) * _ScreenSize.zw;
+    float2 hitUV = LOAD_TEXTURE2D_X(_SSRReflectUVTexture, dispatchThreadId.xy).xy;
+
+    float2 motionVecSurf = LOAD_TEXTURE2D_X(_MotionVectorTexture, dispatchThreadId.xy).xy;
+    float2 motionVecHit = SAMPLE_TEXTURE2D_LOD(_MotionVectorTexture, sampler_LinearClamp, hitUV, 0).xy;
+
+    float speedSrc = length(motionVecSurf);
+    float speedDst = length(motionVecHit);
+    float speed = saturate((speedSrc + speedDst) * 1280.0);
+    float mix = lerp(0.1, 1.0, speed);
+
+    float3 currColor = GetReflectSampleColor(dispatchThreadId.xy);
+    float3 prevColor = SAMPLE_TEXTURE2D_LOD(_SSRLightingPrevTexture, sampler_SSRLightingPrevTexture, screenUV, 0).rgb;
+    
+    _SSRLightingCurrTexture[dispatchThreadId.xy] = float4(lerp(prevColor, currColor, mix), 1.0);
 }

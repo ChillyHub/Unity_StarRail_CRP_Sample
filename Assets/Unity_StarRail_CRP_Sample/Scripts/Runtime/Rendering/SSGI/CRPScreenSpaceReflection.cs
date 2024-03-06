@@ -9,6 +9,8 @@ namespace Unity_StarRail_CRP_Sample
     public class CRPScreenSpaceReflection : VolumeComponent, IPostProcessComponent
     {
         public BoolParameter enable = new BoolParameter(false);
+        public BoolParameter stochasticSSR = new BoolParameter(true);
+        public BoolParameter tracingSkybox = new BoolParameter(true);
         public ClampedIntParameter maxIterCount = new ClampedIntParameter(32, 0, 128);
         public ClampedFloatParameter thickness = new ClampedFloatParameter(0.1f, 0.0f, 1.0f);
         

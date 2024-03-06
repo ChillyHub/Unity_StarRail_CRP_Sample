@@ -94,7 +94,7 @@
 
                 float weightTotal = 0.0;
                 float3 colorTotal = 0.0;
-                for (int i = 0; i < 9; ++i)
+                for (int i = 0; i < 5; ++i)
                 {
                     float2 sampleCoord = int2(screenUV * _ScreenSize.xy) + offsets[i] * step;
                     //float2 motionVec = LOAD_TEXTURE2D_X(_MotionVectorTexture, sampleCoord).xy * 2.0;
@@ -181,6 +181,27 @@
             
                 return float4(color + reflect, 1.0);
             }
+            ENDHLSL
+        }
+        
+        Pass
+        {
+            Blend One One
+            
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+
+            float4 Frag(Varyings i) : SV_Target
+            {
+                float3 color = FragBlit(i, sampler_PointClamp).rgb;
+            
+                return float4(color, 1.0);
+            }
+
             ENDHLSL
         }
     }

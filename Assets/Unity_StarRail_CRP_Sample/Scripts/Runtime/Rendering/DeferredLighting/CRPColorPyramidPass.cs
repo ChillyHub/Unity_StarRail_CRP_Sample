@@ -41,6 +41,8 @@ namespace Unity_StarRail_CRP_Sample
         private int _srcHeight;
         private int[] _srcOffset;
         private int[] _dstOffset;
+        
+        private bool _needMipMap;
 
         public CRPColorPyramidPass()
         {
@@ -67,11 +69,12 @@ namespace Unity_StarRail_CRP_Sample
             _dstOffset = new int[4];
         }
         
-        public void Setup(ColorTextures colorTextures)
+        public void Setup(ColorTextures colorTextures, bool needMipMap = false)
         {
             _colorTextures = colorTextures;
+            _needMipMap = needMipMap;
         }
-        
+
         public void Dispose()
         {
             RTHandles.Release(_downSampledTexture);
@@ -127,7 +130,7 @@ namespace Unity_StarRail_CRP_Sample
             using (new ProfilingScope(cmd, _colorPyramidSampler))
             {
                 var ssr = VolumeManager.instance.stack.GetComponent<CRPScreenSpaceReflection>();
-                bool needMipMap = ssr != null && ssr.IsActive();
+                bool needMipMap = ssr != null && ssr.IsActive() && _needMipMap;
                 
                 int srcMipLevel = 0;
                 int srcMipWidth = _srcWidth;

@@ -291,11 +291,11 @@ FragmentOutputs SceneLitGBufferSSRPassFragment(Varyings input, FRONT_FACE_TYPE f
     Light mainLight = CustomGetMainLight(inputData.shadowCoord, inputData.positionWS, inputData.shadowMask);
     MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, inputData.shadowMask);
     
-    #if SHADER_API_GLES || SHADER_API_GLES3 || SHADER_API_GLCORE
+    //#if SHADER_API_GLES || SHADER_API_GLES3 || SHADER_API_GLCORE
         half3 color = GlobalIllumination(brdfData, inputData.bakedGI, surfaceData.occlusion, inputData.positionWS, inputData.normalWS, inputData.viewDirectionWS);
-    #else
-        half3 color = SSRGlobalIllumination(brdfData, inputData.bakedGI, surfaceData.occlusion, inputData.positionWS, inputData.normalWS, inputData.viewDirectionWS);
-    #endif
+    //#else
+    //    half3 color = SSRGlobalIllumination(brdfData, inputData.bakedGI, surfaceData.occlusion, inputData.positionWS, inputData.normalWS, inputData.viewDirectionWS);
+    //#endif
 
     return SceneBRDFDataToGBuffer(brdfData, inputData, surfaceData.smoothness, surfaceData.emission + color, 1.0);
 }

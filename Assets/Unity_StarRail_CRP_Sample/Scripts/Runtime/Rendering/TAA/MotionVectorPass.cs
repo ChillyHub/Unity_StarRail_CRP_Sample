@@ -34,7 +34,7 @@ namespace Unity_StarRail_CRP_Sample
         private TAACameraData _taaCameraData;
 
         // Render Texture
-        private RTHandle _motionVectorTexture;
+        private MotionVectorTexture _motionVectorTexture;
         
         public MotionVectorPass()
         {
@@ -62,9 +62,10 @@ namespace Unity_StarRail_CRP_Sample
             };
         }
 
-        public void Setup(TAACameraData taaCameraData)
+        public void Setup(TAACameraData taaCameraData, MotionVectorTexture motionVectorTexture)
         {
             _taaCameraData = taaCameraData;
+            _motionVectorTexture = motionVectorTexture;
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -73,7 +74,7 @@ namespace Unity_StarRail_CRP_Sample
             desc.depthBufferBits = 0;
             desc.graphicsFormat = GraphicsFormat.R16G16_SFloat;
             
-            RenderingUtils.ReAllocateIfNeeded(ref _motionVectorTexture, desc, 
+            RenderingUtils.ReAllocateIfNeeded(ref _motionVectorTexture.Texture, desc, 
                 FilterMode.Point, TextureWrapMode.Clamp,
                 name: TextureName.MotionVectorTexture);
         }
@@ -95,7 +96,7 @@ namespace Unity_StarRail_CRP_Sample
                 cmd.SetGlobalMatrix(ShaderIds.PrevViewProjMatrix, _taaCameraData.previousViewGpuProjectionNoJitter);
                 cmd.SetGlobalMatrix(ShaderIds.NonJitteredViewProjMatrix, _taaCameraData.viewGpuProjectionNoJitter);
                 
-                cmd.SetRenderTarget(_motionVectorTexture.nameID, 
+                cmd.SetRenderTarget(_motionVectorTexture.Texture.nameID, 
                     cameraData.renderer.cameraDepthTargetHandle.nameID);
                 
                 // Draw Camera Motion Vector
@@ -111,7 +112,7 @@ namespace Unity_StarRail_CRP_Sample
                 context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref _filteringSettings);
 
                 // Set Motion Vector Texture
-                cmd.SetGlobalTexture(ShaderIds.MotionVectorTexture, _motionVectorTexture.nameID);
+                cmd.SetGlobalTexture(ShaderIds.MotionVectorTexture, _motionVectorTexture.Texture.nameID);
                 
                 cmd.SetRenderTarget(cameraData.renderer.cameraColorTargetHandle.nameID, 
                     cameraData.renderer.cameraDepthTargetHandle.nameID);
@@ -124,9 +125,6 @@ namespace Unity_StarRail_CRP_Sample
         {
             CoreUtils.Destroy(_cameraMotionMaterial);
             _cameraMotionMaterial = null;
-            
-            RTHandles.Release(_motionVectorTexture);
-            _motionVectorTexture = null;
         }
         
         private bool CheckExecute(ref RenderingData renderingData)

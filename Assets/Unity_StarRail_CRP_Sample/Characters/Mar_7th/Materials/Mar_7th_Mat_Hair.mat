@@ -202,7 +202,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
-    - _OutlineColor: {r: 0.8301887, g: 0.56703454, b: 0.8192239, a: 1}
+    - _OutlineColor: {r: 0.6415094, g: 0.444215, b: 0.63267535, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}

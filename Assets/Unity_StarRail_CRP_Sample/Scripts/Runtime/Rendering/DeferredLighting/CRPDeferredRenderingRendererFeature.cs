@@ -45,6 +45,7 @@ namespace Unity_StarRail_CRP_Sample
         private List<DepthTextures> _depthTextures;
         private List<ColorTextures> _colorTextures;
         private List<ShadowTextures> _shadowTextures;
+        private List<MotionVectorTexture> _motionVectorTextures;
 
         // Pass
         private CharacterShadowPass _characterShadowPass;
@@ -79,6 +80,7 @@ namespace Unity_StarRail_CRP_Sample
             _depthTextures = new List<DepthTextures>();
             _colorTextures = new List<ColorTextures>();
             _shadowTextures = new List<ShadowTextures>();
+            _motionVectorTextures = new List<MotionVectorTexture>();
 
             _characterShadowPass = new CharacterShadowPass();
             _crpGBufferPass = new CRPGBufferPass();
@@ -117,13 +119,13 @@ namespace Unity_StarRail_CRP_Sample
             _decalStencilLightingPass.Setup(_gBufferTextures[cameraIndex]);
             _crpTransparentPass.Setup(_gBufferTextures[cameraIndex]);
             
-            _motionVectorPass.Setup(_taaCameraData[cameraIndex]);
+            _motionVectorPass.Setup(_taaCameraData[cameraIndex], _motionVectorTextures[cameraIndex]);
             
 #if !UNITY_ANDROID
             if (camera.cameraType != CameraType.Preview && camera.cameraType != CameraType.Reflection)
             {
                 _screenSpaceReflectionPass.Setup(_gBufferTextures[cameraIndex], _depthTextures[cameraIndex], 
-                    _colorTextures[cameraIndex]);
+                    _colorTextures[cameraIndex], _motionVectorTextures[cameraIndex]);
                 _crpColorPyramidPass.Setup(_colorTextures[cameraIndex]);
             }
 #endif
@@ -142,6 +144,7 @@ namespace Unity_StarRail_CRP_Sample
                 _depthTextures.Add(new DepthTextures());
                 _colorTextures.Add(new ColorTextures());
                 _shadowTextures.Add(new ShadowTextures());
+                _motionVectorTextures.Add(new MotionVectorTexture());
             }
 
             int cameraIndex = _cameraIndices[camera];
@@ -226,10 +229,12 @@ namespace Unity_StarRail_CRP_Sample
                 _depthTextures[i]?.Release();
                 _colorTextures[i]?.Release();
                 _shadowTextures[i]?.Release();
+                _motionVectorTextures[i]?.Release();
                 _gBufferTextures[i] = null;
                 _depthTextures[i] = null;
                 _colorTextures[i] = null;
                 _shadowTextures[i] = null;
+                _motionVectorTextures[i] = null;
                 _taaCameraData[i] = null;
             }
             
