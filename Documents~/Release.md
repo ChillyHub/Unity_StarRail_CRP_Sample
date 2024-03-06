@@ -33,5 +33,5 @@ In 3rd scene. The operatrion is similar to Unity scene camera.
 > [!Tip]
 > Demo for Android is coming. There are still compatibility and optimization issues.
 
-##### Unity_StarRail_CRP_Sample_Package_v0_0_3.unitypackage
+##### Unity_StarRail_CRP_Sample_Package_v0_0_4.unitypackage
 If clone project failed. Download this unity package.

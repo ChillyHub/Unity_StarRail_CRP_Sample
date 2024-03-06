@@ -33,5 +33,5 @@ Demo 中有 3 个场景。
 > [!Tip]
 > Android Demo 鸽了。 目前还存在兼容性和优化问题。
 
-##### Unity_StarRail_CRP_Sample_Package_v0_0_3.unitypackage
+##### Unity_StarRail_CRP_Sample_Package_v0_0_4.unitypackage
 如果克隆项目失败。 下载这个 Unity 包。
